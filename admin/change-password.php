@@ -59,9 +59,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <link href="../assets/css/main.css" rel="stylesheet">
+    <style>
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(37, 99, 235, 0.9);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .back-button:hover {
+            background: rgba(29, 78, 216, 0.95);
+            color: white;
+            transform: translateX(-3px);
+        }
+    </style>
 </head>
 <body class="admin-dashboard">
-    <?php include 'navbar.php'; ?>
+    <a href="dashboard.php" class="back-button">
+        <i class="bi bi-arrow-left"></i>
+    </a>
 
     <div class="container mt-5">
         <div class="row justify-content-center">
