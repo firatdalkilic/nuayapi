@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once 'config.php';
+require_once '../config/db_connection.php';
 
 $success_message = '';
 $error_message = '';
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Mevcut şifreyi kontrol et
     $stmt = $conn->prepare("SELECT password FROM admin WHERE id = 1");
     $stmt->execute();
-    $result = $stmt->fetch();
+    $result = $stmt->fetch_assoc();
     $stored_password = $result['password'];
 
     if (password_verify($current_password, $stored_password)) {
@@ -29,8 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Yeni şifreyi hashle ve güncelle
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                 $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
+                $update_stmt->bind_param("s", $hashed_password);
                 
-                if ($update_stmt->execute([$hashed_password])) {
+                if ($update_stmt->execute()) {
                     $_SESSION['success'] = "Şifreniz başarıyla güncellendi.";
                     header("Location: dashboard.php");
                     exit;
