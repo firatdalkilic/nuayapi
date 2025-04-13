@@ -406,14 +406,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+    function formatPrice(number) {
+        return new Intl.NumberFormat('tr-TR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(number);
+    }
+
     function calculatePricePerSqm() {
         const price = document.getElementById('price').value;
         const area = document.getElementById('area').value;
         const pricePerSqm = document.getElementById('price_per_sqm');
         
         if (price && area && area > 0) {
-            const result = (price / area).toFixed(2);
-            pricePerSqm.value = result + ' ₺/m²';
+            const result = (price / area);
+            pricePerSqm.value = formatPrice(result) + ' ₺/m²';
         } else {
             pricePerSqm.value = '';
         }
