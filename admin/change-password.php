@@ -9,53 +9,83 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 require_once 'config.php';
 
+// Veritabanı bağlantı kontrolü
+if (!isset($conn) || $conn->connect_error) {
+    die("Veritabanı bağlantısı başarısız: " . ($conn->connect_error ?? "Bağlantı oluşturulamadı"));
+}
+
 $success_message = '';
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $current_password = $_POST['current_password'];
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
+    try {
+        $current_password = $_POST['current_password'] ?? '';
+        $new_password = $_POST['new_password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
 
-    // Mevcut şifreyi kontrol et
-    $stmt = $conn->prepare("SELECT password FROM admin WHERE id = 1");
-    $stmt->execute();
-    $result = $stmt->get_result();
+        if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+            throw new Exception("Tüm alanları doldurun.");
+        }
 
-    if ($result && $result->num_rows > 0) {
+        // Mevcut şifreyi kontrol et
+        $stmt = $conn->prepare("SELECT password FROM admin WHERE id = 1");
+        if (!$stmt) {
+            throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
+        }
+
+        if (!$stmt->execute()) {
+            throw new Exception("Sorgu çalıştırılamadı: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        
+        if (!$result) {
+            throw new Exception("Sonuç alınamadı: " . $stmt->error);
+        }
+
+        if ($result->num_rows === 0) {
+            throw new Exception("Admin kullanıcısı bulunamadı.");
+        }
+
         $row = $result->fetch_assoc();
         $stored_password = $row['password'];
 
-        if (password_verify($current_password, $stored_password)) {
-            if ($new_password === $confirm_password) {
-                if (strlen($new_password) >= 6) {
-                    // Yeni şifreyi hashle ve güncelle
-                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                    
-                    $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
-                    $update_stmt->bind_param("s", $hashed_password);
-                    
-                    if ($update_stmt->execute()) {
-                        $_SESSION['success_message'] = "Şifreniz başarıyla güncellendi.";
-                        header("Location: change-password.php");
-                        exit;
-                    } else {
-                        $error_message = "Şifre güncellenirken bir hata oluştu: " . $conn->error;
-                    }
-                    $update_stmt->close();
-                } else {
-                    $error_message = "Yeni şifre en az 6 karakter uzunluğunda olmalıdır.";
-                }
-            } else {
-                $error_message = "Yeni şifre ve şifre tekrarı eşleşmiyor.";
-            }
-        } else {
-            $error_message = "Mevcut şifre yanlış.";
+        if (!password_verify($current_password, $stored_password)) {
+            throw new Exception("Mevcut şifre yanlış.");
         }
-    } else {
-        $error_message = "Admin kullanıcısı bulunamadı.";
+
+        if ($new_password !== $confirm_password) {
+            throw new Exception("Yeni şifre ve şifre tekrarı eşleşmiyor.");
+        }
+
+        if (strlen($new_password) < 6) {
+            throw new Exception("Yeni şifre en az 6 karakter uzunluğunda olmalıdır.");
+        }
+
+        // Yeni şifreyi hashle ve güncelle
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        
+        $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
+        if (!$update_stmt) {
+            throw new Exception("Güncelleme sorgusu hazırlanamadı: " . $conn->error);
+        }
+
+        $update_stmt->bind_param("s", $hashed_password);
+        
+        if (!$update_stmt->execute()) {
+            throw new Exception("Şifre güncellenirken bir hata oluştu: " . $update_stmt->error);
+        }
+
+        $_SESSION['success_message'] = "Şifreniz başarıyla güncellendi.";
+        header("Location: change-password.php");
+        exit;
+
+    } catch (Exception $e) {
+        $error_message = $e->getMessage();
+    } finally {
+        if (isset($stmt)) $stmt->close();
+        if (isset($update_stmt)) $update_stmt->close();
     }
-    $stmt->close();
 }
 
 // Session'dan success mesajını al ve temizle
@@ -100,6 +130,7 @@ if (isset($_SESSION['success_message'])) {
                             <div class="mb-3">
                                 <label for="new_password" class="form-label">Yeni Şifre</label>
                                 <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                <small class="text-muted">En az 6 karakter</small>
                             </div>
                             <div class="mb-3">
                                 <label for="confirm_password" class="form-label">Yeni Şifre (Tekrar)</label>
