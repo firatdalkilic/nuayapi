@@ -13,7 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'zoning_status' => 'İmar Durumu',
         'block_no' => 'Ada No',
         'parcel_no' => 'Parsel No',
-        'sheet_no' => 'Pafta No',
         'floor_area_ratio' => 'Kaks (Emsal)',
         'height_limit' => 'Gabari',
         'credit_status' => 'Krediye Uygunluk',
@@ -45,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $zoning_status = trim($_POST['zoning_status']);
     $block_no = trim($_POST['block_no']);
     $parcel_no = trim($_POST['parcel_no']);
-    $sheet_no = trim($_POST['sheet_no']);
     $floor_area_ratio = trim($_POST['floor_area_ratio']);
     $height_limit = trim($_POST['height_limit']);
     $credit_status = trim($_POST['credit_status']);
@@ -53,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = trim($_POST['description']);
     $property_type = 'Arsa'; // Sabit değer
     $neighborhood = trim($_POST['neighborhood']);
+    $sheet_no = trim($_POST['sheet_no']);
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -64,18 +63,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
         title, price, status, location, description, property_type,
-        net_area, zoning_status, block_no, parcel_no,
-        sheet_no, floor_area_ratio, height_limit, eligible_for_credit,
-        deed_status, neighborhood
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        net_area, zoning_status, block_no, parcel_no, sheet_no,
+        floor_area_ratio, height_limit, eligible_for_credit,
+        deed_status, neighborhood, price_per_sqm
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdssssdsssssssss", 
+        $stmt->bind_param("sdssssdssssssssd", 
             $title, $price, $status, $location, $description, $property_type,
-            $area, $zoning_status, $block_no, $parcel_no,
-            $sheet_no, $floor_area_ratio, $height_limit, $credit_status,
-            $deed_status, $neighborhood
+            $area, $zoning_status, $block_no, $parcel_no, $sheet_no,
+            $floor_area_ratio, $height_limit, $credit_status,
+            $deed_status, $neighborhood, $price_per_sqm
         );
         
         if ($stmt->execute()) {
