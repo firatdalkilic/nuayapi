@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config.php';
 checkLogin();
@@ -71,80 +74,93 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdsssssssssssssd", 
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        $bind_result = $stmt->bind_param("sdsssssssssssssd", 
             $title, $price, $status, $location, $description, $property_type,
             $area, $zoning_status, $block_no, $parcel_no, $sheet_no,
             $floor_area_ratio, $height_limit, $credit_status,
             $deed_status, $neighborhood, $price_per_sqm
         );
         
-        if ($stmt->execute()) {
-            $property_id = $conn->insert_id;
+        if (!$bind_result) {
+            throw new Exception("Binding parameters failed: " . $stmt->error);
+        }
+
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+
+        $property_id = $conn->insert_id;
+        if (!$property_id) {
+            throw new Exception("Could not get last insert ID");
+        }
+        
+        // Resimleri yükle
+        $upload_success = false;
+        if (isset($_FILES["images"]) && !empty($_FILES["images"]["name"][0])) {
+            $target_dir = "../uploads/";
+            if (!file_exists($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
             
-            // Resimleri yükle
-            $upload_success = false;
-            if (isset($_FILES["images"]) && !empty($_FILES["images"]["name"][0])) {
-                $target_dir = "../uploads/";
-                if (!file_exists($target_dir)) {
-                    mkdir($target_dir, 0777, true);
-                }
-                
-                $total = count($_FILES["images"]["name"]);
-                $first_image = true;
-                
-                for($i = 0; $i < $total; $i++) {
-                    if($_FILES["images"]["error"][$i] == 0) {
-                        $imageFileType = strtolower(pathinfo($_FILES["images"]["name"][$i], PATHINFO_EXTENSION));
+            $total = count($_FILES["images"]["name"]);
+            $first_image = true;
+            
+            for($i = 0; $i < $total; $i++) {
+                if($_FILES["images"]["error"][$i] == 0) {
+                    $imageFileType = strtolower(pathinfo($_FILES["images"]["name"][$i], PATHINFO_EXTENSION));
+                    
+                    if($imageFileType == "jpg" || $imageFileType == "jpeg" || $imageFileType == "png" || $imageFileType == "gif") {
+                        $unique_name = time() . '_' . uniqid() . '.' . $imageFileType;
+                        $target_file = $target_dir . $unique_name;
                         
-                        if($imageFileType == "jpg" || $imageFileType == "jpeg" || $imageFileType == "png" || $imageFileType == "gif") {
-                            $unique_name = time() . '_' . uniqid() . '.' . $imageFileType;
-                            $target_file = $target_dir . $unique_name;
-                            
-                            $check = getimagesize($_FILES["images"]["tmp_name"][$i]);
-                            if($check !== false && move_uploaded_file($_FILES["images"]["tmp_name"][$i], $target_file)) {
-                                $is_featured = $first_image ? 1 : 0;
-                                $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)");
-                                $img_stmt->bind_param("isi", $property_id, $unique_name, $is_featured);
-                                if($img_stmt->execute()) {
-                                    $upload_success = true;
-                                    $first_image = false;
-                                }
+                        $check = getimagesize($_FILES["images"]["tmp_name"][$i]);
+                        if($check !== false && move_uploaded_file($_FILES["images"]["tmp_name"][$i], $target_file)) {
+                            $is_featured = $first_image ? 1 : 0;
+                            $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)");
+                            $img_stmt->bind_param("isi", $property_id, $unique_name, $is_featured);
+                            if($img_stmt->execute()) {
+                                $upload_success = true;
+                                $first_image = false;
                             }
                         }
                     }
                 }
             }
-            
-            // Video yükleme
-            if (isset($_FILES["property_video"]) && !empty($_FILES["property_video"]["name"])) {
-                $video_dir = "../uploads/videos/";
-                if (!file_exists($video_dir)) {
-                    mkdir($video_dir, 0777, true);
-                }
+        }
+        
+        // Video yükleme
+        if (isset($_FILES["property_video"]) && !empty($_FILES["property_video"]["name"])) {
+            $video_dir = "../uploads/videos/";
+            if (!file_exists($video_dir)) {
+                mkdir($video_dir, 0777, true);
+            }
 
-                $video_name = time() . '_' . basename($_FILES["property_video"]["name"]);
-                $video_target = $video_dir . $video_name;
-                
-                $allowed_types = ['video/mp4', 'video/webm', 'video/ogg'];
-                
-                if (in_array($_FILES["property_video"]["type"], $allowed_types)) {
-                    if (move_uploaded_file($_FILES["property_video"]["tmp_name"], $video_target)) {
-                        $video_stmt = $conn->prepare("UPDATE properties SET video_file = ? WHERE id = ?");
-                        $video_stmt->bind_param("si", $video_name, $property_id);
-                        $video_stmt->execute();
-                    }
+            $video_name = time() . '_' . basename($_FILES["property_video"]["name"]);
+            $video_target = $video_dir . $video_name;
+            
+            $allowed_types = ['video/mp4', 'video/webm', 'video/ogg'];
+            
+            if (in_array($_FILES["property_video"]["type"], $allowed_types)) {
+                if (move_uploaded_file($_FILES["property_video"]["tmp_name"], $video_target)) {
+                    $video_stmt = $conn->prepare("UPDATE properties SET video_file = ? WHERE id = ?");
+                    $video_stmt->bind_param("si", $video_name, $property_id);
+                    $video_stmt->execute();
                 }
             }
-            
-            if ($upload_success) {
-                $_SESSION['success'] = "Arsa ilanı başarıyla eklendi.";
-                header("Location: dashboard.php");
-                exit;
-            } else {
-                // Resim yüklenemedi, ilanı sil
-                $conn->query("DELETE FROM properties WHERE id = " . $property_id);
-                $_SESSION['error'] = "Resimler yüklenirken bir hata oluştu. İlan eklenemedi.";
-            }
+        }
+        
+        if ($upload_success) {
+            $_SESSION['success'] = "Arsa ilanı başarıyla eklendi.";
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            // Resim yüklenemedi, ilanı sil
+            $conn->query("DELETE FROM properties WHERE id = " . $property_id);
+            $_SESSION['error'] = "Resimler yüklenirken bir hata oluştu. İlan eklenemedi.";
         }
     } catch (Exception $e) {
         $_SESSION['error'] = "İlan eklenirken bir hata oluştu: " . $e->getMessage();
