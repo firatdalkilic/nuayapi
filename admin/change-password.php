@@ -1,6 +1,7 @@
 <?php
+session_start();
 require_once 'check_session.php';
-require_once '../config/db_connection.php';
+require_once 'config.php';
 
 $success_message = '';
 $error_message = '';
@@ -13,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Mevcut şifreyi kontrol et
     $stmt = $conn->prepare("SELECT password FROM admin WHERE id = 1");
     $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch();
     $stored_password = $result['password'];
 
     if (password_verify($current_password, $stored_password)) {
@@ -48,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Şifre Değiştir - Admin Panel</title>
     <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/admin.css" rel="stylesheet">
+    <link href="../assets/css/main.css" rel="stylesheet">
 </head>
-<body>
+<body class="admin-dashboard">
     <?php include 'navbar.php'; ?>
 
     <div class="container mt-5">
