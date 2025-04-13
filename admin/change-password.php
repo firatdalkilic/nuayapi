@@ -20,33 +20,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Mevcut şifreyi kontrol et
     $stmt = $conn->prepare("SELECT password FROM admin WHERE id = 1");
     $stmt->execute();
-    $result = $stmt->fetch_assoc();
-    $stored_password = $result['password'];
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
 
-    if (password_verify($current_password, $stored_password)) {
-        if ($new_password === $confirm_password) {
-            if (strlen($new_password) >= 6) {
-                // Yeni şifreyi hashle ve güncelle
-                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
-                $update_stmt->bind_param("s", $hashed_password);
-                
-                if ($update_stmt->execute()) {
-                    $_SESSION['success'] = "Şifreniz başarıyla güncellendi.";
-                    header("Location: dashboard.php");
-                    exit;
+    if ($row) {
+        $stored_password = $row['password'];
+
+        if (password_verify($current_password, $stored_password)) {
+            if ($new_password === $confirm_password) {
+                if (strlen($new_password) >= 6) {
+                    // Yeni şifreyi hashle ve güncelle
+                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                    $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
+                    $update_stmt->bind_param("s", $hashed_password);
+                    
+                    if ($update_stmt->execute()) {
+                        $_SESSION['success'] = "Şifreniz başarıyla güncellendi.";
+                        header("Location: dashboard.php");
+                        exit;
+                    } else {
+                        $error_message = "Şifre güncellenirken bir hata oluştu: " . $conn->error;
+                    }
+                    $update_stmt->close();
                 } else {
-                    $error_message = "Şifre güncellenirken bir hata oluştu.";
+                    $error_message = "Yeni şifre en az 6 karakter uzunluğunda olmalıdır.";
                 }
             } else {
-                $error_message = "Yeni şifre en az 6 karakter uzunluğunda olmalıdır.";
+                $error_message = "Yeni şifre ve şifre tekrarı eşleşmiyor.";
             }
         } else {
-            $error_message = "Yeni şifre ve şifre tekrarı eşleşmiyor.";
+            $error_message = "Mevcut şifre yanlış.";
         }
     } else {
-        $error_message = "Mevcut şifre yanlış.";
+        $error_message = "Admin kullanıcısı bulunamadı.";
     }
+    $stmt->close();
 }
 ?>
 
