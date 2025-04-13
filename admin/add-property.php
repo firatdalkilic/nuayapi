@@ -36,15 +36,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = trim($_POST['title']);
     
     // Fiyat alanını işle
-    $price = str_replace('.', '', $_POST['price']); // Binlik ayracı olan noktaları kaldır
-    $price = str_replace(',', '.', $price); // Virgülü noktaya çevir
-    $price = (float)$price;
-    
+    $price = trim($_POST['price']);
     if (!is_numeric($price) || $price <= 0) {
         $_SESSION['error'] = "Geçerli bir fiyat girmelisiniz.";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
+    $price = (float)$price;
     
     $status = trim($_POST['status']);
     $beds = (int)$_POST['beds'];
@@ -299,9 +297,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="col-md-6">
                                     <label for="price" class="form-label">Fiyat (₺)</label>
                                     <input type="text" class="form-control" id="price" name="price" required 
-                                           oninput="formatPrice(this)" 
-                                           pattern="[0-9,]*"
-                                           title="Lütfen sadece sayı girin">
+                                           oninput="formatPrice(this)">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
@@ -539,88 +535,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         function formatPrice(input) {
-            // Sadece sayı ve virgül karakterlerine izin ver
-            let value = input.value.replace(/[^\d,]/g, '');
-            
-            // Virgülden sonra en fazla 2 basamağa izin ver
-            let parts = value.split(',');
-            if (parts.length > 1) {
-                parts[1] = parts[1].slice(0, 2);
-                value = parts.join(',');
-            }
+            // Sadece sayı ve nokta karakterlerine izin ver
+            let value = input.value.replace(/[^\d.]/g, '');
             
             // Binlik ayracı olarak nokta ekle
-            let numberPart = parts[0] || '';
-            numberPart = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            
-            // Virgülden sonraki kısmı ekle (eğer varsa)
-            if (parts.length > 1) {
-                value = numberPart + ',' + parts[1];
-            } else {
-                value = numberPart;
-            }
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             
             input.value = value;
         }
 
-        // Form gönderilmeden önce kontroller
-        document.getElementById('propertyForm').addEventListener('submit', function(e) {
-            // Fiyatı temizle
+        // Form submit öncesi fiyat alanını temizle
+        document.querySelector('form').addEventListener('submit', function(e) {
             let priceInput = document.getElementById('price');
-            priceInput.value = priceInput.value.replace(/\D/g, '');
-
-            // Dosya boyutu kontrolü
-            const maxSize = 100 * 1024 * 1024; // 100MB
-            let totalSize = 0;
-
-            // Resim dosyaları kontrolü
-            const imageFiles = document.getElementById('images').files;
-            for (let i = 0; i < imageFiles.length; i++) {
-                totalSize += imageFiles[i].size;
-            }
-
-            // Video dosyası kontrolü
-            const videoFile = document.getElementById('property_video').files[0];
-            if (videoFile) {
-                totalSize += videoFile.size;
-            }
-
-            if (totalSize > maxSize) {
-                e.preventDefault();
-                alert('Toplam dosya boyutu 100MB\'ı geçemez. Lütfen daha küçük dosyalar seçin.');
-                return false;
-            }
-
-            // Zorunlu alanların kontrolü
-            const requiredFields = [
-                'title', 'price', 'status', 'beds', 'neighborhood',
-                'description', 'property_type', 'living_room',
-                'parking', 'usage_status', 'video_call_available'
-            ];
-
-            let hasError = false;
-            requiredFields.forEach(field => {
-                const element = document.getElementById(field);
-                if (!element.value.trim()) {
-                    element.classList.add('is-invalid');
-                    hasError = true;
-                } else {
-                    element.classList.remove('is-invalid');
-                }
-            });
-
-            if (hasError) {
-                e.preventDefault();
-                alert('Lütfen tüm zorunlu alanları doldurun.');
-                return false;
-            }
-
-            // En az bir resim seçilmiş mi kontrolü
-            if (imageFiles.length === 0) {
-                e.preventDefault();
-                alert('Lütfen en az bir resim seçin.');
-                return false;
-            }
+            // Noktaları kaldır
+            priceInput.value = priceInput.value.replace(/\./g, '');
         });
     </script>
 </body>
