@@ -70,54 +70,26 @@ if (isset($_SESSION['success_message'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Şifre Değiştir - Admin Panel</title>
-    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
-    <style>
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            background: rgba(37, 99, 235, 0.9);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        .back-button:hover {
-            background: rgba(29, 78, 216, 0.95);
-            color: white;
-            transform: translateX(-3px);
-        }
-    </style>
+    <title>Şifre Değiştir - Admin Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="admin-dashboard">
-    <a href="dashboard.php" class="back-button">
-        <i class="bi bi-arrow-left"></i>
-    </a>
+<body>
+    <?php include 'navbar.php'; ?>
 
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Şifre Değiştir</h3>
+                        <h3 class="text-center">Şifre Değiştir</h3>
                     </div>
                     <div class="card-body">
                         <?php if ($success_message): ?>
-                            <div class="alert alert-success"><?php echo $success_message; ?></div>
+                            <div class="alert alert-success"><?php echo htmlspecialchars($success_message); ?></div>
                         <?php endif; ?>
 
                         <?php if ($error_message): ?>
-                            <div class="alert alert-danger"><?php echo $error_message; ?></div>
+                            <div class="alert alert-danger"><?php echo htmlspecialchars($error_message); ?></div>
                         <?php endif; ?>
 
                         <form method="POST" action="">
@@ -128,7 +100,6 @@ if (isset($_SESSION['success_message'])) {
                             <div class="mb-3">
                                 <label for="new_password" class="form-label">Yeni Şifre</label>
                                 <input type="password" class="form-control" id="new_password" name="new_password" required>
-                                <small class="text-muted">Şifre en az 6 karakter uzunluğunda olmalıdır.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="confirm_password" class="form-label">Yeni Şifre (Tekrar)</label>
@@ -144,6 +115,6 @@ if (isset($_SESSION['success_message'])) {
         </div>
     </div>
 
-    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 
