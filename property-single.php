@@ -100,6 +100,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       border-radius: 4px;
       background-color: #f8f9fa;
       transition: all 0.2s ease;
+      height: 100%;
     }
 
     .detail-item:hover {
@@ -134,6 +135,8 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     .row.g-2 > [class*="col-"] {
       padding: 0.5rem;
+      flex: 0 0 50%;
+      max-width: 50%;
     }
 
     .property-description {
@@ -259,6 +262,11 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       .detail-item {
         margin-bottom: 0.5rem;
         padding: 0.5rem;
+      }
+
+      .row.g-2 > [class*="col-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
       }
     }
 
@@ -535,7 +543,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 <?php else: ?>
                     <!-- Konut özellikleri (daire, villa, müstakil ev) -->
                     <div class="row g-2">
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
                                 <span>Durum:</span>
@@ -543,7 +551,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             </div>
                         </div>
                         <?php if (!empty($property['gross_area'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>m² (Brüt):</span>
@@ -552,7 +560,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['net_area'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>m² (Net):</span>
@@ -561,7 +569,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['room_count'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-door-open"></i>
                                 <span>Oda Sayısı:</span>
@@ -570,7 +578,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['building_age'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-building-add"></i>
                                 <span>Bina Yaşı:</span>
@@ -579,7 +587,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['floor'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-layers"></i>
                                 <span>Bulunduğu Kat:</span>
@@ -588,7 +596,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['total_floors'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
                                 <span>Kat Sayısı:</span>
@@ -597,7 +605,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['heating'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-thermometer-half"></i>
                                 <span>Isıtma:</span>
@@ -606,7 +614,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['bathroom_count'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-droplet"></i>
                                 <span>Banyo Sayısı:</span>
@@ -615,7 +623,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['balcony'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-door-closed"></i>
                                 <span>Balkon:</span>
@@ -624,7 +632,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['parking'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-p-square"></i>
                                 <span>Otopark:</span>
@@ -633,7 +641,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['furnished'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-box"></i>
                                 <span>Eşyalı:</span>
@@ -642,7 +650,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['usage_status'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-house-gear"></i>
                                 <span>Kullanım Durumu:</span>
@@ -651,7 +659,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['site_status'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-buildings"></i>
                                 <span>Site İçerisinde:</span>
@@ -660,7 +668,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['site_name'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-building-check"></i>
                                 <span>Site Adı:</span>
@@ -669,7 +677,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['eligible_for_credit'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-credit-card"></i>
                                 <span>Krediye Uygun:</span>
@@ -678,7 +686,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($property['video_call_available'])): ?>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-camera-video"></i>
                                 <span>Görüntülü Arama:</span>
