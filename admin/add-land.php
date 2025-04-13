@@ -52,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $deed_status = trim($_POST['deed_status']);
     $description = trim($_POST['description']);
     $property_type = 'Arsa'; // Sabit değer
+    $neighborhood = trim($_POST['neighborhood']);
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -65,16 +66,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, price, status, location, description, property_type,
         net_area, price_per_sqm, zoning_status, block_no, parcel_no,
         sheet_no, floor_area_ratio, height_limit, eligible_for_credit,
-        deed_status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        deed_status, neighborhood
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdssssddssssssss", 
+        $stmt->bind_param("sdssssddssssssssss", 
             $title, $price, $status, $location, $description, $property_type,
             $area, $price_per_sqm, $zoning_status, $block_no, $parcel_no,
             $sheet_no, $floor_area_ratio, $height_limit, $credit_status,
-            $deed_status
+            $deed_status, $neighborhood
         );
         
         if ($stmt->execute()) {
@@ -298,6 +299,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="mb-3">
                                 <label for="location" class="form-label">Konum</label>
                                 <input type="text" class="form-control" id="location" value="Didim" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="neighborhood" class="form-label">Mahalle</label>
+                                <select class="form-select" id="neighborhood" name="neighborhood" required>
+                                    <option value="">Mahalle Seçiniz</option>
+                                    <option value="Ak-yeniköy Mah.">Ak-yeniköy Mah.</option>
+                                    <option value="Akbük Mah.">Akbük Mah.</option>
+                                    <option value="Akköy Mah.">Akköy Mah.</option>
+                                    <option value="Altınkum Mah.">Altınkum Mah.</option>
+                                    <option value="Balat Mah.">Balat Mah.</option>
+                                    <option value="Batıköy Mah.">Batıköy Mah.</option>
+                                    <option value="Cumhuriyet Mah.">Cumhuriyet Mah.</option>
+                                    <option value="Çamlık Mah.">Çamlık Mah.</option>
+                                    <option value="Denizköy Mah.">Denizköy Mah.</option>
+                                    <option value="Efeler Mah.">Efeler Mah.</option>
+                                    <option value="Fevzipaşa Mah.">Fevzipaşa Mah.</option>
+                                    <option value="Hisar Mah.">Hisar Mah.</option>
+                                    <option value="Mavişehir Mah.">Mavişehir Mah.</option>
+                                    <option value="Mersindere Mah.">Mersindere Mah.</option>
+                                    <option value="Yalıköy Mah.">Yalıköy Mah.</option>
+                                    <option value="Yeni Mah.">Yeni Mah.</option>
+                                </select>
                             </div>
 
                             <div class="row mb-3">
