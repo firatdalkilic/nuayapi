@@ -542,14 +542,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Sadece sayısal değerleri al
             value = value.replace(/[^\d]/g, '');
             
+            // Eğer değer boşsa, işlemi sonlandır
+            if (!value) {
+                input.value = '';
+                return;
+            }
+
             // Sayıyı tam sayıya çevir
             let number = parseInt(value, 10);
-            if (isNaN(number)) {
-                number = 0;
-            }
             
             // Binlik ayracı olarak nokta ekle
-            value = number.toLocaleString('tr-TR');
+            value = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             
             input.value = value;
         }
@@ -557,8 +560,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Form submit öncesi fiyat alanını temizle
         document.querySelector('form').addEventListener('submit', function(e) {
             let priceInput = document.getElementById('price');
-            // Tüm nokta ve virgülleri kaldır
-            priceInput.value = priceInput.value.replace(/[.,]/g, '');
+            // Tüm noktaları kaldır
+            priceInput.value = priceInput.value.replace(/\./g, '');
         });
     </script>
 </body>
