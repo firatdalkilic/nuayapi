@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'zoning_status' => 'İmar Durumu',
         'block_no' => 'Ada No',
         'parcel_no' => 'Parsel No',
+        'sheet_no' => 'Pafta No',
         'floor_area_ratio' => 'Kaks (Emsal)',
         'height_limit' => 'Gabari',
         'credit_status' => 'Krediye Uygunluk',
@@ -40,10 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status = trim($_POST['status']);
     $location = 'Didim'; // Sabit değer
     $area = (float)$_POST['area'];
-    $price_per_sqm = $area > 0 ? $price / $area : 0;
+    $price_per_sqm = $area > 0 ? round($price / $area, 2) : 0;
     $zoning_status = trim($_POST['zoning_status']);
     $block_no = trim($_POST['block_no']);
     $parcel_no = trim($_POST['parcel_no']);
+    $sheet_no = trim($_POST['sheet_no']);
     $floor_area_ratio = trim($_POST['floor_area_ratio']);
     $height_limit = trim($_POST['height_limit']);
     $credit_status = trim($_POST['credit_status']);
@@ -51,7 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = trim($_POST['description']);
     $property_type = 'Arsa'; // Sabit değer
     $neighborhood = trim($_POST['neighborhood']);
-    $sheet_no = trim($_POST['sheet_no']);
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -70,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdssssdssssssssd", 
+        $stmt->bind_param("sdsssssssssssssd", 
             $title, $price, $status, $location, $description, $property_type,
             $area, $zoning_status, $block_no, $parcel_no, $sheet_no,
             $floor_area_ratio, $height_limit, $credit_status,
