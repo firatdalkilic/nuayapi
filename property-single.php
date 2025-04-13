@@ -355,76 +355,56 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       <div class="container">
         <div class="row">
           <!-- Sol Kolon - Fotoğraf Galerisi -->
-          <div class="col-lg-5">
+          <div class="col-lg-8">
             <div class="property-gallery">
-              <div class="gallery-main">
+              <div class="gallery-main mb-3">
                 <?php if (!empty($images)): ?>
                   <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" 
                       alt="Ana Görsel" 
                       id="mainImage"
-                      onclick="nextImage()"
-                      style="cursor: pointer;">
+                      class="img-fluid w-100"
+                      style="max-height: 500px; object-fit: contain;">
                 <?php else: ?>
                   <img src="assets/img/no-image.jpg" 
-                      alt="<?php echo htmlspecialchars($property['title']); ?>">
+                      alt="<?php echo htmlspecialchars($property['title']); ?>"
+                      class="img-fluid w-100">
                 <?php endif; ?>
               </div>
 
-              <?php if (!empty($images)): ?>
-              <div class="text-center">
+              <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="photo-counter">
-                  <span id="currentPhotoIndex">1</span> / <?php echo count($images); ?>
+                  <span id="currentPhotoIndex">1</span>/<?php echo count($images); ?> Fotoğraf
                 </div>
-              </div>
-              <?php endif; ?>
-
-              <div class="gallery-actions">
-                <button class="gallery-btn" onclick="openPhotoModal()">
-                  <i class="bi bi-search"></i>
-                  Büyük Fotoğraf
-                </button>
-                <button class="gallery-btn video-btn <?php echo empty($property['video_file']) ? 'disabled' : ''; ?>" onclick="<?php echo !empty($property['video_file']) ? 'openVideoModal()' : ''; ?>">
-                  <i class="bi bi-play-circle"></i>
-                  Video
-                </button>
+                <div class="gallery-actions">
+                  <button class="btn btn-sm btn-outline-primary me-2" onclick="openPhotoModal()">
+                    <i class="bi bi-search"></i> Büyük Fotoğraf
+                  </button>
+                  <?php if (!empty($property['video_file'])): ?>
+                  <button class="btn btn-sm btn-outline-primary" onclick="openVideoModal()">
+                    <i class="bi bi-play-circle"></i> Video
+                  </button>
+                  <?php endif; ?>
+                </div>
               </div>
 
               <?php if (count($images) > 1): ?>
-              <div class="gallery-thumbs">
+              <div class="gallery-thumbs position-relative">
+                <button class="gallery-nav prev" onclick="prevPage()">❮</button>
                 <div class="gallery-thumbs-container">
-                  <?php 
-                  $totalPages = ceil(count($images) / 10);
-                  for($page = 0; $page < $totalPages; $page++): 
-                  ?>
-                  <div class="gallery-thumbs-page">
-                    <?php 
-                    $start = $page * 10;
-                    $end = min($start + 10, count($images));
-                    for($i = $start; $i < $end; $i++): 
-                    ?>
-                    <div class="gallery-thumb <?php echo $i === 0 ? 'active' : ''; ?>" data-index="<?php echo $i; ?>">
-                      <img src="uploads/<?php echo htmlspecialchars($images[$i]['image_name']); ?>" 
-                          alt="<?php echo htmlspecialchars($property['title']); ?>"
-                          onclick="showImage(<?php echo $i; ?>)">
+                  <div class="gallery-thumbs-wrapper" style="display: flex; transition: transform 0.3s ease;">
+                    <?php foreach ($images as $index => $image): ?>
+                    <div class="gallery-thumb <?php echo $index === 0 ? 'active' : ''; ?>" 
+                         onclick="showImage(<?php echo $index; ?>)"
+                         data-index="<?php echo $index; ?>">
+                      <img src="uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
+                           alt="Thumbnail <?php echo $index + 1; ?>"
+                           class="img-fluid">
                     </div>
-                    <?php endfor; ?>
+                    <?php endforeach; ?>
                   </div>
-                  <?php endfor; ?>
                 </div>
+                <button class="gallery-nav next" onclick="nextPage()">❯</button>
               </div>
-              <?php if (count($images) > 10): ?>
-              <div class="gallery-navigation">
-                <span class="gallery-arrow prev hidden" onclick="prevPage()">
-                  <i class="bi bi-chevron-left"></i>
-                </span>
-                <?php for($i = 0; $i < $totalPages; $i++): ?>
-                <div class="gallery-dot <?php echo $i === 0 ? 'active' : ''; ?>" onclick="showPage(<?php echo $i; ?>)"></div>
-                <?php endfor; ?>
-                <span class="gallery-arrow next" onclick="nextPage()">
-                  <i class="bi bi-chevron-right"></i>
-                </span>
-              </div>
-              <?php endif; ?>
               <?php endif; ?>
             </div>
           </div>
@@ -808,241 +788,108 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
   <script src="assets/js/main.js"></script>
 
   <script>
-    let currentImageIndex = 0;
     let currentPage = 0;
-    const images = <?php echo json_encode(array_map(function($img) { 
-        return 'uploads/' . $img['image_name']; 
-    }, $images)); ?>;
-    const totalImages = images.length;
-    const imagesPerPage = 10;
-    const totalPages = Math.ceil(totalImages / imagesPerPage);
-
-    function nextImage() {
-      showImage((currentImageIndex + 1) % totalImages);
-    }
+    const thumbsPerPage = 6;
+    const totalImages = <?php echo count($images); ?>;
+    const totalPages = Math.ceil(totalImages / thumbsPerPage);
 
     function showImage(index) {
-      if (index >= 0 && index < totalImages) {
-        currentImageIndex = index;
-        document.getElementById('mainImage').src = images[index];
-        
-        // Sayacı güncelle
-        document.getElementById('currentPhotoIndex').textContent = index + 1;
-        
-        // Tüm thumbnail'ların active sınıfını kaldır
-        document.querySelectorAll('.gallery-thumb').forEach(thumb => {
-          thumb.classList.remove('active');
-        });
-        
-        // Seçili thumbnail'a active sınıfını ekle
-        const activeThumb = document.querySelector(`.gallery-thumb[data-index="${index}"]`);
-        if (activeThumb) {
-          activeThumb.classList.add('active');
-        }
-
-        // Gerekirse sayfayı değiştir
-        const targetPage = Math.floor(index / imagesPerPage);
-        if (targetPage !== currentPage) {
-          showPage(targetPage);
-        }
-      }
+      // Ana görseli güncelle
+      document.getElementById('mainImage').src = document.querySelector(`.gallery-thumb[data-index="${index}"] img`).src;
+      
+      // Aktif thumb'ı güncelle
+      document.querySelectorAll('.gallery-thumb').forEach(thumb => thumb.classList.remove('active'));
+      document.querySelector(`.gallery-thumb[data-index="${index}"]`).classList.add('active');
+      
+      // Sayacı güncelle
+      document.getElementById('currentPhotoIndex').textContent = index + 1;
     }
 
-    function showPage(page) {
-      if (page >= 0 && page < totalPages) {
-        currentPage = page;
-        
-        // Thumbnail container'ı kaydır
-        const container = document.querySelector('.gallery-thumbs-container');
-        container.style.transform = `translateX(-${page * 100}%)`;
-
-        // Tüm noktaların active sınıfını kaldır
-        document.querySelectorAll('.gallery-dot').forEach(dot => {
-          dot.classList.remove('active');
-        });
-        
-        // Seçili noktaya active sınıfını ekle
-        document.querySelectorAll('.gallery-dot')[page].classList.add('active');
-
-        // Gezinme düğmelerini güncelle
-        document.querySelector('.gallery-arrow.prev').classList.toggle('hidden', page === 0);
-        document.querySelector('.gallery-arrow.next').classList.toggle('hidden', page === totalPages - 1);
-      }
+    function updateGalleryPosition() {
+      const wrapper = document.querySelector('.gallery-thumbs-wrapper');
+      const thumbWidth = 110; // thumb genişliği + margin
+      wrapper.style.transform = `translateX(-${currentPage * thumbWidth * thumbsPerPage}px)`;
     }
 
     function nextPage() {
-      showPage(currentPage + 1);
+      if (currentPage < totalPages - 1) {
+        currentPage++;
+        updateGalleryPosition();
+      }
     }
 
     function prevPage() {
-      showPage(currentPage - 1);
+      if (currentPage > 0) {
+        currentPage--;
+        updateGalleryPosition();
+      }
     }
 
-    // Sayfa yüklendiğinde
-    document.addEventListener('DOMContentLoaded', function() {
-      if (totalImages > 0) {
-        showImage(0);
-        if (totalImages > imagesPerPage) {
-          showPage(0);
-        }
-      }
-
-      // Modal dışına tıklandığında kapatma
-      const modal = document.getElementById('photoModal');
-      if (modal) {
-        modal.addEventListener('click', function(event) {
-          if (event.target === modal) {
-            closePhotoModal();
-          }
-        });
-      }
-
-      // ESC tuşuna basıldığında modalı kapatma
-      document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-          closePhotoModal();
-        }
-      });
-
-      // Touch events için gerekli kodlar
-      const mainImage = document.getElementById('mainImage');
-      if (mainImage) {
-        mainImage.addEventListener('touchstart', handleTouchStart, false);
-        mainImage.addEventListener('touchmove', handleTouchMove, false);
-        mainImage.addEventListener('touchend', handleTouchEnd, false);
-      }
-    });
-
+    // Büyük fotoğraf modalı
     function openPhotoModal() {
-      const modal = document.getElementById('photoModal');
-      const modalImage = document.getElementById('modalImage');
-      if (modal && modalImage) {
-        modalImage.src = images[currentImageIndex];
-        modal.style.display = 'block';
-      }
-    }
-
-    function closePhotoModal() {
-      const modal = document.getElementById('photoModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    }
-
-    function changeModalImage(direction) {
-      event.preventDefault();
-      currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
-      const modalImage = document.getElementById('modalImage');
-      if (modalImage) {
-        modalImage.src = images[currentImageIndex];
-      }
-    }
-
-    // Thumbnail tıklamalarını güncelleyelim
-    document.querySelectorAll('.gallery-thumb').forEach((thumb, index) => {
-      thumb.addEventListener('click', () => {
-        showImage(index);
-      });
-    });
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    function handleTouchStart(evt) {
-      touchStartX = evt.touches[0].clientX;
-    }
-    
-    function handleTouchMove(evt) {
-      touchEndX = evt.touches[0].clientX;
-    }
-    
-    function handleTouchEnd() {
-      if (!touchStartX || !touchEndX) return;
+      const currentSrc = document.getElementById('mainImage').src;
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        cursor: pointer;
+      `;
       
-      const diffX = touchStartX - touchEndX;
-      const threshold = 50; // minimum kaydırma mesafesi
+      const img = document.createElement('img');
+      img.src = currentSrc;
+      img.style.cssText = `
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+      `;
       
-      if (Math.abs(diffX) > threshold) {
-        if (diffX > 0) {
-          // Sola kaydırma - sonraki resim
-          nextImage();
-        } else {
-          // Sağa kaydırma - önceki resim
-          showImage((currentImageIndex - 1 + totalImages) % totalImages);
-        }
-      }
-      
-      // Değerleri sıfırla
-      touchStartX = 0;
-      touchEndX = 0;
+      modal.appendChild(img);
+      modal.onclick = () => modal.remove();
+      document.body.appendChild(modal);
     }
-  </script>
 
-  <!-- Photo Modal -->
-  <div class="photo-modal" id="photoModal">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closePhotoModal()">&times;</span>
-      <img src="" alt="Büyük Görsel" class="modal-image" id="modalImage">
-      <div class="modal-prev" onclick="changeModalImage(-1)"><i class="bi bi-chevron-left"></i></div>
-      <div class="modal-next" onclick="changeModalImage(1)"><i class="bi bi-chevron-right"></i></div>
-    </div>
-  </div>
-
-  <!-- Video Modal -->
-  <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl" style="max-width: 90%; margin: 1.75rem auto;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="videoModalLabel">Video</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-            </div>
-            <div class="modal-body p-0">
-                <?php if (!empty($property['video_file'])): ?>
-                <video id="propertyVideo" class="w-100" controls style="max-height: 85vh; object-fit: contain;">
-                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
-                    Tarayıcınız video oynatmayı desteklemiyor.
-                </video>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-  </div>
-
-  <script>
+    // Video modalı
     function openVideoModal() {
-        const videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
-        videoModal.show();
-        
-        // Modal açıldığında videoyu başlat
-        const video = document.getElementById('propertyVideo');
-        video.play();
-        
-        // Modal kapandığında videoyu durdur ve başa sar
-        document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
-            const video = document.getElementById('propertyVideo');
-            video.pause();
-            video.currentTime = 0;
-        });
-    }
+      const videoFile = '<?php echo !empty($property['video_file']) ? "uploads/videos/" . htmlspecialchars($property['video_file']) : ""; ?>';
+      if (!videoFile) return;
 
-    // Klavye kontrollerini ekle
-    document.addEventListener('keydown', function(e) {
-      const videoModal = document.getElementById('videoModal');
-      const video = document.getElementById('propertyVideo');
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        cursor: pointer;
+      `;
       
-      // Modal açıksa
-      if (videoModal.classList.contains('show')) {
-        switch(e.key) {
-          case ' ':  // Boşluk tuşu
-            e.preventDefault();
-            video.paused ? video.play() : video.pause();
-            break;
-          case 'Escape':  // ESC tuşu
-            bootstrap.Modal.getInstance(videoModal).hide();
-            break;
-        }
-      }
-    });
+      const video = document.createElement('video');
+      video.src = videoFile;
+      video.controls = true;
+      video.style.cssText = `
+        max-width: 90%;
+        max-height: 90vh;
+      `;
+      
+      modal.appendChild(video);
+      modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+      };
+      document.body.appendChild(modal);
+    }
   </script>
 
 </body>

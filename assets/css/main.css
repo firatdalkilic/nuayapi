@@ -2068,3 +2068,102 @@ section,
         max-height: 80vh;
     }
 }
+
+/* Galeri Stilleri */
+.gallery-main {
+  position: relative;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.gallery-thumbs {
+  position: relative;
+  margin: 20px 0;
+  padding: 0 40px;
+}
+
+.gallery-thumbs-container {
+  overflow: hidden;
+}
+
+.gallery-thumbs-wrapper {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+
+.gallery-thumb {
+  flex: 0 0 100px;
+  height: 75px;
+  margin: 0 5px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumb.active {
+  border-color: #007bff;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  z-index: 2;
+}
+
+.gallery-nav.prev {
+  left: 0;
+}
+
+.gallery-nav.next {
+  right: 0;
+}
+
+.photo-counter {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+
+.gallery-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.gallery-actions button {
+  padding: 5px 15px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gallery-actions button i {
+  font-size: 16px;
+}
