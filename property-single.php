@@ -97,8 +97,8 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       margin-bottom: 0.75rem;
       padding: 0.75rem;
       border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      background-color: #f8fafc;
+      border-radius: 4px;
+      background-color: #f8f9fa;
       transition: all 0.2s ease;
     }
 
@@ -109,18 +109,31 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     .detail-item i {
-      font-size: 1.25rem;
+      font-size: 1rem;
       color: #2563eb;
       margin-right: 0.75rem;
-      width: 24px;
+      width: 20px;
       text-align: center;
     }
 
     .detail-item span {
       font-size: 0.875rem;
-      color: #64748b;
+      color: #4b5563;
       margin-right: 0.5rem;
       font-weight: 500;
+    }
+
+    .detail-item strong {
+      font-size: 0.875rem;
+      color: #1f2937;
+    }
+
+    .row.g-2 {
+      margin: -0.5rem;
+    }
+
+    .row.g-2 > [class*="col-"] {
+      padding: 0.5rem;
     }
 
     .property-description {
@@ -240,12 +253,12 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       }
 
       .property-details {
-        flex-direction: column;
-        gap: 10px;
+        padding: 1rem 0;
       }
 
       .detail-item {
-        width: 100%;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
       }
     }
 
@@ -526,7 +539,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
                                 <span>Durum:</span>
-                                <?php echo htmlspecialchars($property['status']); ?>
+                                <strong><?php echo htmlspecialchars($property['status']); ?></strong>
                             </div>
                         </div>
                         <?php if (!empty($property['gross_area'])): ?>
@@ -534,7 +547,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>m² (Brüt):</span>
-                                <?php echo number_format($property['gross_area'], 0, ',', '.'); ?>
+                                <strong><?php echo number_format($property['gross_area'], 0, ',', '.'); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -543,7 +556,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>m² (Net):</span>
-                                <?php echo number_format($property['net_area'], 0, ',', '.'); ?>
+                                <strong><?php echo number_format($property['net_area'], 0, ',', '.'); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -552,7 +565,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-door-open"></i>
                                 <span>Oda Sayısı:</span>
-                                <?php echo htmlspecialchars($property['room_count']); ?>
+                                <strong><?php echo htmlspecialchars($property['room_count']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -561,7 +574,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-building-add"></i>
                                 <span>Bina Yaşı:</span>
-                                <?php echo htmlspecialchars($property['building_age']); ?>
+                                <strong><?php echo htmlspecialchars($property['building_age']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -570,7 +583,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-layers"></i>
                                 <span>Bulunduğu Kat:</span>
-                                <?php echo htmlspecialchars($property['floor']); ?>
+                                <strong><?php echo htmlspecialchars($property['floor']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -579,7 +592,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
                                 <span>Kat Sayısı:</span>
-                                <?php echo htmlspecialchars($property['total_floors']); ?>
+                                <strong><?php echo htmlspecialchars($property['total_floors']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -588,7 +601,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-thermometer-half"></i>
                                 <span>Isıtma:</span>
-                                <?php echo htmlspecialchars($property['heating']); ?>
+                                <strong><?php echo htmlspecialchars($property['heating']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -597,7 +610,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-droplet"></i>
                                 <span>Banyo Sayısı:</span>
-                                <?php echo htmlspecialchars($property['bathroom_count']); ?>
+                                <strong><?php echo htmlspecialchars($property['bathroom_count']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -606,7 +619,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-door-closed"></i>
                                 <span>Balkon:</span>
-                                <?php echo htmlspecialchars($property['balcony']); ?>
+                                <strong><?php echo htmlspecialchars($property['balcony']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -615,7 +628,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-p-square"></i>
                                 <span>Otopark:</span>
-                                <?php echo htmlspecialchars($property['parking']); ?>
+                                <strong><?php echo htmlspecialchars($property['parking']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -624,16 +637,52 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-box"></i>
                                 <span>Eşyalı:</span>
-                                <?php echo htmlspecialchars($property['furnished']); ?>
+                                <strong><?php echo htmlspecialchars($property['furnished']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
-                        <?php if (!empty($property['site'])): ?>
+                        <?php if (!empty($property['usage_status'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-house-gear"></i>
+                                <span>Kullanım Durumu:</span>
+                                <strong><?php echo htmlspecialchars($property['usage_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($property['site_status'])): ?>
                         <div class="col-6 col-md-4">
                             <div class="detail-item">
                                 <i class="bi bi-buildings"></i>
                                 <span>Site İçerisinde:</span>
-                                <?php echo htmlspecialchars($property['site']); ?>
+                                <strong><?php echo htmlspecialchars($property['site_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($property['site_name'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-building-check"></i>
+                                <span>Site Adı:</span>
+                                <strong><?php echo htmlspecialchars($property['site_name']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($property['eligible_for_credit'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-credit-card"></i>
+                                <span>Krediye Uygun:</span>
+                                <strong><?php echo htmlspecialchars($property['eligible_for_credit']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($property['video_call_available'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-camera-video"></i>
+                                <span>Görüntülü Arama:</span>
+                                <strong><?php echo htmlspecialchars($property['video_call_available']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
