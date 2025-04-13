@@ -28,24 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = str_replace(['.', ','], '', $_POST['price']);
     $price = (float)$price;
     $status = $_POST['status'];
-    $beds = $_POST['beds'];
     $location = $_POST['location'];
-    $neighborhood = $_POST['neighborhood'];
     $description = $_POST['description'];
     $property_type = $_POST['property_type'];
     $gross_area = $_POST['gross_area'];
-    $net_area = $_POST['net_area'];
-    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
-    $total_floors = $_POST['total_floors'];
-    $heating = trim($_POST['heating']);
-    $bathroom_count = $_POST['bathroom_count'];
-    $balcony = $_POST['balcony'];
-    $furnished = $_POST['furnished'];
-    $site_status = $_POST['site_status'];
     $eligible_for_credit = $_POST['eligible_for_credit'];
-    $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
-    $living_room = $_POST['living_room'];
-    $parking = $_POST['parking'];
     $usage_status = $_POST['usage_status'];
     $video_call_available = $_POST['video_call_available'];
 
@@ -54,25 +41,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Video silme işlemi
     if (isset($_POST['delete_video']) && $_POST['delete_video'] == '1') {
-        if (!empty($property['video_file'])) {
-            $old_video_path = "../uploads/videos/" . $property['video_file'];
-            if (file_exists($old_video_path)) {
-                unlink($old_video_path);
+        if (!empty($video_file)) {
+            $video_path = "../uploads/videos/" . $video_file;
+            if (file_exists($video_path)) {
+                unlink($video_path);
             }
-            $video_file = NULL;
+            $video_file = null;
         }
     }
 
-    // Yeni video yükleme işlemi
+    // Yeni video yükleme
     if (isset($_FILES["property_video"]) && !empty($_FILES["property_video"]["name"])) {
         $video_dir = "../uploads/videos/";
         if (!file_exists($video_dir)) {
             mkdir($video_dir, 0777, true);
         }
 
-        // Eski videoyu sil (eğer silme işlemi yapılmadıysa)
-        if (!empty($property['video_file']) && $video_file !== NULL) {
-            $old_video_path = $video_dir . $property['video_file'];
+        // Eski videoyu sil
+        if (!empty($video_file)) {
+            $old_video_path = $video_dir . $video_file;
             if (file_exists($old_video_path)) {
                 unlink($old_video_path);
             }
@@ -90,61 +77,134 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Veritabanını güncelle
-    $stmt = $conn->prepare("UPDATE properties SET 
-        title = ?,
-        price = ?,
-        status = ?,
-        beds = ?,
-        location = ?,
-        neighborhood = ?,
-        description = ?,
-        property_type = ?,
-        gross_area = ?,
-        net_area = ?,
-        floor_location = ?,
-        total_floors = ?,
-        heating = ?,
-        bathroom_count = ?,
-        balcony = ?,
-        furnished = ?,
-        site_status = ?,
-        eligible_for_credit = ?,
-        building_age = ?,
-        living_room = ?,
-        parking = ?,
-        usage_status = ?,
-        video_call_available = ?,
-        video_file = ?
-        WHERE id = ?");
+    // Emlak tipine göre farklı alanları işle
+    if ($property_type === 'Arsa') {
+        // Arsa özellikleri
+        $zoning_status = $_POST['zoning_status'];
+        $block_no = $_POST['block_no'];
+        $parcel_no = $_POST['parcel_no'];
+        $floor_area_ratio = $_POST['floor_area_ratio'];
+        $height_limit = $_POST['height_limit'];
+        $deed_status = $_POST['deed_status'];
+        $neighborhood = $_POST['neighborhood'];
 
-    $stmt->bind_param("sdsissssddsisissssisssssi", 
-        $title,
-        $price,
-        $status,
-        $beds,
-        $location,
-        $neighborhood,
-        $description,
-        $property_type,
-        $gross_area,
-        $net_area,
-        $floor_location,
-        $total_floors,
-        $heating,
-        $bathroom_count,
-        $balcony,
-        $furnished,
-        $site_status,
-        $eligible_for_credit,
-        $building_age,
-        $living_room,
-        $parking,
-        $usage_status,
-        $video_call_available,
-        $video_file,
-        $id
-    );
+        // Arsa için SQL sorgusu
+        $sql = "UPDATE properties SET 
+            title = ?,
+            price = ?,
+            status = ?,
+            location = ?,
+            description = ?,
+            property_type = ?,
+            gross_area = ?,
+            zoning_status = ?,
+            block_no = ?,
+            parcel_no = ?,
+            floor_area_ratio = ?,
+            height_limit = ?,
+            eligible_for_credit = ?,
+            deed_status = ?,
+            neighborhood = ?,
+            usage_status = ?,
+            video_call_available = ?,
+            video_file = ?
+            WHERE id = ?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sdssssdssssssssssssi", 
+            $title,
+            $price,
+            $status,
+            $location,
+            $description,
+            $property_type,
+            $gross_area,
+            $zoning_status,
+            $block_no,
+            $parcel_no,
+            $floor_area_ratio,
+            $height_limit,
+            $eligible_for_credit,
+            $deed_status,
+            $neighborhood,
+            $usage_status,
+            $video_call_available,
+            $video_file,
+            $id
+        );
+    } else {
+        // Konut özellikleri
+        $beds = $_POST['beds'];
+        $living_room = $_POST['living_room'];
+        $bathroom_count = $_POST['bathroom_count'];
+        $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
+        $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
+        $total_floors = $_POST['total_floors'];
+        $heating = trim($_POST['heating']);
+        $balcony = $_POST['balcony'];
+        $furnished = $_POST['furnished'];
+        $site_status = $_POST['site_status'];
+        $parking = $_POST['parking'];
+        $net_area = $_POST['net_area'];
+        $neighborhood = $_POST['neighborhood'];
+
+        // Konut için SQL sorgusu
+        $sql = "UPDATE properties SET 
+            title = ?,
+            price = ?,
+            status = ?,
+            beds = ?,
+            location = ?,
+            neighborhood = ?,
+            description = ?,
+            property_type = ?,
+            gross_area = ?,
+            net_area = ?,
+            floor_location = ?,
+            total_floors = ?,
+            heating = ?,
+            bathroom_count = ?,
+            balcony = ?,
+            furnished = ?,
+            site_status = ?,
+            eligible_for_credit = ?,
+            building_age = ?,
+            living_room = ?,
+            parking = ?,
+            usage_status = ?,
+            video_call_available = ?,
+            video_file = ?
+            WHERE id = ?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sdsissssddsisissssisssssi", 
+            $title,
+            $price,
+            $status,
+            $beds,
+            $location,
+            $neighborhood,
+            $description,
+            $property_type,
+            $gross_area,
+            $net_area,
+            $floor_location,
+            $total_floors,
+            $heating,
+            $bathroom_count,
+            $balcony,
+            $furnished,
+            $site_status,
+            $eligible_for_credit,
+            $building_age,
+            $living_room,
+            $parking,
+            $usage_status,
+            $video_call_available,
+            $video_file,
+            $id
+        );
+    }
 
     if ($stmt->execute()) {
         // Yeni resimler yüklendiyse ekle
@@ -158,14 +218,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             for($i = 0; $i < $total; $i++) {
                 if($_FILES["images"]["error"][$i] == 0) {
-                    $unique_name = time() . '_' . basename($_FILES["images"]["name"][$i]);
-                    $target_file = $target_dir . $unique_name;
+                    $imageFileType = strtolower(pathinfo($_FILES["images"]["name"][$i], PATHINFO_EXTENSION));
                     
-                    $check = getimagesize($_FILES["images"]["tmp_name"][$i]);
-                    if($check !== false && move_uploaded_file($_FILES["images"]["tmp_name"][$i], $target_file)) {
-                        $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name) VALUES (?, ?)");
-                        $img_stmt->bind_param("is", $id, $unique_name);
-                        $img_stmt->execute();
+                    if($imageFileType == "jpg" || $imageFileType == "jpeg" || $imageFileType == "png" || $imageFileType == "gif") {
+                        $unique_name = time() . '_' . uniqid() . '.' . $imageFileType;
+                        $target_file = $target_dir . $unique_name;
+                        
+                        $check = getimagesize($_FILES["images"]["tmp_name"][$i]);
+                        if($check !== false && move_uploaded_file($_FILES["images"]["tmp_name"][$i], $target_file)) {
+                            $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name) VALUES (?, ?)");
+                            $img_stmt->bind_param("is", $id, $unique_name);
+                            $img_stmt->execute();
+                        }
                     }
                 }
             }
