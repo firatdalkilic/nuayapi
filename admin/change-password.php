@@ -18,8 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'];
 
     // Mevcut şifreyi kontrol et
-    $query = "SELECT password FROM admin WHERE id = 1";
-    $result = $conn->query($query);
+    $stmt = $conn->prepare("SELECT password FROM admin WHERE id = 1");
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
@@ -30,15 +31,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (strlen($new_password) >= 6) {
                     // Yeni şifreyi hashle ve güncelle
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                    $update_query = "UPDATE admin SET password = '$hashed_password' WHERE id = 1";
                     
-                    if ($conn->query($update_query)) {
-                        $_SESSION['success'] = "Şifreniz başarıyla güncellendi.";
-                        header("Location: dashboard.php");
+                    $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
+                    $update_stmt->bind_param("s", $hashed_password);
+                    
+                    if ($update_stmt->execute()) {
+                        $_SESSION['success_message'] = "Şifreniz başarıyla güncellendi.";
+                        header("Location: change-password.php");
                         exit;
                     } else {
                         $error_message = "Şifre güncellenirken bir hata oluştu: " . $conn->error;
                     }
+                    $update_stmt->close();
                 } else {
                     $error_message = "Yeni şifre en az 6 karakter uzunluğunda olmalıdır.";
                 }
@@ -51,6 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $error_message = "Admin kullanıcısı bulunamadı.";
     }
+    $stmt->close();
+}
+
+// Session'dan success mesajını al ve temizle
+if (isset($_SESSION['success_message'])) {
+    $success_message = $_SESSION['success_message'];
+    unset($_SESSION['success_message']);
 }
 ?>
 
