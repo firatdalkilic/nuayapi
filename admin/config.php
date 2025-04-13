@@ -1,8 +1,10 @@
 <?php
-$servername = "localhost";
-$username = "root";  // Veritabanı kullanıcı adınız
-$password = "";      // Veritabanı şifreniz
-$dbname = "emlak";   // Veritabanı adınız
+$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+$servername = $url["host"] ?? "localhost";
+$username = $url["user"] ?? "root";
+$password = $url["pass"] ?? "";
+$dbname = substr($url["path"], 1) ?? "emlak";
 
 // Veritabanı bağlantısı
 $conn = new mysqli($servername, $username, $password, $dbname);
