@@ -297,6 +297,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="col-md-6">
                                     <label for="price" class="form-label">Fiyat (₺)</label>
                                     <input type="text" class="form-control" id="price" name="price" required 
+                                           inputmode="numeric" pattern="[0-9]*"
                                            oninput="formatPrice(this)">
                                 </div>
                                 <div class="col-md-6">
@@ -535,11 +536,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         function formatPrice(input) {
-            // Sadece sayı ve nokta karakterlerine izin ver
-            let value = input.value.replace(/[^\d.]/g, '');
+            // Tüm nokta ve virgülleri kaldır
+            let value = input.value.replace(/[.,]/g, '');
+            
+            // Sadece sayısal değerleri al
+            value = value.replace(/[^\d]/g, '');
+            
+            // Sayıyı tam sayıya çevir
+            let number = parseInt(value, 10);
+            if (isNaN(number)) {
+                number = 0;
+            }
             
             // Binlik ayracı olarak nokta ekle
-            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            value = number.toLocaleString('tr-TR');
             
             input.value = value;
         }
@@ -547,8 +557,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Form submit öncesi fiyat alanını temizle
         document.querySelector('form').addEventListener('submit', function(e) {
             let priceInput = document.getElementById('price');
-            // Noktaları kaldır
-            priceInput.value = priceInput.value.replace(/\./g, '');
+            // Tüm nokta ve virgülleri kaldır
+            priceInput.value = priceInput.value.replace(/[.,]/g, '');
         });
     </script>
 </body>
