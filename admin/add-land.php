@@ -407,10 +407,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
     function formatPrice(number) {
-        return new Intl.NumberFormat('tr-TR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(number);
+        // Önce sayıyı tam sayıya yuvarla
+        const roundedNumber = Math.round(number);
+        
+        // Türkçe formatta binlik ayracı ile formatla
+        const formattedNumber = new Intl.NumberFormat('tr-TR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(roundedNumber);
+        
+        return formattedNumber + ',00';
     }
 
     function calculatePricePerSqm() {
