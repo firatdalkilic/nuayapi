@@ -535,11 +535,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         function formatPrice(input) {
-            // Sadece sayı ve nokta karakterlerine izin ver
-            let value = input.value.replace(/[^\d.]/g, '');
+            // Tüm nokta ve virgülleri kaldır
+            let value = input.value.replace(/[.,]/g, '');
+            
+            // Sayısal değeri al
+            value = value.replace(/[^\d]/g, '');
             
             // Binlik ayracı olarak nokta ekle
-            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            if (value.length > 3) {
+                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
             
             input.value = value;
         }
@@ -547,7 +552,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Form submit öncesi fiyat alanını temizle
         document.querySelector('form').addEventListener('submit', function(e) {
             let priceInput = document.getElementById('price');
-            // Noktaları kaldır
+            // Tüm noktaları kaldır
             priceInput.value = priceInput.value.replace(/\./g, '');
         });
     </script>
