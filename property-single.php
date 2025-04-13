@@ -355,19 +355,19 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       <div class="container">
         <div class="row">
           <!-- Sol Kolon - Fotoğraf Galerisi -->
-          <div class="col-lg-8">
+          <div class="col-lg-6">
             <div class="property-gallery">
               <div class="gallery-main mb-3">
                 <?php if (!empty($images)): ?>
                   <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" 
                       alt="Ana Görsel" 
                       id="mainImage"
-                      class="img-fluid w-100"
-                      style="max-height: 500px; object-fit: contain;">
+                      class="img-fluid"
+                      style="width: 100%; height: 400px; object-fit: contain;">
                 <?php else: ?>
                   <img src="assets/img/no-image.jpg" 
                       alt="<?php echo htmlspecialchars($property['title']); ?>"
-                      class="img-fluid w-100">
+                      class="img-fluid">
                 <?php endif; ?>
               </div>
 
@@ -410,7 +410,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
           </div>
 
           <!-- Orta Kolon - İlan Detayları -->
-          <div class="col-lg-4">
+          <div class="col-lg-3">
             <div class="property-id">
               İlan No: <span><?php echo str_pad($property['id'], 10, '0', STR_PAD_LEFT); ?></span>
             </div>
