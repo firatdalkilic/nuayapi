@@ -355,7 +355,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       <div class="container">
         <div class="row">
           <!-- Sol Kolon - Fotoğraf Galerisi -->
-          <div class="col-lg-4">
+          <div class="col-lg-5">
             <div class="property-gallery">
               <div class="gallery-main mb-3">
                 <?php if (!empty($images)): ?>
@@ -410,7 +410,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
           </div>
 
           <!-- Orta Kolon - İlan Detayları -->
-          <div class="col-lg-3">
+          <div class="col-lg-4">
             <div class="property-id">
               İlan No: <span><?php echo str_pad($property['id'], 10, '0', STR_PAD_LEFT); ?></span>
             </div>
