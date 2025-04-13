@@ -163,7 +163,7 @@ $result = $conn->query($sql);
                             } else {
                             ?>
                             <tr>
-                                <td colspan="8" class="text-center">Henüz ilan bulunmamaktadır.</td>
+                                <td colspan="6" class="text-center">Henüz ilan bulunmamaktadır.</td>
                             </tr>
                             <?php } ?>
                         </tbody>
