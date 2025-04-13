@@ -78,11 +78,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Prepare failed: " . $conn->error);
         }
 
-        $bind_result = $stmt->bind_param("sdsssssssssssssd", 
-            $title, $price, $status, $location, $description, $property_type,
-            $area, $zoning_status, $block_no, $parcel_no, $sheet_no,
-            $floor_area_ratio, $height_limit, $credit_status,
-            $deed_status, $neighborhood, $price_per_sqm
+        // Parametre tiplerini ve değerlerini düzenle
+        // s: string, d: double/decimal, i: integer
+        $bind_result = $stmt->bind_param("sdssssdsssssssssd", 
+            $title,         // s (string)
+            $price,         // d (decimal)
+            $status,        // s (string)
+            $location,      // s (string)
+            $description,   // s (string)
+            $property_type, // s (string)
+            $area,          // d (decimal)
+            $zoning_status, // s (string)
+            $block_no,      // s (string)
+            $parcel_no,     // s (string)
+            $sheet_no,      // s (string)
+            $floor_area_ratio, // s (string)
+            $height_limit,  // s (string)
+            $credit_status, // s (string)
+            $deed_status,   // s (string)
+            $neighborhood,  // s (string)
+            $price_per_sqm  // d (decimal)
         );
         
         if (!$bind_result) {
