@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/db_connection.php';
+require_once 'config.php';
 
 $success_message = '';
 $error_message = '';
