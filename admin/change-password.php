@@ -31,7 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $update_stmt = $conn->prepare("UPDATE admin SET password = ? WHERE id = 1");
                 
                 if ($update_stmt->execute([$hashed_password])) {
-                    $success_message = "Şifreniz başarıyla güncellendi.";
+                    $_SESSION['success'] = "Şifreniz başarıyla güncellendi.";
+                    header("Location: dashboard.php");
+                    exit;
                 } else {
                     $error_message = "Şifre güncellenirken bir hata oluştu.";
                 }
