@@ -40,6 +40,11 @@ $result = $conn->query($sql);
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="change-password.php">
+                            <i class="bi bi-key"></i> Şifre Değiştir
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="logout.php">
                             <i class="bi bi-box-arrow-right"></i> Çıkış Yap
                         </a>
@@ -71,9 +76,6 @@ $result = $conn->query($sql);
                     </a>
                     <a href="add-land.php" class="btn btn-success me-2">
                         <i class="fas fa-plus"></i> Arsa İlanı Ekle
-                    </a>
-                    <a href="change-password.php" class="btn btn-warning">
-                        <i class="fas fa-key"></i> Şifre Değiştir
                     </a>
                 </div>
             </div>
