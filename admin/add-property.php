@@ -296,9 +296,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="price" class="form-label">Fiyat (₺)</label>
-                                    <input type="text" class="form-control" id="price" name="price" required 
-                                           inputmode="numeric" pattern="[0-9]*"
-                                           oninput="formatPrice(this)">
+                                    <input type="number" class="form-control" id="price" name="price" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
@@ -535,33 +533,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-        function formatPrice(input) {
-            // Tüm nokta ve virgülleri kaldır
-            let value = input.value.replace(/[.,]/g, '');
-            
-            // Sadece sayısal değerleri al
-            value = value.replace(/[^\d]/g, '');
-            
-            // Eğer değer boşsa, işlemi sonlandır
-            if (!value) {
-                input.value = '';
-                return;
-            }
-
-            // Sayıyı tam sayıya çevir
-            let number = parseInt(value, 10);
-            
-            // Binlik ayracı olarak nokta ekle
-            value = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            
-            input.value = value;
-        }
-
         // Form submit öncesi fiyat alanını temizle
         document.querySelector('form').addEventListener('submit', function(e) {
             let priceInput = document.getElementById('price');
-            // Tüm noktaları kaldır
-            priceInput.value = priceInput.value.replace(/\./g, '');
+            // Sadece sayısal değer kalacak
+            priceInput.value = parseFloat(priceInput.value) || 0;
         });
     </script>
 </body>
