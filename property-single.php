@@ -355,7 +355,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       <div class="container">
         <div class="row">
           <!-- Sol Kolon - Fotoğraf Galerisi -->
-          <div class="col-lg-6">
+          <div class="col-lg-4">
             <div class="property-gallery">
               <div class="gallery-main mb-3">
                 <?php if (!empty($images)): ?>
@@ -363,7 +363,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                       alt="Ana Görsel" 
                       id="mainImage"
                       class="img-fluid"
-                      style="width: 100%; height: 400px; object-fit: contain;">
+                      style="width: 100%; height: 300px; object-fit: contain;">
                 <?php else: ?>
                   <img src="assets/img/no-image.jpg" 
                       alt="<?php echo htmlspecialchars($property['title']); ?>"
