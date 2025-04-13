@@ -1,6 +1,12 @@
 <?php
 session_start();
-require_once 'check_session.php';
+
+// Oturum kontrolü
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: login.php");
+    exit;
+}
+
 require_once 'config.php';
 
 $success_message = '';
