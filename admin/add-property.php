@@ -34,8 +34,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Form verilerini al ve varsayılan değerler ata
     $title = trim($_POST['title']);
-    $price = str_replace(['.', ','], '', $_POST['price']);
+    
+    // Fiyat alanını işle
+    $price = str_replace('.', '', $_POST['price']); // Binlik ayracı olan noktaları kaldır
+    $price = str_replace(',', '.', $price); // Virgülü noktaya çevir
     $price = (float)$price;
+    
+    if (!is_numeric($price) || $price <= 0) {
+        $_SESSION['error'] = "Geçerli bir fiyat girmelisiniz.";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+    
     $status = trim($_POST['status']);
     $beds = (int)$_POST['beds'];
     $location = 'Didim'; // Sabit değer
@@ -288,7 +298,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="price" class="form-label">Fiyat (₺)</label>
-                                    <input type="number" class="form-control" id="price" name="price" required>
+                                    <input type="text" class="form-control" id="price" name="price" required 
+                                           oninput="formatPrice(this)" 
+                                           pattern="[0-9,]*"
+                                           title="Lütfen sadece sayı girin">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
@@ -525,19 +538,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Fiyat formatla
-        document.getElementById('price').addEventListener('input', function(e) {
-            // Sadece sayıları al
-            let value = this.value.replace(/\D/g, '');
+        function formatPrice(input) {
+            // Sadece sayı ve virgül karakterlerine izin ver
+            let value = input.value.replace(/[^\d,]/g, '');
             
-            // Sayıyı formatla
-            if (value !== '') {
-                value = parseInt(value).toLocaleString('tr-TR');
+            // Virgülden sonra en fazla 2 basamağa izin ver
+            let parts = value.split(',');
+            if (parts.length > 1) {
+                parts[1] = parts[1].slice(0, 2);
+                value = parts.join(',');
             }
             
-            // Input değerini güncelle
-            this.value = value;
-        });
+            // Binlik ayracı olarak nokta ekle
+            let numberPart = parts[0] || '';
+            numberPart = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            // Virgülden sonraki kısmı ekle (eğer varsa)
+            if (parts.length > 1) {
+                value = numberPart + ',' + parts[1];
+            } else {
+                value = numberPart;
+            }
+            
+            input.value = value;
+        }
 
         // Form gönderilmeden önce kontroller
         document.getElementById('propertyForm').addEventListener('submit', function(e) {
