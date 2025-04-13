@@ -815,8 +815,12 @@ if (!file_exists('uploads')) {
                                         <i class="bi bi-cash"></i>
                                         <span>m² Fiyatı:</span>
                                         <?php 
-                                            $price_per_sqm = number_format($ilan['price_per_sqm'], 2, ',', '.');
-                                            echo $price_per_sqm . ' ₺/m²';
+                                            if ($ilan['net_area'] > 0) {
+                                                $price_per_sqm = $ilan['price'] / $ilan['net_area'];
+                                                echo number_format($price_per_sqm, 2, ',', '.') . ' ₺/m²';
+                                            } else {
+                                                echo "Hesaplanamadı";
+                                            }
                                         ?>
                                     </div>
                                 </div>
@@ -831,6 +835,7 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['status']); ?>
                                     </div>
                                 </div>
+                                <?php if (!empty($ilan['gross_area'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-rulers"></i>
@@ -838,6 +843,8 @@ if (!file_exists('uploads')) {
                                         <?php echo number_format($ilan['gross_area'], 0, ',', '.'); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['net_area'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-rulers"></i>
@@ -845,6 +852,8 @@ if (!file_exists('uploads')) {
                                         <?php echo number_format($ilan['net_area'], 0, ',', '.'); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['room_count'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-door-open"></i>
@@ -852,6 +861,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['room_count']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['building_age'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-building-add"></i>
@@ -859,6 +870,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['building_age']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['floor'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-layers"></i>
@@ -866,6 +879,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['floor']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['total_floors'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-building"></i>
@@ -873,6 +888,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['total_floors']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['heating'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-thermometer-half"></i>
@@ -880,6 +897,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['heating']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['bathroom_count'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-droplet"></i>
@@ -887,6 +906,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['bathroom_count']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['balcony'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-door-closed"></i>
@@ -894,6 +915,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['balcony']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['parking'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-p-square"></i>
@@ -901,6 +924,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['parking']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['furnished'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-box"></i>
@@ -908,6 +933,8 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['furnished']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
+                                <?php if (!empty($ilan['site'])): ?>
                                 <div class="col-6 col-md-4">
                                     <div class="detail-item">
                                         <i class="bi bi-buildings"></i>
@@ -915,6 +942,7 @@ if (!file_exists('uploads')) {
                                         <?php echo htmlspecialchars($ilan['site']); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                       </div>
