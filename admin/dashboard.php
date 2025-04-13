@@ -52,9 +52,14 @@ $result = $conn->query($sql);
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>İlan Listesi</h2>
-            <a href="add-property.php" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Yeni İlan Ekle
-            </a>
+            <div>
+                <a href="add-property.php" class="btn btn-primary me-2">
+                    <i class="bi bi-plus-lg"></i> Yeni İlan Ekle
+                </a>
+                <a href="add-land.php" class="btn btn-success">
+                    <i class="bi bi-plus-lg"></i> Arsa İlanı Ekle
+                </a>
+            </div>
         </div>
 
         <?php if(isset($_SESSION['success'])): ?>

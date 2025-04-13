@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '93a74243bae24e6d4ab629b28c506057d8d083b8',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '90c2c77c8b25f40004d8ec66d4ba6016fac59fd6',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,31 +11,13 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '93a74243bae24e6d4ab629b28c506057d8d083b8',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '90c2c77c8b25f40004d8ec66d4ba6016fac59fd6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
-        ),
-        'components/jquery' => array(
-            'pretty_version' => 'v3.7.1',
-            'version' => '3.7.1.0',
-            'reference' => '8edc7785239bb8c2ad2b83302b856a1d61de60e7',
-            'type' => 'component',
-            'install_path' => __DIR__ . '/../components/jquery',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'heroku/heroku-buildpack-php' => array(
-            'pretty_version' => 'v265',
-            'version' => '265.0.0.0',
-            'reference' => '86d85038a27f17254164d68dffbbe580f5ea58ea',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../heroku/heroku-buildpack-php',
-            'aliases' => array(),
-            'dev_requirement' => true,
         ),
         'phpmailer/phpmailer' => array(
             'pretty_version' => 'v6.9.3',
@@ -45,21 +27,6 @@
             'install_path' => __DIR__ . '/../phpmailer/phpmailer',
             'aliases' => array(),
             'dev_requirement' => false,
-        ),
-        'twbs/bootstrap' => array(
-            'pretty_version' => 'v5.3.5',
-            'version' => '5.3.5.0',
-            'reference' => '85f23534bd2de8041354b297516cf21959091b31',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../twbs/bootstrap',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'twitter/bootstrap' => array(
-            'dev_requirement' => false,
-            'replaced' => array(
-                0 => 'v5.3.5',
-            ),
         ),
     ),
 );
