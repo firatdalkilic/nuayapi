@@ -31,8 +31,21 @@ try {
         if ($conn->query($sql)) {
             echo "price_per_sqm sütunu başarıyla güncellendi.<br>";
         } else {
-            echo "Hata: " . $conn->error;
+            echo "Hata: " . $conn->error . "<br>";
         }
+    }
+
+    $result = $conn->query("SHOW COLUMNS FROM properties LIKE 'floor_area_ratio'");
+    if ($result->num_rows == 0) {
+        // floor_area_ratio sütunu yok, ekle
+        $sql = "ALTER TABLE properties ADD COLUMN floor_area_ratio VARCHAR(50) AFTER net_area";
+        if ($conn->query($sql)) {
+            echo "floor_area_ratio sütunu başarıyla eklendi.<br>";
+        } else {
+            echo "Hata: " . $conn->error . "<br>";
+        }
+    } else {
+        echo "floor_area_ratio sütunu zaten mevcut.<br>";
     }
 } catch (Exception $e) {
     echo "Hata: " . $e->getMessage();
