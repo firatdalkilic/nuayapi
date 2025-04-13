@@ -91,37 +91,36 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       margin-right: 0.5rem;
     }
 
-    .property-features {
-      margin: 2rem 0;
-    }
-
-    .feature-item {
+    .detail-item {
       display: flex;
       align-items: center;
       margin-bottom: 0.75rem;
-      padding: 0.5rem;
+      padding: 0.75rem;
       border: 1px solid #e5e7eb;
-      border-radius: 4px;
-      background-color: #f8f9fa;
+      border-radius: 8px;
+      background-color: #f8fafc;
+      transition: all 0.2s ease;
     }
 
-    .feature-item i {
-      font-size: 1rem;
+    .detail-item:hover {
+      background-color: #f1f5f9;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .detail-item i {
+      font-size: 1.25rem;
       color: #2563eb;
       margin-right: 0.75rem;
-      width: 20px;
+      width: 24px;
       text-align: center;
     }
 
-    .feature-item span {
+    .detail-item span {
       font-size: 0.875rem;
-      color: #4b5563;
-    }
-
-    .feature-item strong {
-      font-weight: 500;
-      color: #1f2937;
+      color: #64748b;
       margin-right: 0.5rem;
+      font-weight: 500;
     }
 
     .property-description {
@@ -166,315 +165,11 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       position: relative;
     }
 
-    .photo-counter {
-      margin-top: 10px;
-      background: rgba(37, 99, 235, 0.85);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(4px);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .photo-counter::before {
-      content: "\F4FA";
-      font-family: "bootstrap-icons";
-      font-size: 14px;
-    }
-
     .gallery-main img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
-    }
-
-    .gallery-actions {
-      display: flex;
-      gap: 20px;
-      margin: 15px 0;
-      width: 100%;
-    }
-
-    .gallery-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 0;
-      border: none;
-      background: none;
-      color: #2563eb;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      flex: 1;
-      text-align: center;
-    }
-
-    .gallery-btn i {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 4px;
-    }
-
-    .gallery-btn:hover {
-      opacity: 0.8;
-    }
-
-    .gallery-btn.video-btn {
-      color: #2563eb;
-    }
-
-    .gallery-btn.video-btn.disabled {
-      color: #9ca3af;
-      cursor: not-allowed;
-      pointer-events: none;
-      opacity: 0.6;
-    }
-
-    .gallery-btn.video-btn:hover:not(.disabled) {
-      opacity: 0.8;
-    }
-
-    /* Modal Styles */
-    .photo-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-    }
-
-    .modal-content {
-      position: relative;
-      width: 90%;
-      max-width: 1200px;
-      height: 80vh;
-      margin: 50px auto;
-    }
-
-    .modal-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      color: white;
-      font-size: 30px;
-      cursor: pointer;
-    }
-
-    .modal-prev,
-    .modal-next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      background-color: rgba(0, 0, 0, 0.5);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-    }
-
-    .modal-prev:hover,
-    .modal-next:hover {
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .modal-prev {
-      left: 20px;
-    }
-
-    .modal-next {
-      right: 20px;
-    }
-
-    .modal-prev i,
-    .modal-next i {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .gallery-thumbs {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 8px;
-      position: relative;
-      margin-top: 10px;
-      height: 160px;
-      overflow: hidden;
-    }
-
-    .gallery-thumbs-container {
-      display: flex;
-      transition: transform 0.3s ease;
-    }
-
-    .gallery-thumbs-page {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 8px;
-      min-width: 100%;
-      height: 160px;
-    }
-
-    .gallery-thumb {
-      position: relative;
-      width: 100%;
-      height: 75px;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid #e5e7eb;
-      background-color: #f8f9fa;
-    }
-
-    .gallery-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    @media (max-width: 768px) {
-      .gallery-thumbs, .gallery-navigation {
-        display: none !important;
-      }
-
-      .gallery-thumb {
-        display: none !important;
-      }
-
-      .gallery-thumbs-container {
-        display: none !important;
-      }
-
-      .gallery-thumbs-page {
-        display: none !important;
-      }
-
-      .gallery-actions {
-        display: flex;
-        margin-top: 15px;
-      }
-
-      .gallery-main {
-        position: relative;
-        touch-action: pan-x;
-      }
-
-      .gallery-main img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        user-select: none;
-        -webkit-user-select: none;
-      }
-    }
-
-    @media (min-width: 769px) {
-      .photo-counter {
-        display: none;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .gallery-thumbs, .gallery-thumbs-page {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        height: 120px;
-        gap: 4px;
-      }
-      
-      .gallery-thumb {
-        height: 55px;
-      }
-    }
-
-    .gallery-thumb:hover img {
-      transform: scale(1.05);
-    }
-
-    .gallery-thumb.active {
-      border: 2px solid #2563eb;
-    }
-
-    .gallery-navigation {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      padding: 5px 0;
-    }
-
-    .gallery-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: #d1d5db;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: none;
-      padding: 0;
-      margin: 0 2px;
-    }
-
-    .gallery-dot.active {
-      background-color: #2563eb;
-      transform: scale(1.2);
-    }
-
-    .gallery-arrow {
-      color: #6b7280;
-      cursor: pointer;
-      padding: 4px;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .gallery-arrow:hover {
-      color: #2563eb;
-    }
-
-    .gallery-arrow.hidden {
-      visibility: hidden;
-      pointer-events: none;
     }
 
     .property-id {
@@ -494,6 +189,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       padding: 1.5rem;
       border-radius: 8px;
       margin-bottom: 2rem;
+      border: 1px solid #e5e7eb;
     }
 
     .agent-info h3 {
@@ -538,122 +234,19 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       color: white;
     }
 
-    .main-gallery-image {
-      width: 100%;
-      height: 400px;
-      object-fit: contain;
-      border-radius: 8px;
-      transition: transform 0.3s ease;
-      background-color: #f5f5f5;
-    }
-    .main-gallery-image:hover {
-      transform: scale(1.02);
-    }
-    .gallery-thumbs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .gallery-thumb {
-      flex: 0 0 calc(33.333% - 7px);
-      aspect-ratio: 4/3;
-      background-color: #f5f5f5;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .thumbnail-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: opacity 0.3s ease;
-      padding: 4px;
-    }
-    .thumbnail-image:hover {
-      opacity: 0.8;
-    }
-
     @media (max-width: 768px) {
-      .main-gallery-image {
+      .gallery-main {
         height: 300px;
       }
-      .gallery-thumb {
-        flex: 0 0 calc(25% - 8px);
+
+      .property-details {
+        flex-direction: column;
+        gap: 10px;
       }
-    }
 
-    /* Stil düzenlemeleri */
-    @media (max-width: 768px) {
-        /* Galeri düzenlemeleri */
-        .property-gallery {
-            margin-bottom: 20px;
-        }
-        
-        .property-gallery img {
-            width: 100%;
-            height: auto !important;
-            object-fit: cover;
-        }
-        
-        /* Özellikler tablosu düzenlemeleri */
-        .property-features {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .property-features table {
-            min-width: 500px;
-        }
-        
-        /* İletişim formu düzenlemeleri */
-        .contact-form {
-            padding: 15px !important;
-        }
-        
-        .contact-form input,
-        .contact-form textarea {
-            font-size: 16px !important; /* iOS'ta zoom sorununu önler */
-        }
-        
-        /* Detay bilgileri düzenlemeleri */
-        .property-details {
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .detail-item {
-            width: 100%;
-            text-align: left;
-        }
-    }
-
-    /* Tablet için düzenlemeler */
-    @media (min-width: 769px) and (max-width: 991px) {
-        .property-gallery img {
-            height: 400px !important;
-        }
-        
-        .property-details {
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .detail-item {
-            width: calc(50% - 15px);
-        }
-    }
-
-    /* Genel düzenlemeler */
-    .img-fluid {
-        max-width: 100%;
-        height: auto;
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+      .detail-item {
+        width: 100%;
+      }
     }
 
     .back-button {
@@ -690,21 +283,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         top: 80px;
         left: 15px;
       }
-    }
-
-    /* Video Modal Styles */
-    #videoModal .modal-content {
-      background-color: transparent;
-      padding: 0;
-    }
-
-    #videoModal video {
-      background-color: black;
-      border-radius: 8px;
-    }
-
-    #videoModal .modal-close {
-      z-index: 1100;
     }
   </style>
 </head>
