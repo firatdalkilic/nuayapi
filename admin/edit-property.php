@@ -323,61 +323,8 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="beds" class="form-label">Oda Sayısı</label>
-                                    <input type="number" class="form-control" id="beds" name="beds" min="0" value="<?php echo htmlspecialchars($property['beds']); ?>" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="living_room" class="form-label">Salon Sayısı</label>
-                                    <input type="number" class="form-control" id="living_room" name="living_room" min="0" value="<?php echo htmlspecialchars($property['living_room']); ?>" required>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="parking" class="form-label">Otopark</label>
-                                    <select class="form-select" id="parking" name="parking" required>
-                                        <option value="Var" <?php echo ($property['parking'] == 'Var') ? 'selected' : ''; ?>>Var</option>
-                                        <option value="Yok" <?php echo ($property['parking'] == 'Yok') ? 'selected' : ''; ?>>Yok</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="bathroom_count" class="form-label">Banyo Sayısı</label>
-                                    <input type="number" class="form-control" id="bathroom_count" name="bathroom_count" value="<?php echo htmlspecialchars($property['bathroom_count']); ?>">
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="location" class="form-label">Konum</label>
-                                <input type="text" class="form-control" id="location" name="location" value="Didim" readonly>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="neighborhood" class="form-label">Mahalle</label>
-                                <select class="form-select" id="neighborhood" name="neighborhood" required>
-                                    <option value="">Mahalle Seçiniz</option>
-                                    <option value="Ak-yeniköy Mah." <?php echo $property['neighborhood'] == 'Ak-yeniköy Mah.' ? 'selected' : ''; ?>>Ak-yeniköy Mah.</option>
-                                    <option value="Akbük Mah." <?php echo $property['neighborhood'] == 'Akbük Mah.' ? 'selected' : ''; ?>>Akbük Mah.</option>
-                                    <option value="Akköy Mah." <?php echo $property['neighborhood'] == 'Akköy Mah.' ? 'selected' : ''; ?>>Akköy Mah.</option>
-                                    <option value="Altınkum Mah." <?php echo $property['neighborhood'] == 'Altınkum Mah.' ? 'selected' : ''; ?>>Altınkum Mah.</option>
-                                    <option value="Balat Mah." <?php echo $property['neighborhood'] == 'Balat Mah.' ? 'selected' : ''; ?>>Balat Mah.</option>
-                                    <option value="Batıköy Mah." <?php echo $property['neighborhood'] == 'Batıköy Mah.' ? 'selected' : ''; ?>>Batıköy Mah.</option>
-                                    <option value="Cumhuriyet Mah." <?php echo $property['neighborhood'] == 'Cumhuriyet Mah.' ? 'selected' : ''; ?>>Cumhuriyet Mah.</option>
-                                    <option value="Çamlık Mah." <?php echo $property['neighborhood'] == 'Çamlık Mah.' ? 'selected' : ''; ?>>Çamlık Mah.</option>
-                                    <option value="Denizköy Mah." <?php echo $property['neighborhood'] == 'Denizköy Mah.' ? 'selected' : ''; ?>>Denizköy Mah.</option>
-                                    <option value="Efeler Mah." <?php echo $property['neighborhood'] == 'Efeler Mah.' ? 'selected' : ''; ?>>Efeler Mah.</option>
-                                    <option value="Fevzipaşa Mah." <?php echo $property['neighborhood'] == 'Fevzipaşa Mah.' ? 'selected' : ''; ?>>Fevzipaşa Mah.</option>
-                                    <option value="Hisar Mah." <?php echo $property['neighborhood'] == 'Hisar Mah.' ? 'selected' : ''; ?>>Hisar Mah.</option>
-                                    <option value="Mavişehir Mah." <?php echo $property['neighborhood'] == 'Mavişehir Mah.' ? 'selected' : ''; ?>>Mavişehir Mah.</option>
-                                    <option value="Mersindere Mah." <?php echo $property['neighborhood'] == 'Mersindere Mah.' ? 'selected' : ''; ?>>Mersindere Mah.</option>
-                                    <option value="Yalıköy Mah." <?php echo $property['neighborhood'] == 'Yalıköy Mah.' ? 'selected' : ''; ?>>Yalıköy Mah.</option>
-                                    <option value="Yeni Mah." <?php echo $property['neighborhood'] == 'Yeni Mah.' ? 'selected' : ''; ?>>Yeni Mah.</option>
-                                </select>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
                                     <label for="property_type" class="form-label">Emlak Tipi</label>
-                                    <select class="form-select" id="property_type" name="property_type" required>
+                                    <select class="form-select" id="property_type" name="property_type" required onchange="togglePropertyFields()">
                                         <option value="">Seçiniz</option>
                                         <option value="Daire" <?php echo $property['property_type'] == 'Daire' ? 'selected' : ''; ?>>Daire</option>
                                         <option value="Villa" <?php echo $property['property_type'] == 'Villa' ? 'selected' : ''; ?>>Villa</option>
@@ -387,134 +334,173 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="building_age" class="form-label">Bina Yaşı</label>
-                                    <select class="form-select" id="building_age" name="building_age">
-                                        <option value="">Seçiniz</option>
-                                        <?php
-                                        $building_age_options = array(
-                                            '0' => '0 (Yeni)',
-                                            '1' => '1',
-                                            '2' => '2',
-                                            '3' => '3',
-                                            '4' => '4',
-                                            '5' => '5',
-                                            '6' => '6',
-                                            '7' => '7',
-                                            '8' => '8',
-                                            '9' => '9',
-                                            '10' => '10',
-                                            '11-15' => '11-15',
-                                            '16-20' => '16-20',
-                                            '21-25' => '21-25',
-                                            '26+' => '26+'
-                                        );
-
-                                        foreach ($building_age_options as $value => $label) {
-                                            $selected = '';
-                                            if (isset($property['building_age']) && $property['building_age'] !== null) {
-                                                $current_value = (string)$property['building_age'];
-                                                
-                                                // 0 için özel kontrol
-                                                if ($value === '0' && ($current_value === '0' || $current_value === 0 || $current_value === '0 (Yeni)')) {
-                                                    $selected = 'selected';
-                                                }
-                                                // 1-10 arası sayılar için kontrol
-                                                elseif (is_numeric($value) && is_numeric($current_value) && (int)$value === (int)$current_value) {
-                                                    $selected = 'selected';
-                                                }
-                                                // Aralık değerleri için kontrol
-                                                elseif ($value === '11-15' && (strpos($current_value, '11-15') !== false || (is_numeric($current_value) && (int)$current_value >= 11 && (int)$current_value <= 15))) {
-                                                    $selected = 'selected';
-                                                }
-                                                elseif ($value === '16-20' && (strpos($current_value, '16-20') !== false || (is_numeric($current_value) && (int)$current_value >= 16 && (int)$current_value <= 20))) {
-                                                    $selected = 'selected';
-                                                }
-                                                elseif ($value === '21-25' && (strpos($current_value, '21-25') !== false || (is_numeric($current_value) && (int)$current_value >= 21 && (int)$current_value <= 25))) {
-                                                    $selected = 'selected';
-                                                }
-                                                elseif ($value === '26+' && (strpos($current_value, '26+') !== false || (is_numeric($current_value) && (int)$current_value >= 26))) {
-                                                    $selected = 'selected';
-                                                }
-                                            }
-                                            echo "<option value=\"{$value}\" {$selected}>{$label}</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
                                     <label for="gross_area" class="form-label">m² (Brüt)</label>
-                                    <input type="number" class="form-control" id="gross_area" name="gross_area" value="<?php echo $property['gross_area']; ?>">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="net_area" class="form-label">m² (Net)</label>
-                                    <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo $property['net_area']; ?>">
+                                    <input type="number" class="form-control" id="gross_area" name="gross_area" value="<?php echo htmlspecialchars($property['gross_area']); ?>">
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="floor_location" class="form-label">Bulunduğu Kat</label>
-                                    <select class="form-select" id="floor_location" name="floor_location">
-                                        <option value="Bodrum Kat" <?php echo $property['floor_location'] == 'Bodrum Kat' ? 'selected' : ''; ?>>Bodrum Kat</option>
-                                        <option value="Yarı Bodrum Kat" <?php echo $property['floor_location'] == 'Yarı Bodrum Kat' ? 'selected' : ''; ?>>Yarı Bodrum Kat</option>
-                                        <option value="Zemin Kat" <?php echo $property['floor_location'] == 'Zemin Kat' ? 'selected' : ''; ?>>Zemin Kat</option>
-                                        <option value="Bahçe Katı" <?php echo $property['floor_location'] == 'Bahçe Katı' ? 'selected' : ''; ?>>Bahçe Katı</option>
-                                        <option value="Yüksek Giriş" <?php echo $property['floor_location'] == 'Yüksek Giriş' ? 'selected' : ''; ?>>Yüksek Giriş</option>
-                                        <option value="1. Kat" <?php echo $property['floor_location'] == '1. Kat' ? 'selected' : ''; ?>>1. Kat</option>
-                                        <option value="2. Kat" <?php echo $property['floor_location'] == '2. Kat' ? 'selected' : ''; ?>>2. Kat</option>
-                                        <option value="3. Kat" <?php echo $property['floor_location'] == '3. Kat' ? 'selected' : ''; ?>>3. Kat</option>
-                                        <option value="4. Kat" <?php echo $property['floor_location'] == '4. Kat' ? 'selected' : ''; ?>>4. Kat</option>
-                                        <option value="5. Kat" <?php echo $property['floor_location'] == '5. Kat' ? 'selected' : ''; ?>>5. Kat</option>
-                                        <option value="6. Kat" <?php echo $property['floor_location'] == '6. Kat' ? 'selected' : ''; ?>>6. Kat</option>
-                                        <option value="7. Kat" <?php echo $property['floor_location'] == '7. Kat' ? 'selected' : ''; ?>>7. Kat</option>
-                                        <option value="8. Kat" <?php echo $property['floor_location'] == '8. Kat' ? 'selected' : ''; ?>>8. Kat</option>
-                                        <option value="9. Kat" <?php echo $property['floor_location'] == '9. Kat' ? 'selected' : ''; ?>>9. Kat</option>
-                                        <option value="10. Kat" <?php echo $property['floor_location'] == '10. Kat' ? 'selected' : ''; ?>>10. Kat</option>
-                                        <option value="11. Kat" <?php echo $property['floor_location'] == '11. Kat' ? 'selected' : ''; ?>>11. Kat</option>
-                                        <option value="12. Kat ve üzeri" <?php echo $property['floor_location'] == '12. Kat ve üzeri' ? 'selected' : ''; ?>>12. Kat ve üzeri</option>
-                                        <option value="Çatı Katı" <?php echo $property['floor_location'] == 'Çatı Katı' ? 'selected' : ''; ?>>Çatı Katı</option>
-                                    </select>
+                            <!-- Arsa özellikleri -->
+                            <div id="landFields" style="display: none;">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="zoning_status" class="form-label">İmar Durumu</label>
+                                        <select class="form-select" id="zoning_status" name="zoning_status">
+                                            <option value="">Seçiniz</option>
+                                            <option value="Konut" <?php echo $property['zoning_status'] == 'Konut' ? 'selected' : ''; ?>>Konut</option>
+                                            <option value="Ticari" <?php echo $property['zoning_status'] == 'Ticari' ? 'selected' : ''; ?>>Ticari</option>
+                                            <option value="Karma" <?php echo $property['zoning_status'] == 'Karma' ? 'selected' : ''; ?>>Karma</option>
+                                            <option value="Turizm" <?php echo $property['zoning_status'] == 'Turizm' ? 'selected' : ''; ?>>Turizm</option>
+                                            <option value="Sanayi" <?php echo $property['zoning_status'] == 'Sanayi' ? 'selected' : ''; ?>>Sanayi</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="parcel_no" class="form-label">Parsel No</label>
+                                        <input type="text" class="form-control" id="parcel_no" name="parcel_no" value="<?php echo htmlspecialchars($property['parcel_no']); ?>">
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="total_floors" class="form-label">Kat Sayısı</label>
-                                    <input type="number" class="form-control" id="total_floors" name="total_floors" value="<?php echo $property['total_floors']; ?>">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="block_no" class="form-label">Ada No</label>
+                                        <input type="text" class="form-control" id="block_no" name="block_no" value="<?php echo htmlspecialchars($property['block_no']); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="floor_area_ratio" class="form-label">Kaks (Emsal)</label>
+                                        <input type="text" class="form-control" id="floor_area_ratio" name="floor_area_ratio" value="<?php echo htmlspecialchars($property['floor_area_ratio']); ?>">
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="heating" class="form-label">Isıtma</label>
-                                    <select class="form-select" id="heating" name="heating" required>
-                                        <option value="Kombi (Doğalgaz)" <?php echo $property['heating'] == 'Kombi (Doğalgaz)' ? 'selected' : ''; ?>>Kombi (Doğalgaz)</option>
-                                        <option value="Merkezi" <?php echo $property['heating'] == 'Merkezi' ? 'selected' : ''; ?>>Merkezi</option>
-                                        <option value="Klima" <?php echo $property['heating'] == 'Klima' ? 'selected' : ''; ?>>Klima</option>
-                                        <option value="Yerden Isıtma" <?php echo $property['heating'] == 'Yerden Isıtma' ? 'selected' : ''; ?>>Yerden Isıtma</option>
-                                        <option value="Soba" <?php echo $property['heating'] == 'Soba' ? 'selected' : ''; ?>>Soba</option>
-                                    </select>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="height_limit" class="form-label">Gabari</label>
+                                        <input type="text" class="form-control" id="height_limit" name="height_limit" value="<?php echo htmlspecialchars($property['height_limit']); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="deed_status" class="form-label">Tapu Durumu</label>
+                                        <select class="form-select" id="deed_status" name="deed_status">
+                                            <option value="">Seçiniz</option>
+                                            <option value="Müstakil" <?php echo $property['deed_status'] == 'Müstakil' ? 'selected' : ''; ?>>Müstakil</option>
+                                            <option value="Hisseli" <?php echo $property['deed_status'] == 'Hisseli' ? 'selected' : ''; ?>>Hisseli</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="balcony" class="form-label">Balkon</label>
-                                    <select class="form-select" id="balcony" name="balcony">
-                                        <option value="Var" <?php echo $property['balcony'] == 'Var' ? 'selected' : ''; ?>>Var</option>
-                                        <option value="Yok" <?php echo $property['balcony'] == 'Yok' ? 'selected' : ''; ?>>Yok</option>
-                                    </select>
+                            <!-- Konut özellikleri -->
+                            <div id="residentialFields">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="beds" class="form-label">Oda Sayısı</label>
+                                        <input type="number" class="form-control" id="beds" name="beds" min="0" value="<?php echo htmlspecialchars($property['beds']); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="living_room" class="form-label">Salon Sayısı</label>
+                                        <input type="number" class="form-control" id="living_room" name="living_room" min="0" value="<?php echo htmlspecialchars($property['living_room']); ?>">
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="furnished" class="form-label">Eşyalı</label>
-                                    <select class="form-select" id="furnished" name="furnished">
-                                        <option value="Evet" <?php echo $property['furnished'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
-                                        <option value="Hayır" <?php echo $property['furnished'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
-                                    </select>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="bathroom_count" class="form-label">Banyo Sayısı</label>
+                                        <input type="number" class="form-control" id="bathroom_count" name="bathroom_count" value="<?php echo htmlspecialchars($property['bathroom_count']); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="building_age" class="form-label">Bina Yaşı</label>
+                                        <select class="form-select" id="building_age" name="building_age">
+                                            <?php
+                                            $building_age_options = [
+                                                '0' => '0 (Yeni)',
+                                                '1' => '1',
+                                                '2' => '2',
+                                                '3' => '3',
+                                                '4' => '4',
+                                                '5' => '5',
+                                                '6' => '6',
+                                                '7' => '7',
+                                                '8' => '8',
+                                                '9' => '9',
+                                                '10' => '10',
+                                                '11-15' => '11-15',
+                                                '16-20' => '16-20',
+                                                '21 ve üzeri' => '21 ve üzeri'
+                                            ];
+                                            foreach ($building_age_options as $value => $label) {
+                                                $selected = '';
+                                                if (isset($property['building_age']) && $property['building_age'] !== null) {
+                                                    $current_value = (string)$property['building_age'];
+                                                    if ($value === $current_value) {
+                                                        $selected = 'selected';
+                                                    }
+                                                }
+                                                echo "<option value=\"$value\" $selected>$label</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="site_status" class="form-label">Site İçerisinde</label>
-                                    <select class="form-select" id="site_status" name="site_status">
-                                        <option value="Evet" <?php echo $property['site_status'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
-                                        <option value="Hayır" <?php echo $property['site_status'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
-                                    </select>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="floor_location" class="form-label">Bulunduğu Kat</label>
+                                        <select class="form-select" id="floor_location" name="floor_location">
+                                            <option value="">Seçiniz</option>
+                                            <option value="Bodrum Kat" <?php echo $property['floor_location'] == 'Bodrum Kat' ? 'selected' : ''; ?>>Bodrum Kat</option>
+                                            <option value="Yarı Bodrum Kat" <?php echo $property['floor_location'] == 'Yarı Bodrum Kat' ? 'selected' : ''; ?>>Yarı Bodrum Kat</option>
+                                            <option value="Zemin Kat" <?php echo $property['floor_location'] == 'Zemin Kat' ? 'selected' : ''; ?>>Zemin Kat</option>
+                                            <option value="Bahçe Katı" <?php echo $property['floor_location'] == 'Bahçe Katı' ? 'selected' : ''; ?>>Bahçe Katı</option>
+                                            <option value="Yüksek Giriş" <?php echo $property['floor_location'] == 'Yüksek Giriş' ? 'selected' : ''; ?>>Yüksek Giriş</option>
+                                            <option value="1. Kat" <?php echo $property['floor_location'] == '1. Kat' ? 'selected' : ''; ?>>1. Kat</option>
+                                            <option value="2. Kat" <?php echo $property['floor_location'] == '2. Kat' ? 'selected' : ''; ?>>2. Kat</option>
+                                            <option value="3. Kat" <?php echo $property['floor_location'] == '3. Kat' ? 'selected' : ''; ?>>3. Kat</option>
+                                            <option value="4. Kat" <?php echo $property['floor_location'] == '4. Kat' ? 'selected' : ''; ?>>4. Kat</option>
+                                            <option value="5. Kat" <?php echo $property['floor_location'] == '5. Kat' ? 'selected' : ''; ?>>5. Kat</option>
+                                            <option value="6. Kat" <?php echo $property['floor_location'] == '6. Kat' ? 'selected' : ''; ?>>6. Kat</option>
+                                            <option value="7. Kat" <?php echo $property['floor_location'] == '7. Kat' ? 'selected' : ''; ?>>7. Kat</option>
+                                            <option value="8. Kat" <?php echo $property['floor_location'] == '8. Kat' ? 'selected' : ''; ?>>8. Kat</option>
+                                            <option value="9. Kat" <?php echo $property['floor_location'] == '9. Kat' ? 'selected' : ''; ?>>9. Kat</option>
+                                            <option value="10. Kat" <?php echo $property['floor_location'] == '10. Kat' ? 'selected' : ''; ?>>10. Kat</option>
+                                            <option value="11. Kat" <?php echo $property['floor_location'] == '11. Kat' ? 'selected' : ''; ?>>11. Kat</option>
+                                            <option value="12. Kat ve üzeri" <?php echo $property['floor_location'] == '12. Kat ve üzeri' ? 'selected' : ''; ?>>12. Kat ve üzeri</option>
+                                            <option value="Çatı Katı" <?php echo $property['floor_location'] == 'Çatı Katı' ? 'selected' : ''; ?>>Çatı Katı</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="total_floors" class="form-label">Kat Sayısı</label>
+                                        <input type="number" class="form-control" id="total_floors" name="total_floors" value="<?php echo $property['total_floors']; ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="heating" class="form-label">Isıtma</label>
+                                        <select class="form-select" id="heating" name="heating">
+                                            <option value="">Seçiniz</option>
+                                            <option value="Kombi (Doğalgaz)" <?php echo $property['heating'] == 'Kombi (Doğalgaz)' ? 'selected' : ''; ?>>Kombi (Doğalgaz)</option>
+                                            <option value="Merkezi" <?php echo $property['heating'] == 'Merkezi' ? 'selected' : ''; ?>>Merkezi</option>
+                                            <option value="Klima" <?php echo $property['heating'] == 'Klima' ? 'selected' : ''; ?>>Klima</option>
+                                            <option value="Yerden Isıtma" <?php echo $property['heating'] == 'Yerden Isıtma' ? 'selected' : ''; ?>>Yerden Isıtma</option>
+                                            <option value="Soba" <?php echo $property['heating'] == 'Soba' ? 'selected' : ''; ?>>Soba</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="balcony" class="form-label">Balkon</label>
+                                        <select class="form-select" id="balcony" name="balcony">
+                                            <option value="Var" <?php echo $property['balcony'] == 'Var' ? 'selected' : ''; ?>>Var</option>
+                                            <option value="Yok" <?php echo $property['balcony'] == 'Yok' ? 'selected' : ''; ?>>Yok</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="furnished" class="form-label">Eşyalı</label>
+                                        <select class="form-select" id="furnished" name="furnished">
+                                            <option value="Evet" <?php echo $property['furnished'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
+                                            <option value="Hayır" <?php echo $property['furnished'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="site_status" class="form-label">Site İçerisinde</label>
+                                        <select class="form-select" id="site_status" name="site_status">
+                                            <option value="Evet" <?php echo $property['site_status'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
+                                            <option value="Hayır" <?php echo $property['site_status'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -585,13 +571,12 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             </div>
                             <?php endif; ?>
 
-                            <div class="mb-4">
-                                <label for="images" class="form-label">Yeni Resimler Ekle</label>
-                                <input type="file" class="form-control" id="images" name="images[]" accept="image/*" multiple>
-                                <small class="text-muted">Birden fazla resim seçebilirsiniz.</small>
+                            <div class="mb-3">
+                                <label for="images" class="form-label">Yeni Resimler</label>
+                                <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+                                <small class="text-muted">Birden fazla resim seçebilirsiniz</small>
                             </div>
 
-                            <!-- Mevcut video ve yeni video yükleme alanı -->
                             <div class="mb-4">
                                 <?php if (!empty($property['video_file'])): ?>
                                 <div class="mb-3">
@@ -647,6 +632,26 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         document.querySelector('form').addEventListener('submit', function(e) {
             let priceInput = document.getElementById('price');
             priceInput.value = priceInput.value.replace(/\D/g, '');
+        });
+
+        // Emlak tipine göre form alanlarını göster/gizle
+        function togglePropertyFields() {
+            const propertyType = document.getElementById('property_type').value;
+            const landFields = document.getElementById('landFields');
+            const residentialFields = document.getElementById('residentialFields');
+
+            if (propertyType === 'Arsa') {
+                landFields.style.display = 'block';
+                residentialFields.style.display = 'none';
+            } else {
+                landFields.style.display = 'none';
+                residentialFields.style.display = 'block';
+            }
+        }
+
+        // Sayfa yüklendiğinde form alanlarını düzenle
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePropertyFields();
         });
     </script>
 </body>
