@@ -737,36 +737,186 @@ if (!file_exists('uploads')) {
                         ?>
                       </div>
                       <div class="property-details">
-                        <div class="detail-item">
-                          <i class="fas fa-home me-1"></i>
-                          <span><?php echo htmlspecialchars($ilan['property_type']); ?></span>
-                        </div>
-                        <div class="detail-item">
-                          <i class="fas fa-bed me-1"></i>
-                          <span><?php 
-                          $rooms = '';
-                          if (isset($ilan['beds']) && $ilan['beds'] > 0) {
-                              $rooms .= $ilan['beds'];
-                          }
-                          if (isset($ilan['living_room']) && $ilan['living_room'] > 0) {
-                              if (!empty($rooms)) {
-                                  $rooms .= '+';
-                              }
-                              $rooms .= $ilan['living_room'];
-                          }
-                          if (empty($rooms)) {
-                              $rooms = isset($ilan['beds']) ? $ilan['beds'] : '0';
-                              if (isset($ilan['living_room'])) {
-                                  $rooms .= '+' . $ilan['living_room'];
-                              }
-                          }
-                          echo $rooms;
-                          ?></span>
-                        </div>
-                        <div class="detail-item">
-                          <i class="fas fa-ruler-combined me-1"></i>
-                          <span><?php echo $ilan['net_area']; ?> m²</span>
-                        </div>
+                        <?php if ($ilan['property_type'] == 'Arsa'): ?>
+                            <!-- Arsa özellikleri -->
+                            <div class="row g-2">
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-building"></i>
+                                        <span>Durum:</span>
+                                        <?php echo htmlspecialchars($ilan['status']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-rulers"></i>
+                                        <span>m²:</span>
+                                        <?php echo number_format($ilan['net_area'], 0, ',', '.'); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-clipboard-check"></i>
+                                        <span>İmar Durumu:</span>
+                                        <?php echo htmlspecialchars($ilan['zoning_status']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <span>Ada No:</span>
+                                        <?php echo htmlspecialchars($ilan['block_no']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-geo"></i>
+                                        <span>Parsel No:</span>
+                                        <?php echo htmlspecialchars($ilan['parcel_no']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-map"></i>
+                                        <span>Pafta No:</span>
+                                        <?php echo htmlspecialchars($ilan['sheet_no']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-arrows-angle-expand"></i>
+                                        <span>Kaks (Emsal):</span>
+                                        <?php echo htmlspecialchars($ilan['floor_area_ratio']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-building-up"></i>
+                                        <span>Gabari:</span>
+                                        <?php echo htmlspecialchars($ilan['height_limit']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-credit-card"></i>
+                                        <span>Krediye Uygun:</span>
+                                        <?php echo htmlspecialchars($ilan['eligible_for_credit']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                        <span>Tapu Durumu:</span>
+                                        <?php echo htmlspecialchars($ilan['deed_status']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-cash"></i>
+                                        <span>m² Fiyatı:</span>
+                                        <?php 
+                                            $price_per_sqm = number_format($ilan['price_per_sqm'], 2, ',', '.');
+                                            echo $price_per_sqm . ' ₺/m²';
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <!-- Konut özellikleri (daire, villa, müstakil ev) -->
+                            <div class="row g-2">
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-building"></i>
+                                        <span>Durum:</span>
+                                        <?php echo htmlspecialchars($ilan['status']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-rulers"></i>
+                                        <span>m² (Brüt):</span>
+                                        <?php echo number_format($ilan['gross_area'], 0, ',', '.'); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-rulers"></i>
+                                        <span>m² (Net):</span>
+                                        <?php echo number_format($ilan['net_area'], 0, ',', '.'); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-door-open"></i>
+                                        <span>Oda Sayısı:</span>
+                                        <?php echo htmlspecialchars($ilan['room_count']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-building-add"></i>
+                                        <span>Bina Yaşı:</span>
+                                        <?php echo htmlspecialchars($ilan['building_age']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-layers"></i>
+                                        <span>Bulunduğu Kat:</span>
+                                        <?php echo htmlspecialchars($ilan['floor']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-building"></i>
+                                        <span>Kat Sayısı:</span>
+                                        <?php echo htmlspecialchars($ilan['total_floors']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-thermometer-half"></i>
+                                        <span>Isıtma:</span>
+                                        <?php echo htmlspecialchars($ilan['heating']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-droplet"></i>
+                                        <span>Banyo Sayısı:</span>
+                                        <?php echo htmlspecialchars($ilan['bathroom_count']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-door-closed"></i>
+                                        <span>Balkon:</span>
+                                        <?php echo htmlspecialchars($ilan['balcony']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-p-square"></i>
+                                        <span>Otopark:</span>
+                                        <?php echo htmlspecialchars($ilan['parking']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-box"></i>
+                                        <span>Eşyalı:</span>
+                                        <?php echo htmlspecialchars($ilan['furnished']); ?>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-buildings"></i>
+                                        <span>Site İçerisinde:</span>
+                                        <?php echo htmlspecialchars($ilan['site']); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                       </div>
                       <div class="property-features d-flex justify-content-start gap-4 mt-auto">
                         <div class="feature">
