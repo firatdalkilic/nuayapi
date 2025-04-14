@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $property_type = trim($_POST['property_type']);
     $gross_area = isset($_POST['gross_area']) ? (float)$_POST['gross_area'] : 0;
     $net_area = isset($_POST['net_area']) ? (float)$_POST['net_area'] : 0;
-    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
+    $floor = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
     $total_floors = isset($_POST['total_floors']) ? (int)$_POST['total_floors'] : 0;
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)$_POST['bathroom_count'] : 0;
@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
         title, price, status, beds, location, neighborhood, description,
-        property_type, gross_area, net_area, floor_location, total_floors,
+        property_type, gross_area, net_area, floor, total_floors,
         heating, bathroom_count, balcony, furnished, site_status,
         eligible_for_credit, building_age, living_room,
         parking, usage_status, video_call_available
@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sdsissssddssisissssissss", 
             $title, $price, $status, $beds, $location, $neighborhood, 
-            $description, $property_type, $gross_area, $net_area, $floor_location, 
+            $description, $property_type, $gross_area, $net_area, $floor, 
             $total_floors, $heating, $bathroom_count, $balcony, $furnished, 
             $site_status, $eligible_for_credit, $building_age, $living_room,
             $parking, $usage_status, $video_call_available
@@ -399,8 +399,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label for="floor_location" class="form-label">Bulunduğu Kat</label>
-                                    <select class="form-select" id="floor_location" name="floor_location">
+                                    <label for="floor" class="form-label">Bulunduğu Kat</label>
+                                    <select class="form-select" id="floor" name="floor_location">
                                         <option value="">Seçiniz</option>
                                         <option value="Bodrum Kat">Bodrum Kat</option>
                                         <option value="Yarı Bodrum Kat">Yarı Bodrum Kat</option>
