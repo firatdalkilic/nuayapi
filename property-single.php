@@ -53,7 +53,7 @@ try {
     }
 
     // Fotoğrafları getir
-    $images_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY COALESCE(display_order, id) ASC");
+    $images_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY id ASC");
     if (!$images_stmt) {
         throw new Exception("Fotoğraf sorgusu hazırlanamadı: " . $conn->error);
     }

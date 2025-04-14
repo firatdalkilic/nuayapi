@@ -9,24 +9,17 @@ try {
         throw new Exception("Veritabanı bağlantısı kurulamadı.");
     }
 
-    // display_order sütununu ekle
-    $sql = "ALTER TABLE property_images ADD COLUMN display_order INT DEFAULT 0";
-    
+    // display_order kolonunu ekle
+    $sql = "ALTER TABLE property_images ADD COLUMN IF NOT EXISTS display_order INT DEFAULT NULL";
     if ($conn->query($sql)) {
-        echo "display_order sütunu başarıyla eklendi!";
-        
-        // Mevcut resimlere sıra numarası ver
-        $update_sql = "UPDATE property_images SET display_order = id WHERE display_order = 0";
-        if ($conn->query($update_sql)) {
-            echo "<br>Mevcut resimlere sıra numarası verildi!";
-        } else {
-            throw new Exception("Sıra numarası güncellenirken hata oluştu: " . $conn->error);
-        }
+        echo "display_order kolonu başarıyla eklendi.";
     } else {
-        throw new Exception("Sütun eklenirken hata oluştu: " . $conn->error);
+        echo "Hata oluştu: " . $conn->error;
     }
 
 } catch (Exception $e) {
     echo "Bir hata oluştu: " . htmlspecialchars($e->getMessage());
 }
+
+$conn->close();
 ?> 
