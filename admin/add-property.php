@@ -63,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usage_status = trim($_POST['usage_status']);
     $video_call_available = trim($_POST['video_call_available']);
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
+    $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -76,16 +77,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, beds, bathroom_count, balcony,
         parking, site, floor_location, total_floors, gross_area, living_room_count,
-        building_age, eligible_for_credit
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        building_age, eligible_for_credit, heating
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdsisssssidiss", 
+        $stmt->bind_param("ssdssssdsisssssidisss", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
             $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
-            $building_age, $eligible_for_credit
+            $building_age, $eligible_for_credit, $heating
         );
         
         if ($stmt->execute()) {
@@ -395,8 +396,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label for="floor" class="form-label">Bulunduğu Kat</label>
-                                    <select class="form-select" id="floor" name="floor_location">
+                                    <label for="floor_location" class="form-label">Bulunduğu Kat</label>
+                                    <select class="form-select" id="floor_location" name="floor_location">
                                         <option value="">Seçiniz</option>
                                         <option value="Bodrum Kat">Bodrum Kat</option>
                                         <option value="Yarı Bodrum Kat">Yarı Bodrum Kat</option>
@@ -416,6 +417,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <option value="11. Kat">11. Kat</option>
                                         <option value="12. Kat ve üzeri">12. Kat ve üzeri</option>
                                         <option value="Çatı Katı">Çatı Katı</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="heating" class="form-label">Isıtma</label>
+                                    <select class="form-select" id="heating" name="heating">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Kombi (Doğalgaz)">Kombi (Doğalgaz)</option>
+                                        <option value="Merkezi">Merkezi</option>
+                                        <option value="Klima">Klima</option>
+                                        <option value="Yerden Isıtma">Yerden Isıtma</option>
+                                        <option value="Soba">Soba</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
