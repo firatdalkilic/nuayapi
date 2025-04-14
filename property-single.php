@@ -170,7 +170,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     .gallery-main {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       border-radius: 8px;
       overflow: hidden;
       background-color: #fff;
@@ -204,17 +204,15 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     .gallery-actions {
-      position: absolute;
-      top: 20px;
-      right: 20px;
       display: flex;
       gap: 10px;
-      z-index: 10;
+      justify-content: center;
+      margin: 10px 0;
     }
 
     .gallery-btn {
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
       padding: 8px 15px;
       border-radius: 5px;
       cursor: pointer;
@@ -223,18 +221,21 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       gap: 5px;
       font-size: 14px;
       transition: all 0.3s ease;
+      color: #2c3e50;
+      text-decoration: none;
     }
 
     .gallery-btn:hover {
-      background: white;
+      background: #e9ecef;
       transform: translateY(-2px);
+      color: #2c3e50;
     }
 
     .gallery-thumbnails {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 100px);
       gap: 10px;
-      margin-bottom: 10px;
     }
 
     .gallery-thumbnail {
@@ -289,6 +290,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     @media (max-width: 768px) {
       .gallery-thumbnails {
         grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, 100px);
       }
     }
 
@@ -447,22 +449,23 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                   <div class="gallery-counter">
                     <span id="currentImageIndex">1</span>/<span id="totalImages"><?php echo count($images); ?></span>
                   </div>
-                  <div class="gallery-actions">
-                    <button class="gallery-btn" onclick="openFullscreen()">
-                      <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
-                    </button>
-                    <?php if (!empty($property['video_url'])): ?>
-                    <button class="gallery-btn" onclick="openVideo('<?php echo htmlspecialchars($property['video_url']); ?>')">
-                      <i class="bi bi-play-circle"></i> Video
-                    </button>
-                    <?php endif; ?>
-                  </div>
                   <button class="gallery-nav prev" onclick="changeImage(-1)">
                     <i class="bi bi-chevron-left"></i>
                   </button>
                   <button class="gallery-nav next" onclick="changeImage(1)">
                     <i class="bi bi-chevron-right"></i>
                   </button>
+                <?php endif; ?>
+              </div>
+
+              <div class="gallery-actions">
+                <a href="#" class="gallery-btn" onclick="openFullscreen(); return false;">
+                  <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
+                </a>
+                <?php if (!empty($property['video_url'])): ?>
+                <a href="<?php echo htmlspecialchars($property['video_url']); ?>" class="gallery-btn" target="_blank">
+                  <i class="bi bi-play-circle"></i> Video
+                </a>
                 <?php endif; ?>
               </div>
 
