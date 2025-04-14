@@ -532,11 +532,11 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                         <label for="heating" class="form-label">Isıtma</label>
                                         <select class="form-select" id="heating" name="heating">
                                             <option value="">Seçiniz</option>
-                                            <option value="Kombi (Doğalgaz)" <?php echo $property['heating'] == 'Kombi (Doğalgaz)' ? 'selected' : ''; ?>>Kombi (Doğalgaz)</option>
-                                            <option value="Merkezi" <?php echo $property['heating'] == 'Merkezi' ? 'selected' : ''; ?>>Merkezi</option>
-                                            <option value="Klima" <?php echo $property['heating'] == 'Klima' ? 'selected' : ''; ?>>Klima</option>
-                                            <option value="Yerden Isıtma" <?php echo $property['heating'] == 'Yerden Isıtma' ? 'selected' : ''; ?>>Yerden Isıtma</option>
-                                            <option value="Soba" <?php echo $property['heating'] == 'Soba' ? 'selected' : ''; ?>>Soba</option>
+                                            <option value="Kombi (Doğalgaz)" <?php echo ($property['heating'] == 'Kombi (Doğalgaz)') ? 'selected' : ''; ?>>Kombi (Doğalgaz)</option>
+                                            <option value="Merkezi" <?php echo ($property['heating'] == 'Merkezi') ? 'selected' : ''; ?>>Merkezi</option>
+                                            <option value="Klima" <?php echo ($property['heating'] == 'Klima') ? 'selected' : ''; ?>>Klima</option>
+                                            <option value="Yerden Isıtma" <?php echo ($property['heating'] == 'Yerden Isıtma') ? 'selected' : ''; ?>>Yerden Isıtma</option>
+                                            <option value="Soba" <?php echo ($property['heating'] == 'Soba') ? 'selected' : ''; ?>>Soba</option>
                                         </select>
                                     </div>
                                 </div>
