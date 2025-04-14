@@ -450,6 +450,85 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         left: 15px;
       }
     }
+
+    /* Modal Stilleri */
+    .photo-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 80%;
+      height: 90%;
+      margin: 2% auto;
+    }
+
+    .modal-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -30px;
+      right: 0;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 5px;
+    }
+
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .modal-nav:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-prev {
+      left: -60px;
+    }
+
+    .modal-next {
+      right: -60px;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95%;
+      }
+      .modal-nav {
+        padding: 10px;
+        font-size: 18px;
+      }
+      .modal-prev {
+        left: 10px;
+      }
+      .modal-next {
+        right: 10px;
+      }
+    }
   </style>
 </head>
 
@@ -936,6 +1015,22 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
+  <!-- Modal -->
+  <div id="photoModal" class="photo-modal" onclick="closeModalFromOverlay(event)">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <img id="modalImage" class="modal-image" src="" alt="">
+      <button class="modal-nav modal-prev" onclick="changeModalImage(-1)">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="modal-nav modal-next" onclick="changeModalImage(1)">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
   <script>
     let currentImageIndex = 0;
     const images = <?php echo json_encode(array_map(function($img) { 
@@ -987,23 +1082,51 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     function openFullscreen() {
-      const url = images[currentImageIndex];
-      const win = window.open(url, '_blank');
-      win.focus();
+      const modal = document.getElementById('photoModal');
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = images[currentImageIndex];
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
     }
 
-    // Klavye ile gezinme
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft') {
-        changeImage(-1);
-      } else if (e.key === 'ArrowRight') {
-        changeImage(1);
-      }
-    });
+    function closeModal() {
+      const modal = document.getElementById('photoModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
 
-    // Ana resme tıklayınca sonraki resme geç
-    document.getElementById('mainImage').addEventListener('click', function() {
-      changeImage(1);
+    function closeModalFromOverlay(event) {
+      if (event.target.className === 'photo-modal') {
+        closeModal();
+      }
+    }
+
+    function changeModalImage(direction) {
+      event.stopPropagation();
+      currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = images[currentImageIndex];
+      updateImage();
+      syncPageWithImage();
+    }
+
+    // ESC tuşu ile modalı kapatma
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      } else if (e.key === 'ArrowLeft') {
+        if (document.getElementById('photoModal').style.display === 'block') {
+          changeModalImage(-1);
+        } else {
+          changeImage(-1);
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (document.getElementById('photoModal').style.display === 'block') {
+          changeModalImage(1);
+        } else {
+          changeImage(1);
+        }
+      }
     });
 
     function changePage(direction) {
