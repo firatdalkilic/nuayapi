@@ -766,7 +766,12 @@ if (!file_exists('uploads')) {
                             <?php if (!empty($ilan['room_count'])): ?>
                             <div class="detail-item">
                                 <i class="bi bi-door-open"></i>
-                                <span><?php echo htmlspecialchars($ilan['room_count']); ?></span>
+                                <span><?php 
+                                    echo htmlspecialchars($ilan['room_count']); 
+                                    if (!empty($ilan['living_room_count'])) {
+                                        echo '+' . htmlspecialchars($ilan['living_room_count']);
+                                    }
+                                ?></span>
                             </div>
                             <?php endif; ?>
                         <?php endif; ?>
