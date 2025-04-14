@@ -84,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdsissssddsisissssissss", 
+        $stmt->bind_param("sdsissssddssisissssissss", 
             $title, $price, $status, $beds, $location, $neighborhood, 
             $description, $property_type, $gross_area, $net_area, $floor_location, 
             $total_floors, $heating, $bathroom_count, $balcony, $furnished, 
