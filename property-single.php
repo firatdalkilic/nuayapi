@@ -256,31 +256,49 @@ try {
     }
 
     .gallery-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
       margin: 10px 0;
+      padding: 0;
     }
 
-    .gallery-btn {
-      background: #f8f9fa;
-      border: 1px solid #e5e7eb;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
+    .action-links {
+      display: flex;
+      width: 100%;
+      gap: 1px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .gallery-link {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      background: #fff;
+      color: #0d6efd;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      color: #2563eb;
-      text-decoration: none;
+      justify-content: center;
     }
 
-    .gallery-btn:hover {
-      background: #e9ecef;
-      transform: translateY(-2px);
-      color: #1d4ed8;
+    .gallery-link i {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+
+    .gallery-link:hover:not(.disabled) {
+      background: #f8f9fa;
+      color: #0a58ca;
+    }
+
+    .gallery-link.disabled {
+      background: #f8f9fa;
+      color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.8;
     }
 
     .gallery-thumbnails-container {
@@ -679,14 +697,15 @@ try {
               </div>
 
               <div class="gallery-actions">
-                <a href="#" class="gallery-btn" onclick="openFullscreen(); return false;">
-                  <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
-                </a>
-                <?php if (!empty($property['video_file'])): ?>
-                <a href="#" class="gallery-btn" onclick="openVideoModal(); return false;">
-                  <i class="bi bi-play-circle"></i> Video
-                </a>
-                <?php endif; ?>
+                <div class="action-links">
+                  <a href="#" class="gallery-link" onclick="openFullscreen(); return false;">
+                    <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
+                  </a>
+                  <a href="#" class="gallery-link <?php echo empty($property['video_file']) ? 'disabled' : ''; ?>" 
+                     onclick="<?php echo !empty($property['video_file']) ? 'openVideoModal(); return false;' : 'return false;'; ?>">
+                    <i class="bi bi-play-circle"></i> Video
+                  </a>
+                </div>
               </div>
 
               <div class="gallery-thumbnails-container">
