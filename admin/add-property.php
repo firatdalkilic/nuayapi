@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $property_type = trim($_POST['property_type']);
     $gross_area = isset($_POST['gross_area']) ? (float)$_POST['gross_area'] : 0;
     $net_area = isset($_POST['net_area']) ? (float)$_POST['net_area'] : 0;
-    $floor = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
+    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
     $total_floors = isset($_POST['total_floors']) ? (int)$_POST['total_floors'] : 0;
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)$_POST['bathroom_count'] : 0;
     $balcony = isset($_POST['balcony']) ? trim($_POST['balcony']) : 'Yok';
@@ -74,15 +74,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO properties (
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, beds, bathroom_count, balcony,
-        parking, site, floor, total_floors, gross_area, living_room_count
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        parking, site, floor_location, total_floors, gross_area, living_room_count,
+        building_age
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdsisssssidi", 
+        $stmt->bind_param("ssdssssdsisssssidis", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
-            $parking, $site_status, $floor, $total_floors, $gross_area, $living_room
+            $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
+            $building_age
         );
         
         if ($stmt->execute()) {
