@@ -74,6 +74,14 @@ try {
         $images[] = $image;
     }
 
+    // Sayfalama için değişkenleri tanımla
+    $imagesPerPage = 10;
+    $totalPages = ceil(count($images) / $imagesPerPage);
+    $currentPage = 0; // Başlangıç sayfası
+
+    // Mevcut sayfa için resimleri al
+    $currentPageImages = array_slice($images, $currentPage * $imagesPerPage, $imagesPerPage);
+
 } catch (Exception $e) {
     // Hata mesajını göster
     echo "Bir hata oluştu: " . htmlspecialchars($e->getMessage());
@@ -710,10 +718,7 @@ try {
 
               <div class="gallery-thumbnails-container">
                 <div class="gallery-thumbnails" id="galleryThumbnails">
-                  <?php 
-                  $currentPageImages = array_slice($images, 0, 10);
-                  foreach ($currentPageImages as $index => $image): 
-                  ?>
+                  <?php foreach ($currentPageImages as $index => $image): ?>
                     <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
                          onclick="selectImage(<?php echo $index; ?>)">
                       <img src="uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
@@ -721,6 +726,8 @@ try {
                     </div>
                   <?php endforeach; ?>
                 </div>
+                
+                <?php if (count($images) > $imagesPerPage): ?>
                 <div class="gallery-pagination">
                   <?php if ($currentPage > 0): ?>
                   <button class="gallery-pagination-btn prev-page" onclick="changePage(-1)">
@@ -729,11 +736,8 @@ try {
                   <?php endif; ?>
                   
                   <div class="gallery-pagination-dots">
-                    <?php 
-                      $totalPages = ceil(count($images) / 10);
-                      for ($i = 0; $i < $totalPages; $i++):
-                    ?>
-                      <div class="gallery-pagination-dot <?php echo $i === 0 ? 'active' : ''; ?>" 
+                    <?php for ($i = 0; $i < $totalPages; $i++): ?>
+                      <div class="gallery-pagination-dot <?php echo $i === $currentPage ? 'active' : ''; ?>" 
                            onclick="goToPage(<?php echo $i; ?>)"></div>
                     <?php endfor; ?>
                   </div>
@@ -744,6 +748,7 @@ try {
                   </button>
                   <?php endif; ?>
                 </div>
+                <?php endif; ?>
               </div>
             </div>
           </div>
@@ -1199,9 +1204,9 @@ try {
     const allImages = <?php echo json_encode(array_map(function($img) {
         return ['image_path' => 'uploads/' . $img['image_name']];
     }, $images)); ?>;
-    const imagesPerPage = 10;
-    const totalPages = Math.ceil(totalImages / imagesPerPage);
-    let currentPage = 0;
+    const imagesPerPage = <?php echo $imagesPerPage; ?>;
+    const totalPages = <?php echo $totalPages; ?>;
+    let currentPage = <?php echo $currentPage; ?>;
 
     function changeImage(direction) {
       currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
