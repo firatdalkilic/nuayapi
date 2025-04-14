@@ -64,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $video_call_available = trim($_POST['video_call_available']);
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
+    $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -77,16 +78,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, beds, bathroom_count, balcony,
         parking, site, floor_location, total_floors, gross_area, living_room_count,
-        building_age, eligible_for_credit, heating
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        building_age, eligible_for_credit, heating, furnished
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdsisssssidisss", 
+        $stmt->bind_param("ssdssssdsisssssidissss", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
             $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
-            $building_age, $eligible_for_credit, $heating
+            $building_age, $eligible_for_credit, $heating, $furnished
         );
         
         if ($stmt->execute()) {
@@ -447,6 +448,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <option value="">Seçiniz</option>
                                         <option value="Var">Var</option>
                                         <option value="Yok">Yok</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="furnished" class="form-label">Eşyalı</label>
+                                    <select class="form-select" id="furnished" name="furnished">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Evet">Evet</option>
+                                        <option value="Hayır">Hayır</option>
                                     </select>
                                 </div>
                             </div>
