@@ -755,7 +755,10 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
                                 <span>Durum:</span>
-                                <strong><?php echo htmlspecialchars($property['status']); ?></strong>
+                                <strong><?php 
+                                    echo htmlspecialchars($property['status']) . ' ' . 
+                                         htmlspecialchars($property['property_type']); 
+                                ?></strong>
                             </div>
                         </div>
                         <?php if (!empty($property['gross_area'])): ?>
@@ -776,12 +779,17 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             </div>
                         </div>
                         <?php endif; ?>
-                        <?php if (!empty($property['room_count'])): ?>
+                        <?php if (!empty($property['room_count']) || !empty($property['living_room_count'])): ?>
                         <div class="col-6">
                             <div class="detail-item">
                                 <i class="bi bi-door-open"></i>
-                                <span>Oda Sayısı:</span>
-                                <strong><?php echo htmlspecialchars($property['room_count']); ?></strong>
+                                <span>Oda + Salon:</span>
+                                <strong><?php 
+                                    echo htmlspecialchars($property['room_count']);
+                                    if (!empty($property['living_room_count'])) {
+                                        echo ' + ' . htmlspecialchars($property['living_room_count']);
+                                    }
+                                ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -799,7 +807,20 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             <div class="detail-item">
                                 <i class="bi bi-layers"></i>
                                 <span>Bulunduğu Kat:</span>
-                                <strong><?php echo htmlspecialchars($property['floor']); ?></strong>
+                                <strong><?php 
+                                    $floor = strtolower($property['floor']);
+                                    if ($floor === '0' || $floor === 'zemin') {
+                                        echo 'Zemin';
+                                    } elseif ($floor === '-1' || $floor === 'bodrum') {
+                                        echo 'Bodrum';
+                                    } elseif ($floor === '-2') {
+                                        echo '2. Bodrum';
+                                    } elseif (is_numeric($floor)) {
+                                        echo $floor . '. Kat';
+                                    } else {
+                                        echo htmlspecialchars($property['floor']);
+                                    }
+                                ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
