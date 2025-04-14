@@ -500,7 +500,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             <div class="property-gallery">
               <div class="gallery-main">
                 <?php if (!empty($images)): ?>
-                  <img src="<?php echo htmlspecialchars($images[0]['image_path']); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
+                  <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
                   <div class="gallery-counter">
                     <span id="currentImageIndex">1</span>/<span id="totalImages"><?php echo count($images); ?></span>
                   </div>
@@ -532,7 +532,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                   ?>
                     <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
                          onclick="selectImage(<?php echo $index; ?>)">
-                      <img src="<?php echo htmlspecialchars($image['image_path']); ?>" 
+                      <img src="uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
                            alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
                     </div>
                   <?php endforeach; ?>
@@ -940,8 +940,13 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
   <script>
     let currentImageIndex = 0;
-    const images = <?php echo json_encode(array_column($images, 'image_path')); ?>;
+    const images = <?php echo json_encode(array_map(function($img) { 
+        return 'uploads/' . $img['image_name']; 
+    }, $images)); ?>;
     const totalImages = images.length;
+    const allImages = <?php echo json_encode(array_map(function($img) {
+        return ['image_path' => 'uploads/' . $img['image_name']];
+    }, $images)); ?>;
 
     function changeImage(direction) {
       currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
@@ -995,7 +1000,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     const imagesPerPage = 10;
     const totalImages = <?php echo count($images); ?>;
     const totalPages = Math.ceil(totalImages / imagesPerPage);
-    const allImages = <?php echo json_encode($images); ?>;
 
     function changePage(direction) {
       const newPage = currentPage + direction;
