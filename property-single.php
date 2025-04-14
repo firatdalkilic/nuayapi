@@ -492,26 +492,30 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 15px;
-      cursor: pointer;
-      border: none;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
       border-radius: 50%;
-      font-size: 24px;
+      font-size: 20px;
       transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .modal-nav:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
     }
 
     .modal-prev {
-      left: -60px;
+      left: 20px;
     }
 
     .modal-next {
-      right: -60px;
+      right: 20px;
     }
 
     @media (max-width: 768px) {
@@ -519,14 +523,9 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         width: 95%;
       }
       .modal-nav {
-        padding: 10px;
+        width: 35px;
+        height: 35px;
         font-size: 18px;
-      }
-      .modal-prev {
-        left: 10px;
-      }
-      .modal-next {
-        right: 10px;
       }
     }
   </style>
@@ -1022,12 +1021,12 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         <i class="bi bi-x-lg"></i>
       </button>
       <img id="modalImage" class="modal-image" src="" alt="">
-      <button class="modal-nav modal-prev" onclick="changeModalImage(-1)">
+      <a href="#" class="modal-nav modal-prev" onclick="changeModalImage(-1); return false;">
         <i class="bi bi-chevron-left"></i>
-      </button>
-      <button class="modal-nav modal-next" onclick="changeModalImage(1)">
+      </a>
+      <a href="#" class="modal-nav modal-next" onclick="changeModalImage(1); return false;">
         <i class="bi bi-chevron-right"></i>
-      </button>
+      </a>
     </div>
   </div>
 
