@@ -1,0 +1,1 @@
+ALTER TABLE properties MODIFY COLUMN building_age varchar(50); 

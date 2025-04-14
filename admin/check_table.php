@@ -1,32 +1,38 @@
 <?php
 require_once 'config.php';
 
-// Tablo yapısını kontrol et
-$query = "SHOW CREATE TABLE properties";
-$result = $conn->query($query);
-
-if ($result) {
-    $row = $result->fetch_assoc();
-    echo "<pre>";
-    print_r($row);
-    echo "</pre>";
-} else {
-    echo "Tablo yapısı alınamadı: " . $conn->error;
-}
-
-// Tablo sütunlarını kontrol et
-$query = "SHOW COLUMNS FROM properties";
-$result = $conn->query($query);
-
-if ($result) {
-    echo "<h3>Tablo Sütunları:</h3>";
-    echo "<pre>";
-    while ($row = $result->fetch_assoc()) {
-        print_r($row);
+try {
+    // Show table structure
+    $sql = "SHOW CREATE TABLE properties";
+    $result = $conn->query($sql);
+    
+    if ($result) {
+        $row = $result->fetch_assoc();
+        echo "Table Structure:\n";
+        echo $row['Create Table'] . "\n\n";
+    } else {
+        echo "Error getting table structure: " . $conn->error . "\n";
     }
-    echo "</pre>";
-} else {
-    echo "Sütun bilgileri alınamadı: " . $conn->error;
+    
+    // Show columns
+    $sql = "SHOW COLUMNS FROM properties";
+    $result = $conn->query($sql);
+    
+    if ($result) {
+        echo "Columns in properties table:\n";
+        while ($row = $result->fetch_assoc()) {
+            echo "Field: " . $row['Field'] . "\n";
+            echo "Type: " . $row['Type'] . "\n";
+            echo "Null: " . $row['Null'] . "\n";
+            echo "Default: " . $row['Default'] . "\n";
+            echo "------------------------\n";
+        }
+    } else {
+        echo "Error getting columns: " . $conn->error . "\n";
+    }
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
 }
 
 $conn->close();
