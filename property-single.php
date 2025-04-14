@@ -1,37 +1,75 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'admin/config.php';
 
-if (!isset($_GET['id'])) {
-    header('Location: properties.php');
+// URL'den id parametresini al
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($id <= 0) {
+    header('Location: index.php');
     exit;
 }
 
-$id = (int)$_GET['id'];
+try {
+    // İlan bilgilerini getir
+    $stmt = $conn->prepare("SELECT p.*, 
+        COALESCE(p.parking, 'Yok') as parking,
+        COALESCE(p.usage_status, 'Boş') as usage_status,
+        COALESCE(p.video_call_available, 'Hayır') as video_call_available,
+        COALESCE(p.room_count, '') as room_count,
+        COALESCE(p.living_room_count, '') as living_room_count,
+        COALESCE(p.floor, '') as floor
+    FROM properties p WHERE p.id = ?");
+    
+    if (!$stmt) {
+        throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
+    }
+    
+    $stmt->bind_param("i", $id);
+    
+    if (!$stmt->execute()) {
+        throw new Exception("Sorgu çalıştırılamadı: " . $stmt->error);
+    }
+    
+    $result = $stmt->get_result();
+    if (!$result) {
+        throw new Exception("Sonuç alınamadı: " . $stmt->error);
+    }
+    
+    $property = $result->fetch_assoc();
+    if (!$property) {
+        throw new Exception("İlan bulunamadı");
+    }
 
-// İlan bilgilerini getir
-$stmt = $conn->prepare("SELECT *, 
-    COALESCE(parking, 'Yok') as parking,
-    COALESCE(usage_status, 'Boş') as usage_status,
-    COALESCE(video_call_available, 'Hayır') as video_call_available,
-    COALESCE(room_count, '') as room_count,
-    COALESCE(living_room_count, '') as living_room_count,
-    COALESCE(floor, '') as floor
-FROM properties WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$property = $result->fetch_assoc();
+    // Fotoğrafları getir
+    $images_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY display_order ASC");
+    if (!$images_stmt) {
+        throw new Exception("Fotoğraf sorgusu hazırlanamadı: " . $conn->error);
+    }
+    
+    $images_stmt->bind_param("i", $id);
+    
+    if (!$images_stmt->execute()) {
+        throw new Exception("Fotoğraf sorgusu çalıştırılamadı: " . $images_stmt->error);
+    }
+    
+    $images_result = $images_stmt->get_result();
+    if (!$images_result) {
+        throw new Exception("Fotoğraf sonuçları alınamadı: " . $images_stmt->error);
+    }
+    
+    $images = [];
+    while ($image = $images_result->fetch_assoc()) {
+        $images[] = $image;
+    }
 
-if (!$property) {
-    header('Location: properties.php');
+} catch (Exception $e) {
+    // Hata mesajını göster
+    echo "Bir hata oluştu: " . htmlspecialchars($e->getMessage());
     exit;
 }
-
-// İlan resimlerini getir
-$img_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC");
-$img_stmt->bind_param("i", $id);
-$img_stmt->execute();
-$images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="tr">
