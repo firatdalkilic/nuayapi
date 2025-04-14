@@ -945,20 +945,20 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     const allImages = <?php echo json_encode(array_map(function($img) {
         return ['image_path' => 'uploads/' . $img['image_name']];
     }, $images)); ?>;
+    const imagesPerPage = 10;
+    const totalPages = Math.ceil(totalImages / imagesPerPage);
+    let currentPage = 0;
 
     function changeImage(direction) {
       currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
       updateImage();
+      syncPageWithImage();
     }
 
     function selectImage(index) {
       currentImageIndex = index;
       updateImage();
-      
-      // Küçük resimlerin active class'ını güncelle
-      document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
-        thumb.classList.toggle('active', i === index % 10);
-      });
+      syncPageWithImage();
     }
 
     function updateImage() {
@@ -967,6 +967,23 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       
       mainImage.src = images[currentImageIndex];
       counter.textContent = currentImageIndex + 1;
+
+      // Tüm thumbnail'ları güncelle
+      updateThumbnailsActiveState();
+    }
+
+    function updateThumbnailsActiveState() {
+      document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
+        const absoluteIndex = currentPage * imagesPerPage + i;
+        thumb.classList.toggle('active', absoluteIndex === currentImageIndex);
+      });
+    }
+
+    function syncPageWithImage() {
+      const targetPage = Math.floor(currentImageIndex / imagesPerPage);
+      if (targetPage !== currentPage) {
+        goToPage(targetPage);
+      }
     }
 
     function openFullscreen() {
@@ -988,10 +1005,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     document.getElementById('mainImage').addEventListener('click', function() {
       changeImage(1);
     });
-
-    let currentPage = 0;
-    const imagesPerPage = 10;
-    const totalPages = Math.ceil(totalImages / imagesPerPage);
 
     function changePage(direction) {
       const newPage = currentPage + direction;
