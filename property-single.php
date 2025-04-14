@@ -1254,17 +1254,6 @@ try {
 
     // Initialize pagination
     document.addEventListener('DOMContentLoaded', function() {
-      // Create pagination dots
-      const paginationContainer = document.querySelector('.gallery-pagination');
-      if (paginationContainer) {
-        for (let i = 0; i < totalPages; i++) {
-          const dot = document.createElement('span');
-          dot.className = `gallery-pagination-dot ${i === 0 ? 'active' : ''}`;
-          dot.onclick = () => goToPage(i);
-          paginationContainer.appendChild(dot);
-        }
-      }
-      
       // Initialize first page
       goToPage(0);
     });
