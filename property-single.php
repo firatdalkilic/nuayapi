@@ -234,6 +234,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     .gallery-thumbnails-container {
       position: relative;
       margin-bottom: 20px;
+      overflow: hidden;
     }
 
     .gallery-thumbnails {
@@ -241,7 +242,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(2, 100px);
       gap: 10px;
-      transition: transform 0.3s ease;
     }
 
     .gallery-thumbnail {
@@ -251,6 +251,17 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       cursor: pointer;
       border: 2px solid transparent;
       transition: all 0.3s ease;
+    }
+
+    .gallery-thumbnail.active {
+      border-color: #2563eb;
+    }
+
+    .gallery-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .gallery-pagination {
@@ -514,8 +525,11 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
               </div>
 
               <div class="gallery-thumbnails-container">
-                <div class="gallery-thumbnails">
-                  <?php foreach ($images as $index => $image): ?>
+                <div class="gallery-thumbnails" id="galleryThumbnails">
+                  <?php 
+                  $currentPageImages = array_slice($images, 0, 10);
+                  foreach ($currentPageImages as $index => $image): 
+                  ?>
                     <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
                          onclick="selectImage(<?php echo $index; ?>)">
                       <img src="<?php echo htmlspecialchars($image['image_path']); ?>" 
@@ -981,6 +995,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     const imagesPerPage = 10;
     const totalImages = <?php echo count($images); ?>;
     const totalPages = Math.ceil(totalImages / imagesPerPage);
+    const allImages = <?php echo json_encode($images); ?>;
 
     function changePage(direction) {
       const newPage = currentPage + direction;
@@ -992,8 +1007,27 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     function goToPage(pageNumber) {
       if (pageNumber >= 0 && pageNumber < totalPages) {
         currentPage = pageNumber;
-        const thumbnailsContainer = document.querySelector('.gallery-thumbnails');
-        thumbnailsContainer.style.transform = `translateX(-${currentPage * 100}%)`;
+        const startIndex = currentPage * imagesPerPage;
+        const endIndex = Math.min(startIndex + imagesPerPage, totalImages);
+        const pageImages = allImages.slice(startIndex, endIndex);
+        
+        // Update thumbnails
+        const thumbnailsContainer = document.getElementById('galleryThumbnails');
+        thumbnailsContainer.innerHTML = '';
+        
+        pageImages.forEach((image, index) => {
+          const absoluteIndex = startIndex + index;
+          const thumbnail = document.createElement('div');
+          thumbnail.className = `gallery-thumbnail ${index === 0 ? 'active' : ''}`;
+          thumbnail.onclick = () => selectImage(absoluteIndex);
+          
+          const img = document.createElement('img');
+          img.src = image.image_path;
+          img.alt = `${document.querySelector('#mainImage').alt} - Resim ${absoluteIndex + 1}`;
+          
+          thumbnail.appendChild(img);
+          thumbnailsContainer.appendChild(thumbnail);
+        });
 
         // Update pagination dots
         document.querySelectorAll('.gallery-pagination-dot').forEach((dot, index) => {
@@ -1003,13 +1037,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         // Update navigation buttons
         document.querySelector('.prev-page').classList.toggle('disabled', currentPage === 0);
         document.querySelector('.next-page').classList.toggle('disabled', currentPage === totalPages - 1);
-
-        // Hide thumbnails that are not in the current page
-        document.querySelectorAll('.gallery-thumbnail').forEach((thumb, index) => {
-          const isInCurrentPage = index >= currentPage * imagesPerPage && 
-                               index < (currentPage + 1) * imagesPerPage;
-          thumb.style.display = isInCurrentPage ? 'block' : 'none';
-        });
       }
     }
 
