@@ -315,9 +315,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="price" class="form-label">Fiyat (₺)</label>
-                                    <input type="number" class="form-control" id="price" name="price" required onchange="calculatePricePerSqm()">
+                                    <label for="price" class="form-label">Fiyat (TL)</label>
+                                    <input type="text" class="form-control" id="price" name="price" required>
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="net_area" class="form-label">Alan (m²)</label>
+                                    <input type="number" class="form-control" id="net_area" name="net_area" required>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="price_per_sqm" class="form-label">m² Birim Fiyatı (TL)</label>
+                                    <input type="text" class="form-control" id="price_per_sqm" name="price_per_sqm" readonly>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
@@ -325,11 +339,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <option value="Kiralık">Kiralık</option>
                                     </select>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="location" class="form-label">Konum</label>
-                                <input type="text" class="form-control" id="location" value="Didim" readonly>
+                                <div class="col-md-6">
+                                    <label for="location" class="form-label">Konum</label>
+                                    <input type="text" class="form-control" id="location" value="Didim" readonly>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -358,7 +371,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="area" class="form-label">m²</label>
-                                    <input type="number" class="form-control" id="area" name="area" required onchange="calculatePricePerSqm()">
+                                    <input type="number" class="form-control" id="area" name="area" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="price_per_sqm" class="form-label">m² Fiyatı</label>
@@ -438,31 +451,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-    function formatPrice(number) {
-        // Önce sayıyı tam sayıya yuvarla
-        const roundedNumber = Math.round(number);
-        
-        // Türkçe formatta binlik ayracı ile formatla
-        const formattedNumber = new Intl.NumberFormat('tr-TR', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(roundedNumber);
-        
-        return formattedNumber + ',00';
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const priceInput = document.getElementById('price');
+        const areaInput = document.getElementById('net_area');
+        const pricePerSqmInput = document.getElementById('price_per_sqm');
 
-    function calculatePricePerSqm() {
-        const price = document.getElementById('price').value;
-        const area = document.getElementById('area').value;
-        const pricePerSqm = document.getElementById('price_per_sqm');
-        
-        if (price && area && area > 0) {
-            const result = (price / area);
-            pricePerSqm.value = formatPrice(result) + ' ₺/m²';
-        } else {
-            pricePerSqm.value = '';
+        // Fiyat formatı için yardımcı fonksiyon
+        function formatPrice(price) {
+            return new Intl.NumberFormat('tr-TR').format(price);
         }
-    }
+
+        // String formatındaki fiyatı sayıya çevirme
+        function parseFormattedPrice(formattedPrice) {
+            return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
+        }
+
+        // Metrekare başına fiyatı hesapla
+        function calculatePricePerSqm() {
+            const price = parseFormattedPrice(priceInput.value);
+            const area = parseFloat(areaInput.value);
+            
+            if (!isNaN(price) && !isNaN(area) && area > 0) {
+                const pricePerSqm = price / area;
+                pricePerSqmInput.value = formatPrice(pricePerSqm.toFixed(2));
+            } else {
+                pricePerSqmInput.value = '';
+            }
+        }
+
+        // Fiyat alanı için olay dinleyicisi
+        priceInput.addEventListener('input', function(e) {
+            // Sadece sayı ve virgül girişine izin ver
+            let value = e.target.value.replace(/[^\d,]/g, '');
+            
+            // Sayıyı formatla
+            const number = parseFloat(value.replace(/,/g, ''));
+            if (!isNaN(number)) {
+                e.target.value = formatPrice(number);
+            }
+            
+            calculatePricePerSqm();
+        });
+
+        // Alan alanı için olay dinleyicisi
+        areaInput.addEventListener('input', calculatePricePerSqm);
+    });
     </script>
 </body>
 </html> 

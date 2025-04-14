@@ -379,9 +379,23 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="price" class="form-label">Fiyat (₺)</label>
+                                    <label for="price" class="form-label">Fiyat (TL)</label>
                                     <input type="text" class="form-control" id="price" name="price" value="<?php echo number_format($property['price'], 0, ',', '.'); ?>" required>
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="net_area" class="form-label">Alan (m²)</label>
+                                    <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($property['net_area']); ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="price_per_sqm" class="form-label">m² Birim Fiyatı (TL)</label>
+                                    <input type="text" class="form-control" id="price_per_sqm" name="price_per_sqm" value="<?php echo !empty($property['price_per_sqm']) ? number_format($property['price_per_sqm'], 2, ',', '.') : ''; ?>" readonly>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
@@ -389,9 +403,6 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                         <option value="Satılık" <?php echo $property['status'] == 'Satılık' ? 'selected' : ''; ?>>Satılık</option>
                                     </select>
                                 </div>
-                            </div>
-
-                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="property_type" class="form-label">Emlak Tipi</label>
                                     <select class="form-select" id="property_type" name="property_type" required onchange="togglePropertyFields()">
@@ -406,10 +417,6 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                 <div class="col-md-6">
                                     <label for="gross_area" class="form-label">m² (Brüt)</label>
                                     <input type="number" class="form-control" id="gross_area" name="gross_area" value="<?php echo htmlspecialchars($property['gross_area']); ?>">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="net_area" class="form-label">m² (Net)</label>
-                                    <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($property['net_area']); ?>">
                                 </div>
                             </div>
 
@@ -745,6 +752,52 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         // Sayfa yüklendiğinde form alanlarını düzenle
         document.addEventListener('DOMContentLoaded', function() {
             togglePropertyFields();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.getElementById('price');
+            const areaInput = document.getElementById('net_area');
+            const pricePerSqmInput = document.getElementById('price_per_sqm');
+
+            // Fiyat formatı için yardımcı fonksiyon
+            function formatPrice(price) {
+                return new Intl.NumberFormat('tr-TR').format(price);
+            }
+
+            // String formatındaki fiyatı sayıya çevirme
+            function parseFormattedPrice(formattedPrice) {
+                return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
+            }
+
+            // Metrekare başına fiyatı hesapla
+            function calculatePricePerSqm() {
+                const price = parseFormattedPrice(priceInput.value);
+                const area = parseFloat(areaInput.value);
+                
+                if (!isNaN(price) && !isNaN(area) && area > 0) {
+                    const pricePerSqm = price / area;
+                    pricePerSqmInput.value = formatPrice(pricePerSqm.toFixed(2));
+                } else {
+                    pricePerSqmInput.value = '';
+                }
+            }
+
+            // Fiyat alanı için olay dinleyicisi
+            priceInput.addEventListener('input', function(e) {
+                // Sadece sayı ve virgül girişine izin ver
+                let value = e.target.value.replace(/[^\d,]/g, '');
+                
+                // Sayıyı formatla
+                const number = parseFloat(value.replace(/,/g, ''));
+                if (!isNaN(number)) {
+                    e.target.value = formatPrice(number);
+                }
+                
+                calculatePricePerSqm();
+            });
+
+            // Alan alanı için olay dinleyicisi
+            areaInput.addEventListener('input', calculatePricePerSqm);
         });
     </script>
 </body>
