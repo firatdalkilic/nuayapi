@@ -425,13 +425,15 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="zoning_status" class="form-label">İmar Durumu</label>
-                                        <select class="form-select" id="zoning_status" name="zoning_status">
+                                        <select class="form-select" id="zoning_status" name="zoning_status" required>
                                             <option value="">Seçiniz</option>
-                                            <option value="Konut" <?php echo $property['zoning_status'] == 'Konut' ? 'selected' : ''; ?>>Konut</option>
-                                            <option value="Ticari" <?php echo $property['zoning_status'] == 'Ticari' ? 'selected' : ''; ?>>Ticari</option>
-                                            <option value="Karma" <?php echo $property['zoning_status'] == 'Karma' ? 'selected' : ''; ?>>Karma</option>
-                                            <option value="Turizm" <?php echo $property['zoning_status'] == 'Turizm' ? 'selected' : ''; ?>>Turizm</option>
-                                            <option value="Sanayi" <?php echo $property['zoning_status'] == 'Sanayi' ? 'selected' : ''; ?>>Sanayi</option>
+                                            <option value="Konut İmarlı" <?php echo $property['zoning_status'] == 'Konut İmarlı' ? 'selected' : ''; ?>>Konut İmarlı</option>
+                                            <option value="Ticari İmarlı" <?php echo $property['zoning_status'] == 'Ticari İmarlı' ? 'selected' : ''; ?>>Ticari İmarlı</option>
+                                            <option value="Turizm İmarlı" <?php echo $property['zoning_status'] == 'Turizm İmarlı' ? 'selected' : ''; ?>>Turizm İmarlı</option>
+                                            <option value="Sanayi İmarlı" <?php echo $property['zoning_status'] == 'Sanayi İmarlı' ? 'selected' : ''; ?>>Sanayi İmarlı</option>
+                                            <option value="Tarla" <?php echo $property['zoning_status'] == 'Tarla' ? 'selected' : ''; ?>>Tarla</option>
+                                            <option value="Bağ & Bahçe" <?php echo $property['zoning_status'] == 'Bağ & Bahçe' ? 'selected' : ''; ?>>Bağ & Bahçe</option>
+                                            <option value="Zeytinlik" <?php echo $property['zoning_status'] == 'Zeytinlik' ? 'selected' : ''; ?>>Zeytinlik</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
