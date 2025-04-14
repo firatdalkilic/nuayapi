@@ -2,35 +2,45 @@
 require_once 'config.php';
 
 try {
-    // Eksik kolonları ekle
-    $alter_queries = [
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS location VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_file VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS parking VARCHAR(50) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS net_area DECIMAL(10,2) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS neighborhood VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS heating VARCHAR(100) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS site_name VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS beds INT DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS living_room INT DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS bathroom_count INT DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS building_age VARCHAR(50) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS floor_location VARCHAR(50) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS total_floors INT DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS balcony VARCHAR(50) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS furnished VARCHAR(50) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS site_status VARCHAR(50) DEFAULT NULL"
+    // Her kolon için önce varlığını kontrol et, yoksa ekle
+    $columns = [
+        ["name" => "location", "type" => "VARCHAR(255)", "default" => "NULL"],
+        ["name" => "video_file", "type" => "VARCHAR(255)", "default" => "NULL"],
+        ["name" => "parking", "type" => "VARCHAR(50)", "default" => "NULL"],
+        ["name" => "net_area", "type" => "DECIMAL(10,2)", "default" => "NULL"],
+        ["name" => "neighborhood", "type" => "VARCHAR(255)", "default" => "NULL"],
+        ["name" => "heating", "type" => "VARCHAR(100)", "default" => "NULL"],
+        ["name" => "site_name", "type" => "VARCHAR(255)", "default" => "NULL"],
+        ["name" => "beds", "type" => "INT", "default" => "NULL"],
+        ["name" => "living_room", "type" => "INT", "default" => "NULL"],
+        ["name" => "bathroom_count", "type" => "INT", "default" => "NULL"],
+        ["name" => "building_age", "type" => "VARCHAR(50)", "default" => "NULL"],
+        ["name" => "floor_location", "type" => "VARCHAR(50)", "default" => "NULL"],
+        ["name" => "total_floors", "type" => "INT", "default" => "NULL"],
+        ["name" => "balcony", "type" => "VARCHAR(50)", "default" => "NULL"],
+        ["name" => "furnished", "type" => "VARCHAR(50)", "default" => "NULL"],
+        ["name" => "site_status", "type" => "VARCHAR(50)", "default" => "NULL"]
     ];
 
-    foreach ($alter_queries as $query) {
-        if ($conn->query($query)) {
-            echo "Kolon başarıyla eklendi: " . $query . "<br>";
+    foreach ($columns as $column) {
+        // Önce kolonun var olup olmadığını kontrol et
+        $check_query = "SHOW COLUMNS FROM properties LIKE '{$column['name']}'";
+        $result = $conn->query($check_query);
+        
+        if ($result->num_rows == 0) {
+            // Kolon yoksa ekle
+            $alter_query = "ALTER TABLE properties ADD COLUMN {$column['name']} {$column['type']} DEFAULT {$column['default']}";
+            if ($conn->query($alter_query)) {
+                echo "Kolon başarıyla eklendi: {$column['name']}<br>";
+            } else {
+                echo "Hata oluştu ({$column['name']}): " . $conn->error . "<br>";
+            }
         } else {
-            echo "Hata oluştu: " . $conn->error . "<br>";
+            echo "Kolon zaten mevcut: {$column['name']}<br>";
         }
     }
 
-    echo "<br>Tüm kolonlar başarıyla eklendi!";
+    echo "<br>İşlem tamamlandı!";
 
 } catch (Exception $e) {
     echo "Bir hata oluştu: " . $e->getMessage();
