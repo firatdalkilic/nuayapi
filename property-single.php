@@ -1020,7 +1020,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       <button class="modal-close" onclick="closeModal()">
         <i class="bi bi-x-lg"></i>
       </button>
-      <img id="modalImage" class="modal-image" src="" alt="">
+      <img id="modalImage" class="modal-image" src="" alt="" onclick="changeModalImage(1); event.stopPropagation();">
       <a href="#" class="modal-nav modal-prev" onclick="changeModalImage(-1); return false;">
         <i class="bi bi-chevron-left"></i>
       </a>
@@ -1086,6 +1086,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       modalImage.src = images[currentImageIndex];
       modal.style.display = 'block';
       document.body.style.overflow = 'hidden';
+      modalImage.style.cursor = 'pointer';
     }
 
     function closeModal() {
