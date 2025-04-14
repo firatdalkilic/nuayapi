@@ -231,11 +231,17 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       color: #2c3e50;
     }
 
+    .gallery-thumbnails-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
     .gallery-thumbnails {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(2, 100px);
       gap: 10px;
+      transition: transform 0.3s ease;
     }
 
     .gallery-thumbnail {
@@ -247,14 +253,52 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       transition: all 0.3s ease;
     }
 
-    .gallery-thumbnail.active {
-      border-color: #2563eb;
+    .gallery-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
     }
 
-    .gallery-thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .gallery-pagination-btn {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-pagination-btn:hover {
+      background: #e9ecef;
+    }
+
+    .gallery-pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .gallery-pagination-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .gallery-pagination-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-pagination-dot.active {
+      background: #2563eb;
     }
 
     .gallery-nav {
@@ -290,7 +334,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     @media (max-width: 768px) {
       .gallery-thumbnails {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(4, 100px);
+        grid-template-rows: repeat(2, 100px);
       }
     }
 
@@ -469,14 +513,35 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 <?php endif; ?>
               </div>
 
-              <div class="gallery-thumbnails">
-                <?php foreach ($images as $index => $image): ?>
-                  <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
-                       onclick="selectImage(<?php echo $index; ?>)">
-                    <img src="<?php echo htmlspecialchars($image['image_path']); ?>" 
-                         alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
+              <div class="gallery-thumbnails-container">
+                <div class="gallery-thumbnails">
+                  <?php foreach ($images as $index => $image): ?>
+                    <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
+                         onclick="selectImage(<?php echo $index; ?>)">
+                      <img src="<?php echo htmlspecialchars($image['image_path']); ?>" 
+                           alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+                <?php if (count($images) > 10): ?>
+                <div class="gallery-pagination">
+                  <button class="gallery-pagination-btn prev-page" onclick="changePage(-1)">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <div class="gallery-pagination-dots">
+                    <?php 
+                      $totalPages = ceil(count($images) / 10);
+                      for ($i = 0; $i < $totalPages; $i++):
+                    ?>
+                      <div class="gallery-pagination-dot <?php echo $i === 0 ? 'active' : ''; ?>" 
+                           onclick="goToPage(<?php echo $i; ?>)"></div>
+                    <?php endfor; ?>
                   </div>
-                <?php endforeach; ?>
+                  <button class="gallery-pagination-btn next-page" onclick="changePage(1)">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+                <?php endif; ?>
               </div>
             </div>
           </div>
@@ -911,6 +976,45 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     document.getElementById('mainImage').addEventListener('click', function() {
       changeImage(1);
     });
+
+    let currentPage = 0;
+    const imagesPerPage = 10;
+    const totalImages = <?php echo count($images); ?>;
+    const totalPages = Math.ceil(totalImages / imagesPerPage);
+
+    function changePage(direction) {
+      const newPage = currentPage + direction;
+      if (newPage >= 0 && newPage < totalPages) {
+        goToPage(newPage);
+      }
+    }
+
+    function goToPage(pageNumber) {
+      if (pageNumber >= 0 && pageNumber < totalPages) {
+        currentPage = pageNumber;
+        const thumbnailsContainer = document.querySelector('.gallery-thumbnails');
+        thumbnailsContainer.style.transform = `translateX(-${currentPage * 100}%)`;
+
+        // Update pagination dots
+        document.querySelectorAll('.gallery-pagination-dot').forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentPage);
+        });
+
+        // Update navigation buttons
+        document.querySelector('.prev-page').classList.toggle('disabled', currentPage === 0);
+        document.querySelector('.next-page').classList.toggle('disabled', currentPage === totalPages - 1);
+
+        // Hide thumbnails that are not in the current page
+        document.querySelectorAll('.gallery-thumbnail').forEach((thumb, index) => {
+          const isInCurrentPage = index >= currentPage * imagesPerPage && 
+                               index < (currentPage + 1) * imagesPerPage;
+          thumb.style.display = isInCurrentPage ? 'block' : 'none';
+        });
+      }
+    }
+
+    // Initialize pagination
+    goToPage(0);
   </script>
 
 </body>
