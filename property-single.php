@@ -812,14 +812,14 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-arrows-angle-expand"></i>
                                 <span>m² (Brüt):</span>
-                                <strong><?php echo !empty($property['gross_area']) ? htmlspecialchars($property['gross_area']) : '-'; ?></strong>
+                                <strong><?php echo !empty($property['gross_area']) ? number_format((float)$property['gross_area'], 0, ',', '.') : '-'; ?></strong>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-arrows-angle-contract"></i>
                                 <span>m² (Net):</span>
-                                <strong><?php echo !empty($property['net_area']) ? htmlspecialchars($property['net_area']) : '-'; ?></strong>
+                                <strong><?php echo !empty($property['net_area']) ? number_format((float)$property['net_area'], 0, ',', '.') : '-'; ?></strong>
                             </div>
                         </div>
                         <div class="col-md-6">
