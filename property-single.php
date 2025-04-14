@@ -805,7 +805,7 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-house"></i>
                                 <span>Durum:</span>
-                                <strong><?php echo htmlspecialchars($property['status']); ?></strong>
+                                <strong><?php echo htmlspecialchars($property['status']) . ' ' . htmlspecialchars($property['property_type']); ?></strong>
                             </div>
                         </div>
                         <div class="col-md-6">
