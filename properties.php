@@ -289,103 +289,72 @@ if (!file_exists('uploads')) {
 
     /* İlan Kartı Stilleri */
     .property-card {
-      background: #fff;
+      background-color: #fff;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
       overflow: hidden;
-      height: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .property-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    .property-image {
-      position: relative;
-      width: 100%;
-      height: 220px;
+    .property-card .property-image {
+      height: 250px;
       overflow: hidden;
+      position: relative;
+      border-radius: 8px 8px 0 0;
+      background-color: #ffffff;
     }
 
-    .property-image img {
+    .property-card .property-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center;
-    }
-
-    .property-status {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(13, 110, 253, 0.9);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .property-content {
-      padding: 15px;
-    }
-
-    .property-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #2c3e50;
-      line-height: 1.4;
-      height: 3em;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-
-    .property-location {
-      display: flex;
-      align-items: center;
-      color: #6c757d;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-    }
-
-    .property-location i {
-      margin-right: 5px;
-      color: #0d6efd;
+      background-color: #ffffff;
     }
 
     .property-details {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #eee;
+      gap: 1.5rem;
+      margin: 1rem 0;
     }
 
-    .property-detail-item {
+    .detail-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 0.5rem;
+      color: #4b5563;
       font-size: 0.9rem;
-      color: #495057;
     }
 
-    .property-detail-item i {
-      color: #0d6efd;
+    .detail-item i {
+      color: #2563eb;
       font-size: 1rem;
     }
 
-    .property-price {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #0d6efd;
-      margin-top: 10px;
-      text-align: right;
+    .property-location {
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .property-location i {
+      color: #2563eb;
+      margin-right: 0.5rem;
+    }
+
+    .property-features {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .property-features i {
+      color: #2563eb;
     }
 
     /* Sayfalama Stilleri */
@@ -741,57 +710,77 @@ if (!file_exists('uploads')) {
 
             <div class="properties-list" id="propertiesList">
               <?php while ($ilan = $result->fetch_assoc()): ?>
-              <a href="property-single.php?id=<?php echo $ilan['id']; ?>" class="text-decoration-none">
-                <div class="property-card mb-4">
-                  <div class="property-image">
+              <a href="property-single.php?id=<?php echo $ilan['id']; ?>" class="text-decoration-none text-dark">
+              <div class="property-card mb-4">
+                <div class="row g-0">
+                  <div class="col-md-4 position-relative">
                     <?php
                     if (!empty($ilan['image_name'])) {
-                        echo '<img src="uploads/' . htmlspecialchars($ilan['image_name']) . '" alt="' . htmlspecialchars($ilan['title']) . '">';
+                        echo '<img src="uploads/' . htmlspecialchars($ilan['image_name']) . '" class="img-fluid w-100" style="height: 250px; object-fit: contain; background-color: #ffffff;" alt="' . htmlspecialchars($ilan['title']) . '">';
                     } else {
-                        echo '<img src="assets/img/no-image.jpg" alt="' . htmlspecialchars($ilan['title']) . '">';
+                        echo '<img src="assets/img/no-image.jpg" class="img-fluid w-100" style="height: 250px; object-fit: contain; background-color: #ffffff;" alt="' . htmlspecialchars($ilan['title']) . '">';
                     }
                     ?>
-                    <div class="property-status">
-                      <?php echo htmlspecialchars($ilan['status']) . ' ' . htmlspecialchars($ilan['property_type']); ?>
+                    <div class="position-absolute top-0 end-0 m-2">
+                      <span class="badge bg-primary"><?php echo htmlspecialchars($ilan['status']); ?></span>
                     </div>
                   </div>
-                  <div class="property-content">
-                    <h3 class="property-title"><?php echo htmlspecialchars($ilan['title']); ?></h3>
-                    <div class="property-location">
-                      <i class="bi bi-geo-alt"></i>
-                      <?php 
-                      echo !empty($ilan['location']) ? htmlspecialchars($ilan['location']) : 'Didim';
-                      if (!empty($ilan['neighborhood'])) {
-                          echo ' / ' . htmlspecialchars($ilan['neighborhood']);
-                      }
-                      ?>
-                    </div>
-                    <div class="property-details">
-                      <?php if ($ilan['property_type'] != 'Arsa'): ?>
-                      <div class="property-detail-item">
-                        <i class="bi bi-rulers"></i>
-                        <?php echo !empty($ilan['net_area']) ? number_format($ilan['net_area'], 0, ',', '.') . ' m²' : '-'; ?>
+                  <div class="col-md-8">
+                    <div class="card-body h-100 d-flex flex-column">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0" style="font-weight: 700; font-size: 1.25rem;">
+                            <?php echo htmlspecialchars($ilan['title']); ?>
+                        </h5>
+                        <span class="text-primary fw-bold fs-4"><?php echo number_format($ilan['price'], 0, ',', '.'); ?> TL</span>
                       </div>
-                      <div class="property-detail-item">
-                        <i class="bi bi-door-open"></i>
+                      <div class="property-location">
+                        <i class="bi bi-geo-alt"></i>
                         <?php 
-                        $room_count = !empty($ilan['room_count']) ? $ilan['room_count'] : '';
-                        $living_room_count = !empty($ilan['living_room_count']) ? $ilan['living_room_count'] : '';
-                        echo !empty($room_count) && !empty($living_room_count) ? $room_count . '+' . $living_room_count : '-';
+                        echo !empty($ilan['location']) ? htmlspecialchars($ilan['location']) : 'Didim';
+                        if (!empty($ilan['neighborhood'])) {
+                            echo ' / ' . htmlspecialchars($ilan['neighborhood']);
+                        }
                         ?>
                       </div>
-                      <?php else: ?>
-                      <div class="property-detail-item">
-                        <i class="bi bi-rulers"></i>
-                        <?php echo !empty($ilan['net_area']) ? number_format($ilan['net_area'], 0, ',', '.') . ' m²' : '-'; ?>
+                      <div class="property-details mt-2">
+                        <?php if ($ilan['property_type'] == 'Arsa'): ?>
+                            <div class="detail-item me-4">
+                                <i class="bi bi-building"></i>
+                                <span><?php echo htmlspecialchars($ilan['status'] . ' ' . $ilan['property_type']); ?></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="bi bi-rulers"></i>
+                                <span><?php echo number_format($ilan['net_area'], 0, ',', '.'); ?> m²</span>
+                            </div>
+                        <?php else: ?>
+                            <div class="detail-item me-4">
+                                <i class="bi bi-building"></i>
+                                <span><?php echo htmlspecialchars($ilan['status'] . ' ' . $ilan['property_type']); ?></span>
+                            </div>
+                            <?php if (!empty($ilan['gross_area'])): ?>
+                            <div class="detail-item me-4">
+                                <i class="bi bi-rulers"></i>
+                                <span><?php echo number_format($ilan['gross_area'], 0, ',', '.'); ?> m²</span>
+                            </div>
+                            <?php endif; ?>
+                            <?php if (!empty($ilan['room_count'])): ?>
+                            <div class="detail-item">
+                                <i class="bi bi-door-open"></i>
+                                <span><?php echo htmlspecialchars($ilan['room_count']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
                       </div>
-                      <?php endif; ?>
-                    </div>
-                    <div class="property-price">
-                      <?php echo number_format($ilan['price'], 0, ',', '.'); ?> TL
+                      <div class="property-features d-flex justify-content-start gap-4 mt-auto">
+                        <div class="feature">
+                          <i class="fas fa-calendar-alt me-1"></i>
+                          <span><?php echo date('d-m-Y', strtotime($ilan['created_at'])); ?></span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
               </a>
               <?php endwhile; ?>
             </div>
