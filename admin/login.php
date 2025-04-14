@@ -4,21 +4,25 @@ require_once 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
-    $password = md5($_POST['password']);
+    $password = $_POST['password'];
     
-    $sql = "SELECT id, username FROM users WHERE username = ? AND password = ?";
+    $sql = "SELECT id, username, password FROM admin WHERE username = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $username, $password);
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_id'] = $row['id'];
-        $_SESSION['admin_username'] = $row['username'];
-        header("Location: dashboard.php");
-        exit;
+        if (password_verify($password, $row['password'])) {
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_id'] = $row['id'];
+            $_SESSION['admin_username'] = $row['username'];
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            $error = "Kullanıcı adı veya şifre hatalı!";
+        }
     } else {
         $error = "Kullanıcı adı veya şifre hatalı!";
     }
@@ -37,9 +41,30 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Girişi</title>
-    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .admin-login {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        .card {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        .admin-alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
 </head>
 <body class="admin-login">
     <div class="container">
@@ -51,7 +76,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
                     </div>
                     <div class="card-body">
                         <?php if(isset($error)): ?>
-                            <div class="admin-alert alert-danger"><?php echo $error; ?></div>
+                            <div class="admin-alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
                         <?php endif; ?>
                         
                         <form method="POST" action="">
@@ -76,7 +101,9 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
                     </div>
                 </div>
                 <div class="text-center mt-4">
-                    <a href="../index.html" class="text-muted"><i class="bi bi-arrow-left"></i> Siteye Dön</a>
+                    <a href="../index.php" class="text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left"></i> Siteye Dön
+                    </a>
                 </div>
             </div>
         </div>
