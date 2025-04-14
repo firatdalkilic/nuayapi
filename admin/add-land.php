@@ -12,14 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'title' => 'İlan Başlığı',
         'price' => 'Fiyat',
         'status' => 'Durum',
-        'area' => 'm²',
+        'net_area' => 'Alan (m²)',
         'zoning_status' => 'İmar Durumu',
         'block_no' => 'Ada No',
         'parcel_no' => 'Parsel No',
         'sheet_no' => 'Pafta No',
         'floor_area_ratio' => 'Kaks (Emsal)',
         'height_limit' => 'Gabari',
-        'credit_status' => 'Krediye Uygunluk',
+        'eligible_for_credit' => 'Krediye Uygunluk',
         'deed_status' => 'Tapu Durumu',
         'description' => 'Açıklama'
     ];
@@ -39,23 +39,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Form verilerini al
     $title = trim($_POST['title']);
-    $price = str_replace(['.', ','], '', $_POST['price']);
-    $price = (float)$price;
+    $price = str_replace('.', '', $_POST['price']); // Noktalı sayı formatını temizle
+    $price = str_replace(',', '.', $price); // Virgülü nokta ile değiştir
     $status = trim($_POST['status']);
-    $location = 'Didim'; // Sabit değer
-    $area = (float)$_POST['area'];
-    $price_per_sqm = $area > 0 ? round($price / $area, 2) : 0;
+    $location = 'Didim';
+    $description = trim($_POST['description']);
+    $property_type = 'Arsa';
+    $net_area = floatval($_POST['net_area']);
     $zoning_status = trim($_POST['zoning_status']);
     $block_no = trim($_POST['block_no']);
     $parcel_no = trim($_POST['parcel_no']);
     $sheet_no = trim($_POST['sheet_no']);
     $floor_area_ratio = trim($_POST['floor_area_ratio']);
     $height_limit = trim($_POST['height_limit']);
-    $credit_status = trim($_POST['credit_status']);
+    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? $_POST['eligible_for_credit'] : 'Hayır';
     $deed_status = trim($_POST['deed_status']);
-    $description = trim($_POST['description']);
-    $property_type = 'Arsa'; // Sabit değer
     $neighborhood = trim($_POST['neighborhood']);
+    $usage_status = trim($_POST['usage_status']);
+    $video_call_available = isset($_POST['video_call_available']) ? $_POST['video_call_available'] : 'Hayır';
+    $video_file = '';
+
+    // Metrekare başına fiyatı hesapla
+    $price_per_sqm = $net_area > 0 ? $price / $net_area : 0;
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -69,8 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, price, status, location, description, property_type,
         net_area, zoning_status, block_no, parcel_no, sheet_no,
         floor_area_ratio, height_limit, eligible_for_credit,
-        deed_status, neighborhood, price_per_sqm
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        deed_status, neighborhood, price_per_sqm, usage_status,
+        video_call_available, video_file
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
@@ -79,25 +85,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Parametre tiplerini ve değerlerini düzenle
-        // s: string, d: double/decimal, i: integer
-        $bind_result = $stmt->bind_param("sdssssdsssssssssd", 
+        $stmt->bind_param("sdssssdssssssssdssss", 
             $title,         // s (string)
             $price,         // d (decimal)
             $status,        // s (string)
             $location,      // s (string)
             $description,   // s (string)
             $property_type, // s (string)
-            $area,          // d (decimal)
+            $net_area,      // d (decimal)
             $zoning_status, // s (string)
             $block_no,      // s (string)
             $parcel_no,     // s (string)
             $sheet_no,      // s (string)
             $floor_area_ratio, // s (string)
             $height_limit,  // s (string)
-            $credit_status, // s (string)
+            $eligible_for_credit, // s (string)
             $deed_status,   // s (string)
             $neighborhood,  // s (string)
-            $price_per_sqm  // d (decimal)
+            $price_per_sqm, // d (decimal)
+            $usage_status,  // s (string)
+            $video_call_available, // s (string)
+            $video_file    // s (string)
         );
         
         if (!$bind_result) {
@@ -109,11 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $property_id = $conn->insert_id;
-        if (!$property_id) {
-            throw new Exception("Could not get last insert ID");
-        }
-        
-        // Resimleri yükle
+
+        // Resim yükleme işlemleri...
         $upload_success = false;
         if (isset($_FILES["images"]) && !empty($_FILES["images"]["name"][0])) {
             $target_dir = "../uploads/";
@@ -146,39 +151,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
-        
-        // Video yükleme
-        if (isset($_FILES["property_video"]) && !empty($_FILES["property_video"]["name"])) {
-            $video_dir = "../uploads/videos/";
-            if (!file_exists($video_dir)) {
-                mkdir($video_dir, 0777, true);
-            }
 
-            $video_name = time() . '_' . basename($_FILES["property_video"]["name"]);
-            $video_target = $video_dir . $video_name;
-            
-            $allowed_types = ['video/mp4', 'video/webm', 'video/ogg'];
-            
-            if (in_array($_FILES["property_video"]["type"], $allowed_types)) {
-                if (move_uploaded_file($_FILES["property_video"]["tmp_name"], $video_target)) {
-                    $video_stmt = $conn->prepare("UPDATE properties SET video_file = ? WHERE id = ?");
-                    $video_stmt->bind_param("si", $video_name, $property_id);
-                    $video_stmt->execute();
-                }
-            }
-        }
-        
-        if ($upload_success) {
-            $_SESSION['success'] = "Arsa ilanı başarıyla eklendi.";
-            header("Location: dashboard.php");
+        if ($stmt->affected_rows > 0 && $upload_success) {
+            $_SESSION['success'] = "İlan başarıyla eklendi.";
+            header("Location: properties.php");
             exit;
         } else {
-            // Resim yüklenemedi, ilanı sil
-            $conn->query("DELETE FROM properties WHERE id = " . $property_id);
-            $_SESSION['error'] = "Resimler yüklenirken bir hata oluştu. İlan eklenemedi.";
+            throw new Exception("İlan eklenirken bir hata oluştu.");
         }
     } catch (Exception $e) {
-        $_SESSION['error'] = "İlan eklenirken bir hata oluştu: " . $e->getMessage();
+        $_SESSION['error'] = $e->getMessage();
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     }
 }
 ?>
@@ -368,63 +352,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="description" class="form-label">İlan Açıklaması</label>
+                                <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                            </div>
+
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="area" class="form-label">m²</label>
-                                    <input type="number" class="form-control" id="area" name="area" required>
+                                    <label for="zoning_status" class="form-label">İmar Durumu</label>
+                                    <select class="form-select" id="zoning_status" name="zoning_status" required>
+                                        <option value="">Seçiniz</option>
+                                        <option value="Konut">Konut</option>
+                                        <option value="Ticari">Ticari</option>
+                                        <option value="Karma">Karma</option>
+                                        <option value="İmarsız">İmarsız</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="price_per_sqm" class="form-label">m² Fiyatı</label>
-                                    <input type="text" class="form-control" id="price_per_sqm" readonly>
+                                    <label for="deed_status" class="form-label">Tapu Durumu</label>
+                                    <select class="form-select" id="deed_status" name="deed_status" required>
+                                        <option value="">Seçiniz</option>
+                                        <option value="Müstakil">Müstakil</option>
+                                        <option value="Hisseli">Hisseli</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label for="block_no" class="form-label">Ada No</label>
-                                    <input type="text" class="form-control" id="block_no" name="block_no" required>
+                                    <input type="text" class="form-control" id="block_no" name="block_no">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="parcel_no" class="form-label">Parsel No</label>
-                                    <input type="text" class="form-control" id="parcel_no" name="parcel_no" required>
+                                    <input type="text" class="form-control" id="parcel_no" name="parcel_no">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="sheet_no" class="form-label">Pafta No</label>
-                                    <input type="text" class="form-control" id="sheet_no" name="sheet_no" required>
+                                    <input type="text" class="form-control" id="sheet_no" name="sheet_no">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="floor_area_ratio" class="form-label">Kaks (Emsal)</label>
-                                    <input type="text" class="form-control" id="floor_area_ratio" name="floor_area_ratio" required>
+                                    <input type="text" class="form-control" id="floor_area_ratio" name="floor_area_ratio">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="height_limit" class="form-label">Gabari</label>
-                                    <input type="text" class="form-control" id="height_limit" name="height_limit" required>
+                                    <input type="text" class="form-control" id="height_limit" name="height_limit">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="credit_status" class="form-label">Krediye Uygunluk</label>
-                                    <select class="form-select" id="credit_status" name="credit_status" required>
+                                    <label for="eligible_for_credit" class="form-label">Krediye Uygunluk</label>
+                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
                                         <option value="Evet">Evet</option>
                                         <option value="Hayır">Hayır</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="deed_status" class="form-label">Tapu Durumu</label>
-                                    <select class="form-select" id="deed_status" name="deed_status" required>
-                                        <option value="Müstakil Parsel">Müstakil Parsel</option>
-                                        <option value="Hisseli Parsel">Hisseli Parsel</option>
+                                    <label for="usage_status" class="form-label">Kullanım Durumu</label>
+                                    <select class="form-select" id="usage_status" name="usage_status" required>
+                                        <option value="Boş">Boş</option>
+                                        <option value="Kiracılı">Kiracılı</option>
+                                        <option value="Mülk Sahibi">Mülk Sahibi</option>
                                     </select>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="description" class="form-label">İlan Açıklaması</label>
-                                <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
                             </div>
 
                             <div class="mb-3">
@@ -434,9 +429,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
 
                             <div class="mb-3">
-                                <label for="property_video" class="form-label">İlan Videosu</label>
-                                <input type="file" class="form-control" id="property_video" name="property_video" accept="video/*">
-                                <small class="text-muted">Video yüklemek isteğe bağlıdır.</small>
+                                <label for="video_call_available" class="form-label">Görüntülü Arama ile Gezilebilir</label>
+                                <select class="form-select" id="video_call_available" name="video_call_available">
+                                    <option value="Evet">Evet</option>
+                                    <option value="Hayır">Hayır</option>
+                                </select>
                             </div>
 
                             <div class="d-grid">
