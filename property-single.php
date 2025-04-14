@@ -348,23 +348,44 @@ try {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
       margin-top: 10px;
     }
 
     .gallery-pagination-btn {
-      background: none;
+      width: 30px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.1);
       border: none;
-      padding: 5px;
+      border-radius: 50%;
       cursor: pointer;
       color: #0d6efd;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gallery-pagination-btn::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(108, 117, 125, 0.15);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .gallery-pagination-btn i {
+      position: relative;
+      z-index: 1;
+      font-size: 18px;
     }
 
     .gallery-pagination-btn:hover {
+      background: rgba(0, 0, 0, 0.15);
       color: #0a58ca;
       transform: scale(1.1);
     }
@@ -729,11 +750,9 @@ try {
                 
                 <?php if (count($images) > $imagesPerPage): ?>
                 <div class="gallery-pagination">
-                  <?php if ($currentPage > 0): ?>
                   <button class="gallery-pagination-btn prev-page" onclick="changePage(-1)">
                     <i class="bi bi-chevron-left"></i>
                   </button>
-                  <?php endif; ?>
                   
                   <div class="gallery-pagination-dots">
                     <?php for ($i = 0; $i < $totalPages; $i++): ?>
@@ -742,11 +761,9 @@ try {
                     <?php endfor; ?>
                   </div>
                   
-                  <?php if ($currentPage < $totalPages - 1): ?>
                   <button class="gallery-pagination-btn next-page" onclick="changePage(1)">
                     <i class="bi bi-chevron-right"></i>
                   </button>
-                  <?php endif; ?>
                 </div>
                 <?php endif; ?>
               </div>
@@ -1332,12 +1349,12 @@ try {
           dot.classList.toggle('active', index === currentPage);
         });
 
-        // Update navigation buttons visibility
+        // Update navigation buttons visibility and state
         const prevButton = document.querySelector('.prev-page');
         const nextButton = document.querySelector('.next-page');
         
-        if (prevButton) prevButton.style.display = currentPage === 0 ? 'none' : 'flex';
-        if (nextButton) nextButton.style.display = currentPage === totalPages - 1 ? 'none' : 'flex';
+        prevButton.style.visibility = currentPage === 0 ? 'hidden' : 'visible';
+        nextButton.style.visibility = currentPage === totalPages - 1 ? 'hidden' : 'visible';
       }
     }
 
