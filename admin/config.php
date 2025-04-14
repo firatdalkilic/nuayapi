@@ -1,23 +1,27 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "emlak";
+$jawsdb_url = getenv("JAWSDB_URL");
+
+if ($jawsdb_url) {
+    $url = parse_url($jawsdb_url);
+    $servername = $url["host"];
+    $username = $url["user"];
+    $password = $url["pass"];
+    $dbname = ltrim($url["path"], '/');
+} else {
+    // Yerel geliştirme ortamı için
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "emlak";
+}
 
 // Veritabanı bağlantısı
-$conn = new mysqli($servername, $username, $password);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Bağlantı kontrolü
 if ($conn->connect_error) {
     error_log("Database Connection Error: " . $conn->connect_error);
     die("Bağlantı hatası: " . $conn->connect_error);
-}
-
-// Veritabanı seçimi
-if (!$conn->select_db($dbname)) {
-    // Veritabanı yoksa oluştur
-    $conn->query("CREATE DATABASE IF NOT EXISTS $dbname");
-    $conn->select_db($dbname);
 }
 
 // Türkçe karakter desteği
