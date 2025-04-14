@@ -504,12 +504,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                   <div class="gallery-counter">
                     <span id="currentImageIndex">1</span>/<span id="totalImages"><?php echo count($images); ?></span>
                   </div>
-                  <button class="gallery-nav prev" onclick="changeImage(-1)">
-                    <i class="bi bi-chevron-left"></i>
-                  </button>
-                  <button class="gallery-nav next" onclick="changeImage(1)">
-                    <i class="bi bi-chevron-right"></i>
-                  </button>
                 <?php endif; ?>
               </div>
 
@@ -956,29 +950,24 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     function selectImage(index) {
       currentImageIndex = index;
       updateImage();
+      
+      // Küçük resimlerin active class'ını güncelle
+      document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index % 10);
+      });
     }
 
     function updateImage() {
       const mainImage = document.getElementById('mainImage');
       const counter = document.getElementById('currentImageIndex');
-      const thumbnails = document.querySelectorAll('.gallery-thumbnail');
       
       mainImage.src = images[currentImageIndex];
       counter.textContent = currentImageIndex + 1;
-      
-      thumbnails.forEach((thumb, index) => {
-        thumb.classList.toggle('active', index === currentImageIndex);
-      });
     }
 
     function openFullscreen() {
       const url = images[currentImageIndex];
       const win = window.open(url, '_blank');
-      win.focus();
-    }
-
-    function openVideo(videoUrl) {
-      const win = window.open(videoUrl, '_blank');
       win.focus();
     }
 
@@ -998,7 +987,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     let currentPage = 0;
     const imagesPerPage = 10;
-    const totalImages = <?php echo count($images); ?>;
     const totalPages = Math.ceil(totalImages / imagesPerPage);
 
     function changePage(direction) {
@@ -1022,7 +1010,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         pageImages.forEach((image, index) => {
           const absoluteIndex = startIndex + index;
           const thumbnail = document.createElement('div');
-          thumbnail.className = `gallery-thumbnail ${index === 0 ? 'active' : ''}`;
+          thumbnail.className = `gallery-thumbnail ${absoluteIndex === currentImageIndex ? 'active' : ''}`;
           thumbnail.onclick = () => selectImage(absoluteIndex);
           
           const img = document.createElement('img');
