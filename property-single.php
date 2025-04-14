@@ -12,7 +12,10 @@ $id = (int)$_GET['id'];
 $stmt = $conn->prepare("SELECT *, 
     COALESCE(parking, 'Yok') as parking,
     COALESCE(usage_status, 'Boş') as usage_status,
-    COALESCE(video_call_available, 'Hayır') as video_call_available 
+    COALESCE(video_call_available, 'Hayır') as video_call_available,
+    COALESCE(room_count, '') as room_count,
+    COALESCE(living_room_count, '') as living_room_count,
+    COALESCE(floor, '') as floor
 FROM properties WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
