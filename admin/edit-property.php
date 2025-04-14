@@ -463,7 +463,7 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                     </div>
                                     <div class="col-md-6">
                                         <label for="living_room" class="form-label">Salon Sayısı</label>
-                                        <input type="number" class="form-control" id="living_room" name="living_room" min="0" value="<?php echo htmlspecialchars($property['living_room']); ?>">
+                                        <input type="number" class="form-control" id="living_room" name="living_room" min="0" value="<?php echo isset($property['living_room']) ? htmlspecialchars($property['living_room']) : ''; ?>">
                                     </div>
                                 </div>
 
