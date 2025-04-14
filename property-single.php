@@ -27,7 +27,9 @@ try {
         COALESCE(p.parking, 'Yok') as parking,
         COALESCE(p.usage_status, 'Boş') as usage_status,
         COALESCE(p.video_call_available, 'Hayır') as video_call_available,
-        COALESCE(p.floor, '') as floor
+        COALESCE(p.floor, '') as floor,
+        COALESCE(p.room_count, '') as room_count,
+        COALESCE(p.living_room_count, '') as living_room_count
     FROM properties p WHERE p.id = ?");
     
     if (!$stmt) {
