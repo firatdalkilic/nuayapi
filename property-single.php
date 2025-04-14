@@ -826,7 +826,7 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-calendar3"></i>
                                 <span>Bina Yaşı:</span>
-                                <strong><?php echo htmlspecialchars($property['building_age']); ?></strong>
+                                <strong><?php echo !empty($property['building_age']) ? htmlspecialchars($property['building_age']) : '-'; ?></strong>
                             </div>
                         </div>
                         <div class="col-md-6">
