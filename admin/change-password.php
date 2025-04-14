@@ -53,6 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = $result->fetch_assoc();
         $stored_password = $row['password'];
 
+        // Debug için şifre bilgilerini yazdır
+        error_log("Current Password: " . $current_password);
+        error_log("Stored Hash: " . $stored_password);
+        error_log("Verification Result: " . (password_verify($current_password, $stored_password) ? "true" : "false"));
+
         if (!password_verify($current_password, $stored_password)) {
             throw new Exception("Mevcut şifre yanlış.");
         }
@@ -135,8 +140,6 @@ if (isset($_SESSION['success_message'])) {
     <a href="dashboard.php" class="back-button">
         <i class="bi bi-arrow-left"></i>
     </a>
-
-    <?php include 'navbar.php'; ?>
 
     <div class="container mt-5">
         <div class="row justify-content-center">
