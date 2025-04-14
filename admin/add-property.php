@@ -62,6 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $parking = trim($_POST['parking']);
     $usage_status = trim($_POST['usage_status']);
     $video_call_available = trim($_POST['video_call_available']);
+    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
@@ -75,16 +76,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, beds, bathroom_count, balcony,
         parking, site, floor_location, total_floors, gross_area, living_room_count,
-        building_age
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        building_age, eligible_for_credit
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdsisssssidis", 
+        $stmt->bind_param("ssdssssdsisssssidiss", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
             $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
-            $building_age
+            $building_age, $eligible_for_credit
         );
         
         if ($stmt->execute()) {
@@ -443,6 +444,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <label for="site_status" class="form-label">Site İçerisinde</label>
                                     <select class="form-select" id="site_status" name="site_status">
                                         <option value="">Seçiniz</option>
+                                        <option value="Evet">Evet</option>
+                                        <option value="Hayır">Hayır</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="eligible_for_credit" class="form-label">Krediye Uygun</label>
+                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
                                         <option value="Evet">Evet</option>
                                         <option value="Hayır">Hayır</option>
                                     </select>
