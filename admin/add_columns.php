@@ -11,8 +11,8 @@ $alterQueries = [
     "ALTER TABLE properties ADD COLUMN IF NOT EXISTS height_limit VARCHAR(255) DEFAULT NULL",
     "ALTER TABLE properties ADD COLUMN IF NOT EXISTS deed_status VARCHAR(255) DEFAULT NULL",
     "ALTER TABLE properties ADD COLUMN IF NOT EXISTS eligible_for_credit VARCHAR(255) DEFAULT 'Hayır'",
-    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS usage_status VARCHAR(255) DEFAULT NULL",
-    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_call_available VARCHAR(255) DEFAULT 'Hayır'"
+    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS usage_status ENUM('Boş', 'Kiracılı', 'Mülk Sahibi') DEFAULT 'Boş'",
+    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_call_available ENUM('Evet', 'Hayır') DEFAULT 'Hayır'"
 ];
 
 $success = true;
