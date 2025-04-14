@@ -826,7 +826,26 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-calendar3"></i>
                                 <span>Bina Yaşı:</span>
-                                <strong><?php echo !empty($property['building_age']) ? htmlspecialchars($property['building_age']) : '-'; ?></strong>
+                                <strong><?php 
+                                $building_age = $property['building_age'];
+                                if ($building_age !== null && $building_age !== '') {
+                                    if ($building_age === '0' || $building_age === 0) {
+                                        echo '0 (Yeni)';
+                                    } elseif ($building_age == '11' || ($building_age >= 11 && $building_age <= 15)) {
+                                        echo '11-15';
+                                    } elseif ($building_age == '16' || ($building_age >= 16 && $building_age <= 20)) {
+                                        echo '16-20';
+                                    } elseif ($building_age == '21' || ($building_age >= 21 && $building_age <= 25)) {
+                                        echo '21-25';
+                                    } elseif ($building_age == '26' || $building_age >= 26) {
+                                        echo '26+';
+                                    } else {
+                                        echo htmlspecialchars($building_age);
+                                    }
+                                } else {
+                                    echo '-';
+                                }
+                                ?></strong>
                             </div>
                         </div>
                         <div class="col-md-6">
