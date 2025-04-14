@@ -2,17 +2,26 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once 'admin/config.php';
-
-// URL'den id parametresini al
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if ($id <= 0) {
-    header('Location: index.php');
-    exit;
-}
-
 try {
+    require_once 'admin/config.php';
+    
+    if (!isset($conn) || !$conn) {
+        throw new Exception("Veritabanı bağlantısı kurulamadı.");
+    }
+
+    // URL'den id parametresini al
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+    if ($id <= 0) {
+        throw new Exception("Geçersiz ilan ID'si");
+    }
+
+    // Test connection and basic query
+    $test_query = "SELECT 1";
+    if (!$conn->query($test_query)) {
+        throw new Exception("Veritabanı bağlantı testi başarısız: " . $conn->error);
+    }
+
     // İlan bilgilerini getir
     $stmt = $conn->prepare("SELECT p.*, 
         COALESCE(p.parking, 'Yok') as parking,
@@ -1239,7 +1248,21 @@ try {
     }
 
     // Initialize pagination
-    goToPage(0);
+    document.addEventListener('DOMContentLoaded', function() {
+      // Create pagination dots
+      const paginationContainer = document.querySelector('.gallery-pagination');
+      if (paginationContainer) {
+        for (let i = 0; i < totalPages; i++) {
+          const dot = document.createElement('span');
+          dot.className = `gallery-pagination-dot ${i === 0 ? 'active' : ''}`;
+          dot.onclick = () => goToPage(i);
+          paginationContainer.appendChild(dot);
+        }
+      }
+      
+      // Initialize first page
+      goToPage(0);
+    });
   </script>
 
 </body>
