@@ -1,5 +1,11 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'admin/config.php';
+
+// Debug için bağlantı bilgilerini kontrol et
+error_log("Database Connection Info - Host: " . $servername . ", User: " . $username . ", DB: " . $dbname);
 
 // Sayfalama için değişkenler
 $sayfa = isset($_GET['sayfa']) ? (int)$_GET['sayfa'] : 1;
