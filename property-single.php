@@ -785,7 +785,9 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                 <i class="bi bi-door-open"></i>
                                 <span>Oda + Salon:</span>
                                 <strong><?php 
-                                    echo htmlspecialchars($property['room_count']);
+                                    if (!empty($property['room_count'])) {
+                                        echo htmlspecialchars($property['room_count']);
+                                    }
                                     if (!empty($property['living_room_count'])) {
                                         echo ' + ' . htmlspecialchars($property['living_room_count']);
                                     }
@@ -808,7 +810,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                 <i class="bi bi-layers"></i>
                                 <span>Bulunduğu Kat:</span>
                                 <strong><?php 
-                                    $floor = strtolower($property['floor']);
+                                    $floor = strtolower(trim($property['floor']));
                                     if ($floor === '0' || $floor === 'zemin') {
                                         echo 'Zemin';
                                     } elseif ($floor === '-1' || $floor === 'bodrum') {
