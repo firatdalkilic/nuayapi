@@ -41,10 +41,64 @@ if ($result->num_rows == 0) {
     $create_table_query = "CREATE TABLE IF NOT EXISTS properties (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
+        price DECIMAL(15,2),
+        status VARCHAR(50),
+        beds INT,
+        location VARCHAR(255),
+        neighborhood VARCHAR(255),
         description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
-    $conn->query($create_table_query);
+        property_type VARCHAR(50),
+        gross_area DECIMAL(10,2),
+        net_area DECIMAL(10,2),
+        floor_location VARCHAR(50),
+        total_floors INT,
+        heating VARCHAR(100),
+        bathroom_count INT,
+        balcony VARCHAR(50),
+        furnished VARCHAR(50),
+        site_status VARCHAR(50),
+        site_name VARCHAR(255),
+        eligible_for_credit VARCHAR(50),
+        building_age VARCHAR(50),
+        living_room INT,
+        parking VARCHAR(50),
+        usage_status VARCHAR(50),
+        video_call_available VARCHAR(50),
+        video_file VARCHAR(255),
+        zoning_status VARCHAR(100),
+        block_no VARCHAR(50),
+        parcel_no VARCHAR(50),
+        sheet_no VARCHAR(50),
+        floor_area_ratio VARCHAR(50),
+        height_limit VARCHAR(50),
+        deed_status VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    
+    if (!$conn->query($create_table_query)) {
+        error_log("Table creation error: " . $conn->error);
+        die("Tablo oluşturma hatası: " . $conn->error);
+    }
+}
+
+// Property Images tablosunu kontrol et ve oluştur
+$test_query = "SHOW TABLES LIKE 'property_images'";
+$result = $conn->query($test_query);
+if ($result->num_rows == 0) {
+    $create_images_table = "CREATE TABLE IF NOT EXISTS property_images (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        property_id INT NOT NULL,
+        image_name VARCHAR(255) NOT NULL,
+        display_order INT DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    
+    if (!$conn->query($create_images_table)) {
+        error_log("Images table creation error: " . $conn->error);
+        die("Resim tablosu oluşturma hatası: " . $conn->error);
+    }
 }
 
 // Oturum kontrolü için fonksiyon
