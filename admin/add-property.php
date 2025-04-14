@@ -79,17 +79,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         property_type, gross_area, net_area, floor_location, total_floors,
         heating, bathroom_count, balcony, furnished, site_status,
         eligible_for_credit, building_age, living_room,
-        parking, usage_status, video_call_available
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        parking, usage_status, video_call_available, floor
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdsissssddsisissssissss", 
+        $stmt->bind_param("sdsissssddsisissssisssss", 
             $title, $price, $status, $beds, $location, $neighborhood, 
             $description, $property_type, $gross_area, $net_area, $floor_location, 
             $total_floors, $heating, $bathroom_count, $balcony, $furnished, 
             $site_status, $eligible_for_credit, $building_age, $living_room,
-            $parking, $usage_status, $video_call_available
+            $parking, $usage_status, $video_call_available, $floor_location
         );
         
         if ($stmt->execute()) {
