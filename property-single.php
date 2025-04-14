@@ -503,6 +503,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       font-size: 20px;
       transition: all 0.3s ease;
       background: rgba(255, 255, 255, 0.1);
+      z-index: 1000;
     }
 
     .modal-nav:hover {
@@ -1109,19 +1110,21 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       syncPageWithImage();
     }
 
-    // ESC tuşu ile modalı kapatma
+    // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         closeModal();
       } else if (e.key === 'ArrowLeft') {
         if (document.getElementById('photoModal').style.display === 'block') {
           changeModalImage(-1);
+          e.preventDefault();
         } else {
           changeImage(-1);
         }
       } else if (e.key === 'ArrowRight') {
         if (document.getElementById('photoModal').style.display === 'block') {
           changeModalImage(1);
+          e.preventDefault();
         } else {
           changeImage(1);
         }
