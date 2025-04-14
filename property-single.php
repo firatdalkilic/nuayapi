@@ -173,20 +173,22 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       margin-bottom: 10px;
       border-radius: 8px;
       overflow: hidden;
-      background-color: #fff;
+      background-color: #f8f9fa;
       border: 1px solid #e5e7eb;
-      height: 500px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      height: 0;
+      padding-bottom: 75%; /* 4:3 oranı için */
       position: relative;
       cursor: pointer;
     }
 
     .gallery-main img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center;
       display: block;
     }
 
@@ -251,6 +253,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       cursor: pointer;
       border: 2px solid transparent;
       transition: all 0.3s ease;
+      background-color: #f8f9fa;
     }
 
     .gallery-thumbnail.active {
@@ -260,7 +263,8 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     .gallery-thumbnail img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center;
       display: block;
     }
 
