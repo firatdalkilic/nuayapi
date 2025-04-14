@@ -256,10 +256,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Mevcut resimleri getir
-$img_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ?");
-$img_stmt->bind_param("i", $id);
-$img_stmt->execute();
-$images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$images_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY COALESCE(display_order, id) ASC");
+if (!$images_stmt) {
+    throw new Exception("Fotoğraf sorgusu hazırlanamadı: " . $conn->error);
+}
+$images_stmt->bind_param("i", $id);
+$images_stmt->execute();
+$images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
