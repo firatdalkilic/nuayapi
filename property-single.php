@@ -166,26 +166,130 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     .property-gallery {
       margin-bottom: 2rem;
+      position: relative;
     }
 
     .gallery-main {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       border-radius: 8px;
       overflow: hidden;
       background-color: #fff;
       border: 1px solid #e5e7eb;
-      height: 400px;
+      height: 500px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
+      cursor: pointer;
     }
 
     .gallery-main img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
+    }
+
+    .gallery-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    .gallery-actions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .gallery-btn {
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-btn:hover {
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .gallery-thumbnails {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .gallery-thumbnail {
+      height: 100px;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-thumbnail.active {
+      border-color: #2563eb;
+    }
+
+    .gallery-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-nav:hover {
+      background: white;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .gallery-nav.prev {
+      left: 20px;
+    }
+
+    .gallery-nav.next {
+      right: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-thumbnails {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
     .property-id {
@@ -248,26 +352,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     .btn-whatsapp:hover {
       background-color: #128c7e;
       color: white;
-    }
-
-    @media (max-width: 768px) {
-      .gallery-main {
-        height: 300px;
-      }
-
-      .property-details {
-        padding: 1rem 0;
-      }
-
-      .detail-item {
-        margin-bottom: 0.5rem;
-        padding: 0.5rem;
-      }
-
-      .row.g-2 > [class*="col-"] {
-        flex: 0 0 100%;
-        max-width: 100%;
-      }
     }
 
     .back-button {
@@ -357,55 +441,40 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
           <!-- Sol Kolon - Fotoğraf Galerisi -->
           <div class="col-lg-5">
             <div class="property-gallery">
-              <div class="gallery-main mb-3">
+              <div class="gallery-main">
                 <?php if (!empty($images)): ?>
-                  <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" 
-                      alt="Ana Görsel" 
-                      id="mainImage"
-                      class="img-fluid"
-                      style="width: 100%; height: 300px; object-fit: contain;">
-                <?php else: ?>
-                  <img src="assets/img/no-image.jpg" 
-                      alt="<?php echo htmlspecialchars($property['title']); ?>"
-                      class="img-fluid">
+                  <img src="<?php echo htmlspecialchars($images[0]['image_path']); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
+                  <div class="gallery-counter">
+                    <span id="currentImageIndex">1</span>/<span id="totalImages"><?php echo count($images); ?></span>
+                  </div>
+                  <div class="gallery-actions">
+                    <button class="gallery-btn" onclick="openFullscreen()">
+                      <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
+                    </button>
+                    <?php if (!empty($property['video_url'])): ?>
+                    <button class="gallery-btn" onclick="openVideo('<?php echo htmlspecialchars($property['video_url']); ?>')">
+                      <i class="bi bi-play-circle"></i> Video
+                    </button>
+                    <?php endif; ?>
+                  </div>
+                  <button class="gallery-nav prev" onclick="changeImage(-1)">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <button class="gallery-nav next" onclick="changeImage(1)">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
                 <?php endif; ?>
               </div>
 
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="photo-counter">
-                  <span id="currentPhotoIndex">1</span>/<?php echo count($images); ?> Fotoğraf
-                </div>
-                <div class="gallery-actions">
-                  <button class="btn btn-sm btn-outline-primary me-2" onclick="openPhotoModal()">
-                    <i class="bi bi-search"></i> Büyük Fotoğraf
-                  </button>
-                  <?php if (!empty($property['video_file'])): ?>
-                  <button class="btn btn-sm btn-outline-primary" onclick="openVideoModal()">
-                    <i class="bi bi-play-circle"></i> Video
-                  </button>
-                  <?php endif; ?>
-                </div>
-              </div>
-
-              <?php if (count($images) > 1): ?>
-              <div class="gallery-thumbs position-relative">
-                <button class="gallery-nav prev" onclick="prevPage()">❮</button>
-                <div class="gallery-thumbs-container">
-                  <div class="gallery-thumbs-wrapper" style="display: flex; transition: transform 0.3s ease;">
-                    <?php foreach ($images as $index => $image): ?>
-                    <div class="gallery-thumb <?php echo $index === 0 ? 'active' : ''; ?>" 
-                         onclick="showImage(<?php echo $index; ?>)"
-                         data-index="<?php echo $index; ?>">
-                      <img src="uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
-                           alt="Thumbnail <?php echo $index + 1; ?>"
-                           class="img-fluid">
-                    </div>
-                    <?php endforeach; ?>
+              <div class="gallery-thumbnails">
+                <?php foreach ($images as $index => $image): ?>
+                  <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
+                       onclick="selectImage(<?php echo $index; ?>)">
+                    <img src="<?php echo htmlspecialchars($image['image_path']); ?>" 
+                         alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
                   </div>
-                </div>
-                <button class="gallery-nav next" onclick="nextPage()">❯</button>
+                <?php endforeach; ?>
               </div>
-              <?php endif; ?>
             </div>
           </div>
 
@@ -788,108 +857,57 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
   <script src="assets/js/main.js"></script>
 
   <script>
-    let currentPage = 0;
-    const thumbsPerPage = 6;
-    const totalImages = <?php echo count($images); ?>;
-    const totalPages = Math.ceil(totalImages / thumbsPerPage);
+    let currentImageIndex = 0;
+    const images = <?php echo json_encode(array_column($images, 'image_path')); ?>;
+    const totalImages = images.length;
 
-    function showImage(index) {
-      // Ana görseli güncelle
-      document.getElementById('mainImage').src = document.querySelector(`.gallery-thumb[data-index="${index}"] img`).src;
-      
-      // Aktif thumb'ı güncelle
-      document.querySelectorAll('.gallery-thumb').forEach(thumb => thumb.classList.remove('active'));
-      document.querySelector(`.gallery-thumb[data-index="${index}"]`).classList.add('active');
-      
-      // Sayacı güncelle
-      document.getElementById('currentPhotoIndex').textContent = index + 1;
+    function changeImage(direction) {
+      currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
+      updateImage();
     }
 
-    function updateGalleryPosition() {
-      const wrapper = document.querySelector('.gallery-thumbs-wrapper');
-      const thumbWidth = 110; // thumb genişliği + margin
-      wrapper.style.transform = `translateX(-${currentPage * thumbWidth * thumbsPerPage}px)`;
+    function selectImage(index) {
+      currentImageIndex = index;
+      updateImage();
     }
 
-    function nextPage() {
-      if (currentPage < totalPages - 1) {
-        currentPage++;
-        updateGalleryPosition();
+    function updateImage() {
+      const mainImage = document.getElementById('mainImage');
+      const counter = document.getElementById('currentImageIndex');
+      const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+      
+      mainImage.src = images[currentImageIndex];
+      counter.textContent = currentImageIndex + 1;
+      
+      thumbnails.forEach((thumb, index) => {
+        thumb.classList.toggle('active', index === currentImageIndex);
+      });
+    }
+
+    function openFullscreen() {
+      const url = images[currentImageIndex];
+      const win = window.open(url, '_blank');
+      win.focus();
+    }
+
+    function openVideo(videoUrl) {
+      const win = window.open(videoUrl, '_blank');
+      win.focus();
+    }
+
+    // Klavye ile gezinme
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        changeImage(-1);
+      } else if (e.key === 'ArrowRight') {
+        changeImage(1);
       }
-    }
+    });
 
-    function prevPage() {
-      if (currentPage > 0) {
-        currentPage--;
-        updateGalleryPosition();
-      }
-    }
-
-    // Büyük fotoğraf modalı
-    function openPhotoModal() {
-      const currentSrc = document.getElementById('mainImage').src;
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        cursor: pointer;
-      `;
-      
-      const img = document.createElement('img');
-      img.src = currentSrc;
-      img.style.cssText = `
-        max-width: 90%;
-        max-height: 90vh;
-        object-fit: contain;
-      `;
-      
-      modal.appendChild(img);
-      modal.onclick = () => modal.remove();
-      document.body.appendChild(modal);
-    }
-
-    // Video modalı
-    function openVideoModal() {
-      const videoFile = '<?php echo !empty($property['video_file']) ? "uploads/videos/" . htmlspecialchars($property['video_file']) : ""; ?>';
-      if (!videoFile) return;
-
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        cursor: pointer;
-      `;
-      
-      const video = document.createElement('video');
-      video.src = videoFile;
-      video.controls = true;
-      video.style.cssText = `
-        max-width: 90%;
-        max-height: 90vh;
-      `;
-      
-      modal.appendChild(video);
-      modal.onclick = (e) => {
-        if (e.target === modal) modal.remove();
-      };
-      document.body.appendChild(modal);
-    }
+    // Ana resme tıklayınca sonraki resme geç
+    document.getElementById('mainImage').addEventListener('click', function() {
+      changeImage(1);
+    });
   </script>
 
 </body>
