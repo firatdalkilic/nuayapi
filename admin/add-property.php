@@ -54,12 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $net_area = isset($_POST['net_area']) ? (float)$_POST['net_area'] : 0;
     $floor = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
     $total_floors = isset($_POST['total_floors']) ? (int)$_POST['total_floors'] : 0;
-    $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)$_POST['bathroom_count'] : 0;
     $balcony = isset($_POST['balcony']) ? trim($_POST['balcony']) : 'Yok';
-    $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
     $site_status = isset($_POST['site_status']) ? trim($_POST['site_status']) : 'Hayır';
-    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
     $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
     $living_room = (int)$_POST['living_room'];
     $parking = trim($_POST['parking']);
@@ -75,21 +72,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
-        title, price, status, beds, location, neighborhood, description,
-        property_type, gross_area, net_area, floor, total_floors,
-        heating, bathroom_count, balcony, furnished, site_status,
-        eligible_for_credit, building_age, living_room,
-        parking, usage_status, video_call_available
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        title, description, price, location, neighborhood, property_type,
+        status, net_area, room_count, beds, bathroom_count, balcony,
+        parking, site, floor, total_floors, gross_area, living_room_count
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdsissssddssisissssissss", 
-            $title, $price, $status, $beds, $location, $neighborhood, 
-            $description, $property_type, $gross_area, $net_area, $floor, 
-            $total_floors, $heating, $bathroom_count, $balcony, $furnished, 
-            $site_status, $eligible_for_credit, $building_age, $living_room,
-            $parking, $usage_status, $video_call_available
+        $stmt->bind_param("ssdssssdsisssssidi", 
+            $title, $description, $price, $location, $neighborhood, $property_type,
+            $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
+            $parking, $site_status, $floor, $total_floors, $gross_area, $living_room
         );
         
         if ($stmt->execute()) {
@@ -426,17 +419,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <label for="total_floors" class="form-label">Kat Sayısı</label>
                                     <input type="number" class="form-control" id="total_floors" name="total_floors">
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="heating" class="form-label">Isıtma</label>
-                                    <select class="form-select" id="heating" name="heating" required>
-                                        <option value="">Tümü</option>
-                                        <option value="Kombi (Doğalgaz)">Kombi (Doğalgaz)</option>
-                                        <option value="Merkezi">Merkezi</option>
-                                        <option value="Klima">Klima</option>
-                                        <option value="Yerden Isıtma">Yerden Isıtma</option>
-                                        <option value="Soba">Soba</option>
-                                    </select>
-                                </div>
                             </div>
 
                             <div class="row mb-3">
@@ -452,28 +434,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <option value="Yok">Yok</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="furnished" class="form-label">Eşyalı</label>
-                                    <select class="form-select" id="furnished" name="furnished">
-                                        <option value="">Seçiniz</option>
-                                        <option value="Evet">Evet</option>
-                                        <option value="Hayır">Hayır</option>
-                                    </select>
-                                </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label for="site_status" class="form-label">Site İçerisinde</label>
                                     <select class="form-select" id="site_status" name="site_status">
-                                        <option value="">Seçiniz</option>
-                                        <option value="Evet">Evet</option>
-                                        <option value="Hayır">Hayır</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="eligible_for_credit" class="form-label">Krediye Uygun</label>
-                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
                                         <option value="">Seçiniz</option>
                                         <option value="Evet">Evet</option>
                                         <option value="Hayır">Hayır</option>
