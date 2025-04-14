@@ -582,7 +582,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             <div class="property-gallery">
               <div class="gallery-main">
                 <?php if (!empty($images)): ?>
-                  <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
+                  <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" onclick="changeImage(1)">
                   <div class="gallery-counter">
                     <span id="currentImageIndex">1</span>/<span id="totalImages"><?php echo count($images); ?></span>
                   </div>
@@ -1020,7 +1020,7 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       <button class="modal-close" onclick="closeModal()">
         <i class="bi bi-x-lg"></i>
       </button>
-      <img id="modalImage" class="modal-image" src="" alt="" onclick="changeModalImage(1); event.stopPropagation();">
+      <img id="modalImage" class="modal-image" src="" alt="">
       <a href="#" class="modal-nav modal-prev" onclick="changeModalImage(-1); return false;">
         <i class="bi bi-chevron-left"></i>
       </a>
@@ -1086,7 +1086,6 @@ $images = $img_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
       modalImage.src = images[currentImageIndex];
       modal.style.display = 'block';
       document.body.style.overflow = 'hidden';
-      modalImage.style.cursor = 'pointer';
     }
 
     function closeModal() {
