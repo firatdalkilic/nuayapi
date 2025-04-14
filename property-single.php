@@ -840,7 +840,17 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-arrow-up-square"></i>
                                 <span>Bulunduğu Kat:</span>
-                                <strong><?php echo htmlspecialchars($property['floor']); ?></strong>
+                                <?php 
+                                $floor_options = [
+                                    'Bodrum Kat', 'Yarı Bodrum Kat', 'Zemin Kat', 'Bahçe Katı', 'Yüksek Giriş',
+                                    '1. Kat', '2. Kat', '3. Kat', '4. Kat', '5. Kat', '6. Kat', '7. Kat', '8. Kat',
+                                    '9. Kat', '10. Kat', '11. Kat', '12. Kat ve üzeri', 'Çatı Katı'
+                                ];
+                                $floor = isset($property['floor_location']) && in_array($property['floor_location'], $floor_options) 
+                                    ? $property['floor_location'] 
+                                    : '-';
+                                ?>
+                                <strong><?php echo htmlspecialchars($floor); ?></strong>
                             </div>
                         </div>
                         <?php if (!empty($property['room_count'])): ?>
