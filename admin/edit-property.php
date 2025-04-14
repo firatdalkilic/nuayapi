@@ -560,15 +560,17 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                     <div class="col-md-4">
                                         <label for="furnished" class="form-label">Eşyalı</label>
                                         <select class="form-select" id="furnished" name="furnished">
-                                            <option value="Evet" <?php echo $property['furnished'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
-                                            <option value="Hayır" <?php echo $property['furnished'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
+                                            <option value="">Seçiniz</option>
+                                            <option value="Evet" <?php echo isset($property['furnished']) && $property['furnished'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
+                                            <option value="Hayır" <?php echo isset($property['furnished']) && $property['furnished'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="site_status" class="form-label">Site İçerisinde</label>
                                         <select class="form-select" id="site_status" name="site_status">
-                                            <option value="Evet" <?php echo $property['site_status'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
-                                            <option value="Hayır" <?php echo $property['site_status'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
+                                            <option value="">Seçiniz</option>
+                                            <option value="Evet" <?php echo isset($property['site_status']) && $property['site_status'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
+                                            <option value="Hayır" <?php echo isset($property['site_status']) && $property['site_status'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
                                         </select>
                                     </div>
                                 </div>
