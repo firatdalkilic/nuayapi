@@ -273,14 +273,14 @@ try {
       gap: 5px;
       font-size: 14px;
       transition: all 0.3s ease;
-      color: #2c3e50;
+      color: #2563eb;
       text-decoration: none;
     }
 
     .gallery-btn:hover {
       background: #e9ecef;
       transform: translateY(-2px);
-      color: #2c3e50;
+      color: #1d4ed8;
     }
 
     .gallery-thumbnails-container {
@@ -579,6 +579,44 @@ try {
         font-size: 18px;
       }
     }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      display: none;
+    }
+
+    .video-fallback {
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .modal-video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-video.loaded {
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -644,8 +682,8 @@ try {
                 <a href="#" class="gallery-btn" onclick="openFullscreen(); return false;">
                   <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
                 </a>
-                <?php if (!empty($property['video_url'])): ?>
-                <a href="<?php echo htmlspecialchars($property['video_url']); ?>" class="gallery-btn" target="_blank">
+                <?php if (!empty($property['video_file'])): ?>
+                <a href="#" class="gallery-btn" onclick="openVideoModal(); return false;">
                   <i class="bi bi-play-circle"></i> Video
                 </a>
                 <?php endif; ?>
@@ -1109,6 +1147,26 @@ try {
     </div>
   </div>
 
+  <!-- Video Modal -->
+  <div id="videoModal" class="photo-modal" onclick="closeVideoModalFromOverlay(event)">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeVideoModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="video-container">
+        <div id="videoLoader" class="video-loader">
+          <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Yükleniyor...</span>
+          </div>
+        </div>
+        <video id="propertyVideo" class="modal-video" controls controlsList="nodownload" playsinline>
+          <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
+          <p class="video-fallback">Tarayıcınız video oynatmayı desteklemiyor.</p>
+        </video>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentImageIndex = 0;
     const images = <?php echo json_encode(array_map(function($img) { 
@@ -1256,6 +1314,130 @@ try {
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize first page
       goToPage(0);
+    });
+
+    function openVideoModal() {
+      const modal = document.getElementById('videoModal');
+      const video = document.getElementById('propertyVideo');
+      const loader = document.getElementById('videoLoader');
+      
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+      
+      // Show loader
+      loader.style.display = 'block';
+      
+      // Video yükleme olaylarını dinle
+      video.addEventListener('loadeddata', handleVideoLoad);
+      video.addEventListener('error', handleVideoError);
+      
+      // Video yüklenene kadar bekle
+      if (video.readyState >= 3) {
+        handleVideoLoad();
+      }
+      
+      video.play().catch(function(error) {
+        console.log("Video otomatik oynatma engellendi:", error);
+      });
+    }
+
+    function handleVideoLoad() {
+      const video = document.getElementById('propertyVideo');
+      const loader = document.getElementById('videoLoader');
+      
+      // Loader'ı gizle
+      loader.style.display = 'none';
+      
+      // Videoyu göster
+      video.classList.add('loaded');
+    }
+
+    function handleVideoError() {
+      const loader = document.getElementById('videoLoader');
+      const video = document.getElementById('propertyVideo');
+      
+      // Loader'ı gizle
+      loader.style.display = 'none';
+      
+      // Hata mesajını göster
+      video.innerHTML = '<p class="video-fallback">Video yüklenirken bir hata oluştu.</p>';
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('videoModal');
+      const video = document.getElementById('propertyVideo');
+      const loader = document.getElementById('videoLoader');
+      
+      // Event listener'ları temizle
+      video.removeEventListener('loadeddata', handleVideoLoad);
+      video.removeEventListener('error', handleVideoError);
+      
+      // Videoyu sıfırla
+      video.pause();
+      video.currentTime = 0;
+      video.classList.remove('loaded');
+      
+      // Modal'ı kapat
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      loader.style.display = 'none';
+    }
+
+    function closeVideoModalFromOverlay(event) {
+      if (event.target.className === 'photo-modal') {
+        closeVideoModal();
+      }
+    }
+
+    // ESC tuşu ile video modalını kapatma
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('videoModal').style.display === 'block') {
+          closeVideoModal();
+        }
+      }
+    });
+
+    // Video kontrollerini klavye ile yönetme
+    document.addEventListener('keydown', function(e) {
+      const video = document.getElementById('propertyVideo');
+      const videoModal = document.getElementById('videoModal');
+      
+      if (videoModal.style.display === 'block') {
+        switch(e.key) {
+          case 'Escape':
+            closeVideoModal();
+            break;
+          case ' ':
+            // Boşluk tuşu ile oynat/duraklat
+            e.preventDefault();
+            if (video.paused) {
+              video.play();
+            } else {
+              video.pause();
+            }
+            break;
+          case 'ArrowLeft':
+            // 5 saniye geri
+            e.preventDefault();
+            video.currentTime = Math.max(0, video.currentTime - 5);
+            break;
+          case 'ArrowRight':
+            // 5 saniye ileri
+            e.preventDefault();
+            video.currentTime = Math.min(video.duration, video.currentTime + 5);
+            break;
+        }
+      }
+    });
+
+    // Video yükleme durumunu izle
+    document.getElementById('propertyVideo').addEventListener('waiting', function() {
+      document.getElementById('videoLoader').style.display = 'block';
+    });
+
+    document.getElementById('propertyVideo').addEventListener('playing', function() {
+      document.getElementById('videoLoader').style.display = 'none';
     });
   </script>
 
