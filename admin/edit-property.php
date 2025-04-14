@@ -475,34 +475,22 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                     <div class="col-md-6">
                                         <label for="building_age" class="form-label">Bina Yaşı</label>
                                         <select class="form-select" id="building_age" name="building_age">
-                                            <?php
-                                            $building_age_options = [
-                                                '0' => '0 (Yeni)',
-                                                '1' => '1',
-                                                '2' => '2',
-                                                '3' => '3',
-                                                '4' => '4',
-                                                '5' => '5',
-                                                '6' => '6',
-                                                '7' => '7',
-                                                '8' => '8',
-                                                '9' => '9',
-                                                '10' => '10',
-                                                '11-15' => '11-15',
-                                                '16-20' => '16-20',
-                                                '21 ve üzeri' => '21 ve üzeri'
-                                            ];
-                                            foreach ($building_age_options as $value => $label) {
-                                                $selected = '';
-                                                if (isset($property['building_age']) && $property['building_age'] !== null) {
-                                                    $current_value = (string)$property['building_age'];
-                                                    if ($value === $current_value) {
-                                                        $selected = 'selected';
-                                                    }
-                                                }
-                                                echo "<option value=\"$value\" $selected>$label</option>";
-                                            }
-                                            ?>
+                                            <option value="">Seçiniz</option>
+                                            <option value="0" <?php echo $property['building_age'] == '0' ? 'selected' : ''; ?>>0 (Yeni)</option>
+                                            <option value="1" <?php echo $property['building_age'] == '1' ? 'selected' : ''; ?>>1</option>
+                                            <option value="2" <?php echo $property['building_age'] == '2' ? 'selected' : ''; ?>>2</option>
+                                            <option value="3" <?php echo $property['building_age'] == '3' ? 'selected' : ''; ?>>3</option>
+                                            <option value="4" <?php echo $property['building_age'] == '4' ? 'selected' : ''; ?>>4</option>
+                                            <option value="5" <?php echo $property['building_age'] == '5' ? 'selected' : ''; ?>>5</option>
+                                            <option value="6" <?php echo $property['building_age'] == '6' ? 'selected' : ''; ?>>6</option>
+                                            <option value="7" <?php echo $property['building_age'] == '7' ? 'selected' : ''; ?>>7</option>
+                                            <option value="8" <?php echo $property['building_age'] == '8' ? 'selected' : ''; ?>>8</option>
+                                            <option value="9" <?php echo $property['building_age'] == '9' ? 'selected' : ''; ?>>9</option>
+                                            <option value="10" <?php echo $property['building_age'] == '10' ? 'selected' : ''; ?>>10</option>
+                                            <option value="11-15" <?php echo $property['building_age'] == '11-15' ? 'selected' : ''; ?>>11-15</option>
+                                            <option value="16-20" <?php echo $property['building_age'] == '16-20' ? 'selected' : ''; ?>>16-20</option>
+                                            <option value="21-25" <?php echo $property['building_age'] == '21-25' ? 'selected' : ''; ?>>21-25</option>
+                                            <option value="26+" <?php echo $property['building_age'] == '26+' ? 'selected' : ''; ?>>26+</option>
                                         </select>
                                     </div>
                                 </div>
