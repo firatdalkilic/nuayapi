@@ -407,6 +407,10 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                     <label for="gross_area" class="form-label">m² (Brüt)</label>
                                     <input type="number" class="form-control" id="gross_area" name="gross_area" value="<?php echo htmlspecialchars($property['gross_area']); ?>">
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="net_area" class="form-label">m² (Net)</label>
+                                    <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($property['net_area']); ?>">
+                                </div>
                             </div>
 
                             <!-- Arsa özellikleri -->
