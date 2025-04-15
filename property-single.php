@@ -794,92 +794,15 @@ try {
 
             <div class="property-details">
                 <?php if ($property['property_type'] == 'Arsa'): ?>
-                    <!-- Arsa özellikleri -->
-                    <div class="row g-2">
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-building"></i>
-                                <span>Durum:</span>
-                                <?php echo htmlspecialchars($property['status']) . ' ' . htmlspecialchars($property['property_type']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-clipboard-check"></i>
-                                <span>İmar Durumu:</span>
-                                <?php echo htmlspecialchars($property['zoning_status']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-rulers"></i>
-                                <span>m²:</span>
-                                <?php echo number_format($property['net_area'], 0, ',', '.'); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-cash"></i>
-                                <span>m² Fiyatı:</span>
-                                <?php 
-                                    if ($property['net_area'] > 0) {
-                                        $price_per_sqm = $property['price'] / $property['net_area'];
-                                        echo number_format($price_per_sqm, 2, ',', '.') . ' ₺/m²';
-                                    } else {
-                                        echo "Hesaplanamadı";
-                                    }
-                                ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Ada No:</span>
-                                <?php echo htmlspecialchars($property['block_no']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-geo"></i>
-                                <span>Parsel No:</span>
-                                <?php echo htmlspecialchars($property['parcel_no']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-map"></i>
-                                <span>Pafta No:</span>
-                                <?php echo htmlspecialchars($property['sheet_no']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-arrows-angle-expand"></i>
-                                <span>Kaks (Emsal):</span>
-                                <?php echo htmlspecialchars($property['floor_area_ratio']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-building-up"></i>
-                                <span>Gabari:</span>
-                                <?php echo htmlspecialchars($property['height_limit']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-credit-card"></i>
-                                <span>Krediye Uygun:</span>
-                                <?php echo htmlspecialchars($property['eligible_for_credit']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-file-earmark-text"></i>
-                                <span>Tapu Durumu:</span>
-                                <?php echo htmlspecialchars($property['deed_status']); ?>
-                            </div>
-                        </div>
+                    <div class="detail-item">
+                        <i class="bi bi-building"></i>
+                        <span>Durum:</span>
+                        <?php echo htmlspecialchars($property['status']); ?>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-rulers"></i>
+                        <span>Alan:</span>
+                        <?php echo number_format($property['net_area'], 0, ',', '.'); ?> m²
                     </div>
                 <?php else: ?>
                     <!-- Konut özellikleri (daire, villa, müstakil ev) -->
