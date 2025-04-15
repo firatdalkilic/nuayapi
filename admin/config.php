@@ -5,6 +5,10 @@ ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 ini_set('error_log', dirname(__FILE__) . '/error.log');
 
+// Admin kullanıcı bilgileri
+define('ADMIN_USERNAME', 'admin');
+define('ADMIN_PASSWORD', 'Nua2024!');
+
 $jawsdb_url = getenv("JAWSDB_URL");
 
 if ($jawsdb_url) {
