@@ -112,16 +112,26 @@ if ($result->num_rows == 0) {
 }
 
 // Mevcut properties tablosunda yeni alanları kontrol et ve ekle
-$alter_queries = [
-    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS sahibinden_link VARCHAR(255)",
-    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS emlakjet_link VARCHAR(255)",
-    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS facebook_link VARCHAR(255)"
+$check_columns_query = "SHOW COLUMNS FROM properties";
+$result = $conn->query($check_columns_query);
+$existing_columns = [];
+while($row = $result->fetch_assoc()) {
+    $existing_columns[] = $row['Field'];
+}
+
+$columns_to_add = [
+    'sahibinden_link' => 'VARCHAR(255)',
+    'emlakjet_link' => 'VARCHAR(255)',
+    'facebook_link' => 'VARCHAR(255)'
 ];
 
-foreach ($alter_queries as $query) {
-    if (!$conn->query($query)) {
-        error_log("Alter table error: " . $conn->error);
-        die("Tablo güncelleme hatası: " . $conn->error);
+foreach ($columns_to_add as $column => $type) {
+    if (!in_array($column, $existing_columns)) {
+        $alter_query = "ALTER TABLE properties ADD COLUMN $column $type";
+        if (!$conn->query($alter_query)) {
+            error_log("Alter table error for column $column: " . $conn->error);
+            die("Tablo güncelleme hatası: " . $conn->error);
+        }
     }
 }
 ?> 
