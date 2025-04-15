@@ -2,44 +2,35 @@
 require_once 'config.php';
 
 try {
-    // Tüm sütunları ve tiplerini tanımla
-    $columns = [
-        'sheet_no' => ['type' => 'VARCHAR(50)', 'after' => 'parcel_no'],
-        'price_per_sqm' => ['type' => 'DECIMAL(12,2)', 'after' => 'net_area'],
-        'floor_area_ratio' => ['type' => 'VARCHAR(50)', 'after' => 'net_area'],
-        'height_limit' => ['type' => 'VARCHAR(50)', 'after' => 'floor_area_ratio'],
-        'eligible_for_credit' => ['type' => 'VARCHAR(10)', 'after' => 'height_limit'],
-        'deed_status' => ['type' => 'VARCHAR(50)', 'after' => 'eligible_for_credit'],
-        'neighborhood' => ['type' => 'VARCHAR(100)', 'after' => 'deed_status'],
-        'zoning_status' => ['type' => 'VARCHAR(50)', 'after' => 'net_area'],
-        'block_no' => ['type' => 'VARCHAR(50)', 'after' => 'zoning_status'],
-        'parcel_no' => ['type' => 'VARCHAR(50)', 'after' => 'block_no']
-    ];
+    // Önce agent_id sütununu ekleyelim (eğer yoksa)
+    $sql = "ALTER TABLE properties ADD COLUMN IF NOT EXISTS agent_id INT";
+    $pdo->exec($sql);
+    echo "agent_id sütunu başarıyla eklendi veya zaten mevcut.<br>";
 
-    // Her sütunu kontrol et ve gerekirse ekle
-    foreach ($columns as $column_name => $config) {
-        $result = $conn->query("SHOW COLUMNS FROM properties LIKE '$column_name'");
-        if ($result->num_rows == 0) {
-            // Sütun yok, ekle
-            $sql = "ALTER TABLE properties ADD COLUMN $column_name {$config['type']} AFTER {$config['after']}";
-            if ($conn->query($sql)) {
-                echo "$column_name sütunu başarıyla eklendi.<br>";
-            } else {
-                echo "Hata: $column_name sütunu eklenirken bir hata oluştu - " . $conn->error . "<br>";
-            }
-        } else {
-            // Sütun var, tipini güncelle
-            $sql = "ALTER TABLE properties MODIFY COLUMN $column_name {$config['type']}";
-            if ($conn->query($sql)) {
-                echo "$column_name sütunu başarıyla güncellendi.<br>";
-            } else {
-                echo "Hata: $column_name sütunu güncellenirken bir hata oluştu - " . $conn->error . "<br>";
-            }
-        }
-    }
+    // Agents tablosunu yeniden oluşturalım
+    $sql = "DROP TABLE IF EXISTS agents";
+    $pdo->exec($sql);
+    echo "Eski agents tablosu silindi.<br>";
 
-    echo "<br>Tüm sütun güncellemeleri tamamlandı.";
-} catch (Exception $e) {
-    echo "Hata: " . $e->getMessage();
+    // Yeni agents tablosunu oluşturalım
+    $sql = "CREATE TABLE agents (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        phone VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+    $pdo->exec($sql);
+    echo "Yeni agents tablosu başarıyla oluşturuldu.<br>";
+
+    // Properties tablosuna foreign key ekleyelim
+    $sql = "ALTER TABLE properties ADD FOREIGN KEY (agent_id) REFERENCES agents(id)";
+    $pdo->exec($sql);
+    echo "Foreign key başarıyla eklendi.<br>";
+
+    echo "Tüm işlemler başarıyla tamamlandı!";
+} catch(PDOException $e) {
+    echo "Hata oluştu: " . $e->getMessage();
 }
 ?> 
