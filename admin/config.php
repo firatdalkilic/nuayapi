@@ -72,6 +72,7 @@ if ($result->num_rows == 0) {
         floor_area_ratio VARCHAR(50),
         height_limit VARCHAR(50),
         deed_status VARCHAR(100),
+        price_per_sqm DECIMAL(12,2),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
