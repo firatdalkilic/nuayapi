@@ -25,7 +25,11 @@ if (!$property) {
     exit;
 }
 
+// Debug için POST verilerini kontrol et
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    error_log("POST request received");
+    error_log("POST data: " . print_r($_POST, true));
+
     // Form verilerini al
     $title = $_POST['title'];
     $price = str_replace(['.', ','], '', $_POST['price']);
@@ -399,7 +403,7 @@ $required_fields = [
                             </div>
                         <?php endif; ?>
 
-                        <form method="POST" action="" enctype="multipart/form-data" class="property-form">
+                        <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?id=' . $id; ?>" enctype="multipart/form-data" class="property-form">
                             <div class="mb-3">
                                 <label for="title" class="form-label">İlan Başlığı</label>
                                 <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($property['title']); ?>" required>
@@ -763,6 +767,23 @@ $required_fields = [
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Form submit olayını dinle
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Form submit event triggered');
+            
+            let priceInput = document.getElementById('price');
+            // Fiyat değerini temizle
+            let cleanPrice = priceInput.value.replace(/\./g, '');
+            console.log('Cleaned price:', cleanPrice);
+            priceInput.value = cleanPrice;
+            
+            // Form verilerini kontrol et
+            let formData = new FormData(this);
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+        });
+
         // Fiyat formatla
         document.getElementById('price').addEventListener('input', function(e) {
             // Sadece sayıları al
@@ -775,12 +796,6 @@ $required_fields = [
             
             // Input değerini güncelle
             this.value = value;
-        });
-
-        // Form gönderilmeden önce fiyatı temizle
-        document.querySelector('form').addEventListener('submit', function(e) {
-            let priceInput = document.getElementById('price');
-            priceInput.value = priceInput.value.replace(/\D/g, '');
         });
 
         // Emlak tipine göre form alanlarını göster/gizle
