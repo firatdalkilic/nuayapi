@@ -742,6 +742,12 @@ if (!file_exists('uploads')) {
                         }
                         ?>
                       </div>
+                      <div class="property-features d-flex justify-content-start gap-4 mt-1">
+                        <div class="feature">
+                          <i class="fas fa-calendar-alt me-1"></i>
+                          <span><?php echo date('d-m-Y', strtotime($ilan['created_at'])); ?></span>
+                        </div>
+                      </div>
                       <div class="property-details mt-2">
                         <?php if ($ilan['property_type'] == 'Arsa'): ?>
                             <div class="detail-item me-4">
@@ -779,12 +785,6 @@ if (!file_exists('uploads')) {
                             </div>
                             <?php endif; ?>
                         <?php endif; ?>
-                      </div>
-                      <div class="property-features d-flex justify-content-start gap-4 mt-auto">
-                        <div class="feature">
-                          <i class="fas fa-calendar-alt me-1"></i>
-                          <span><?php echo date('d-m-Y', strtotime($ilan['created_at'])); ?></span>
-                        </div>
                       </div>
                     </div>
                   </div>
