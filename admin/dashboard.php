@@ -83,6 +83,10 @@ $result = $conn->query($sql);
                     <a href="add-land.php" class="btn btn-success me-2">
                         <i class="fas fa-plus"></i> Arsa İlanı Ekle
                     </a>
+                    <a href="add-agent.php" class="btn btn-secondary me-2">
+                        <i class="bi bi-person-plus"></i>
+                        <span>Danışman Tanımla</span>
+                    </a>
                 </div>
             </div>
 
