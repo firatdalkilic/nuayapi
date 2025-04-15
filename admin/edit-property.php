@@ -30,7 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = $_POST['title'];
     $price = str_replace(['.', ','], '', $_POST['price']);
     $price = (float)$price;
-    $status = $_POST['status'];
+    $raw_status = trim($_POST['status']); // Orijinal durumu sakla
+    $status = $raw_status; // Sadece durumu kullan
     $location = $_POST['location'];
     $description = $_POST['description'];
     $property_type = $_POST['property_type'];
