@@ -4,13 +4,19 @@ require_once 'config.php';
 try {
     // Önce agent_id sütununu ekleyelim (eğer yoksa)
     $sql = "ALTER TABLE properties ADD COLUMN IF NOT EXISTS agent_id INT";
-    $pdo->exec($sql);
-    echo "agent_id sütunu başarıyla eklendi veya zaten mevcut.<br>";
+    if ($conn->query($sql)) {
+        echo "agent_id sütunu başarıyla eklendi veya zaten mevcut.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
 
     // Agents tablosunu yeniden oluşturalım
     $sql = "DROP TABLE IF EXISTS agents";
-    $pdo->exec($sql);
-    echo "Eski agents tablosu silindi.<br>";
+    if ($conn->query($sql)) {
+        echo "Eski agents tablosu silindi.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
 
     // Yeni agents tablosunu oluşturalım
     $sql = "CREATE TABLE agents (
@@ -21,16 +27,22 @@ try {
         phone VARCHAR(20),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
-    $pdo->exec($sql);
-    echo "Yeni agents tablosu başarıyla oluşturuldu.<br>";
+    if ($conn->query($sql)) {
+        echo "Yeni agents tablosu başarıyla oluşturuldu.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
 
     // Properties tablosuna foreign key ekleyelim
     $sql = "ALTER TABLE properties ADD FOREIGN KEY (agent_id) REFERENCES agents(id)";
-    $pdo->exec($sql);
-    echo "Foreign key başarıyla eklendi.<br>";
+    if ($conn->query($sql)) {
+        echo "Foreign key başarıyla eklendi.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
 
     echo "Tüm işlemler başarıyla tamamlandı!";
-} catch(PDOException $e) {
+} catch(Exception $e) {
     echo "Hata oluştu: " . $e->getMessage();
 }
 ?> 
