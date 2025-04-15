@@ -1,148 +1,245 @@
 <?php
 session_start();
-require_once 'config.php';
-require_once 'check_login.php';
 
-// Giriş kontrolü
-checkLogin();
+try {
+    // Config ve login kontrolü dosyalarını dahil et
+    $configFile = 'config.php';
+    $loginFile = 'check_login.php';
 
-// Girdi temizleme fonksiyonu
-function sanitize_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
+    if (!file_exists($configFile)) {
+        throw new Exception("Yapılandırma dosyası bulunamadı: " . $configFile);
+    }
+    if (!file_exists($loginFile)) {
+        throw new Exception("Login kontrol dosyası bulunamadı: " . $loginFile);
+    }
 
-// Form işlemleri
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action'])) {
+    require_once $configFile;
+    require_once $loginFile;
+
+    // Giriş kontrolü
+    checkLogin();
+
+    // Veritabanı bağlantısını kontrol et
+    if (!isset($conn) || !$conn) {
+        throw new Exception("Veritabanı bağlantısı kurulamadı. Hata: " . ($conn->connect_error ?? 'Bilinmeyen hata'));
+    }
+
+    // Girdi temizleme fonksiyonu
+    function sanitize_input($data) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
+    // Form işlemleri
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!isset($_POST['action'])) {
+            throw new Exception("Form action parametresi eksik.");
+        }
+
         $action = $_POST['action'];
         
         switch ($action) {
             case 'add':
-                $fullname = sanitize_input($_POST['fullname']);
-                $username = sanitize_input($_POST['username']);
-                $phone = sanitize_input($_POST['phone']);
-                $email = sanitize_input($_POST['email']);
-                $about = sanitize_input($_POST['about']);
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                $status = sanitize_input($_POST['status']);
-                
-                // Resim yükleme işlemi
-                $image_name = '';
-                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "../uploads/agents/";
-                    if (!file_exists($target_dir)) {
-                        mkdir($target_dir, 0777, true);
+                try {
+                    if (!isset($_POST['fullname'], $_POST['username'], $_POST['phone'], $_POST['email'], $_POST['status'])) {
+                        throw new Exception("Gerekli form alanları eksik.");
+                    }
+
+                    $fullname = sanitize_input($_POST['fullname']);
+                    $username = sanitize_input($_POST['username']);
+                    $phone = sanitize_input($_POST['phone']);
+                    $email = sanitize_input($_POST['email']);
+                    $about = sanitize_input($_POST['about'] ?? '');
+                    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                    $status = sanitize_input($_POST['status']);
+                    
+                    // Resim yükleme işlemi
+                    $image_name = '';
+                    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                        $target_dir = "../uploads/agents/";
+                        if (!file_exists($target_dir)) {
+                            if (!mkdir($target_dir, 0777, true)) {
+                                throw new Exception("Klasör oluşturulamadı: " . $target_dir);
+                            }
+                        }
+                        
+                        $image_name = time() . '_' . basename($_FILES["image"]["name"]);
+                        $target_file = $target_dir . $image_name;
+                        
+                        if (!move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                            throw new Exception("Resim yüklenirken bir hata oluştu.");
+                        }
                     }
                     
-                    $image_name = time() . '_' . basename($_FILES["image"]["name"]);
-                    $target_file = $target_dir . $image_name;
-                    
-                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                        // Resim başarıyla yüklendi
-                    } else {
-                        $_SESSION['error'] = "Resim yüklenirken bir hata oluştu.";
-                        header("Location: manage-agents.php");
-                        exit;
+                    $stmt = $conn->prepare("INSERT INTO agents (fullname, username, phone, email, about, password, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    if (!$stmt) {
+                        throw new Exception("SQL hazırlama hatası: " . $conn->error);
                     }
-                }
-                
-                $stmt = $conn->prepare("INSERT INTO agents (fullname, username, phone, email, about, password, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("ssssssss", $fullname, $username, $phone, $email, $about, $password, $image_name, $status);
-                
-                if ($stmt->execute()) {
+
+                    $stmt->bind_param("ssssssss", $fullname, $username, $phone, $email, $about, $password, $image_name, $status);
+                    
+                    if (!$stmt->execute()) {
+                        throw new Exception("SQL çalıştırma hatası: " . $stmt->error);
+                    }
+
                     $_SESSION['success'] = "Emlakçı başarıyla eklendi.";
-                } else {
-                    $_SESSION['error'] = "Emlakçı eklenirken bir hata oluştu.";
+                } catch (Exception $e) {
+                    error_log("Emlakçı ekleme hatası: " . $e->getMessage());
+                    $_SESSION['error'] = "Emlakçı eklenirken bir hata oluştu: " . $e->getMessage();
                 }
                 break;
                 
             case 'edit':
-                $id = sanitize_input($_POST['id']);
-                $fullname = sanitize_input($_POST['fullname']);
-                $username = sanitize_input($_POST['username']);
-                $phone = sanitize_input($_POST['phone']);
-                $email = sanitize_input($_POST['email']);
-                $about = sanitize_input($_POST['about']);
-                $status = sanitize_input($_POST['status']);
-                
-                // Resim güncelleme işlemi
-                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "../uploads/agents/";
-                    $image_name = time() . '_' . basename($_FILES["image"]["name"]);
-                    $target_file = $target_dir . $image_name;
+                try {
+                    if (!isset($_POST['id'], $_POST['fullname'], $_POST['username'], $_POST['phone'], $_POST['email'], $_POST['status'])) {
+                        throw new Exception("Gerekli form alanları eksik.");
+                    }
+
+                    $id = sanitize_input($_POST['id']);
+                    $fullname = sanitize_input($_POST['fullname']);
+                    $username = sanitize_input($_POST['username']);
+                    $phone = sanitize_input($_POST['phone']);
+                    $email = sanitize_input($_POST['email']);
+                    $about = sanitize_input($_POST['about'] ?? '');
+                    $status = sanitize_input($_POST['status']);
                     
-                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                    // Resim güncelleme işlemi
+                    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                        $target_dir = "../uploads/agents/";
+                        $image_name = time() . '_' . basename($_FILES["image"]["name"]);
+                        $target_file = $target_dir . $image_name;
+                        
+                        if (!move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                            throw new Exception("Resim yüklenirken bir hata oluştu.");
+                        }
+
                         // Eski resmi sil
                         $old_image_query = $conn->prepare("SELECT image FROM agents WHERE id = ?");
+                        if (!$old_image_query) {
+                            throw new Exception("SQL hazırlama hatası: " . $conn->error);
+                        }
+
                         $old_image_query->bind_param("i", $id);
-                        $old_image_query->execute();
+                        if (!$old_image_query->execute()) {
+                            throw new Exception("SQL çalıştırma hatası: " . $old_image_query->error);
+                        }
+
                         $old_image_result = $old_image_query->get_result();
                         $old_image = $old_image_result->fetch_assoc();
                         
                         if ($old_image && $old_image['image']) {
-                            @unlink("../uploads/agents/" . $old_image['image']);
+                            $old_file = "../uploads/agents/" . $old_image['image'];
+                            if (file_exists($old_file)) {
+                                unlink($old_file);
+                            }
                         }
                         
                         // Resim adını güncelle
                         $image_update = $conn->prepare("UPDATE agents SET image = ? WHERE id = ?");
+                        if (!$image_update) {
+                            throw new Exception("SQL hazırlama hatası: " . $conn->error);
+                        }
+
                         $image_update->bind_param("si", $image_name, $id);
-                        $image_update->execute();
+                        if (!$image_update->execute()) {
+                            throw new Exception("SQL çalıştırma hatası: " . $image_update->error);
+                        }
                     }
-                }
-                
-                // Şifre kontrolü ve güncelleme
-                if (!empty($_POST['password'])) {
-                    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                    $stmt = $conn->prepare("UPDATE agents SET fullname=?, username=?, phone=?, email=?, about=?, password=?, status=? WHERE id=?");
-                    $stmt->bind_param("sssssssi", $fullname, $username, $phone, $email, $about, $password, $status, $id);
-                } else {
-                    $stmt = $conn->prepare("UPDATE agents SET fullname=?, username=?, phone=?, email=?, about=?, status=? WHERE id=?");
-                    $stmt->bind_param("ssssssi", $fullname, $username, $phone, $email, $about, $status, $id);
-                }
-                
-                if ($stmt->execute()) {
+                    
+                    // Şifre kontrolü ve güncelleme
+                    if (!empty($_POST['password'])) {
+                        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                        $stmt = $conn->prepare("UPDATE agents SET fullname=?, username=?, phone=?, email=?, about=?, password=?, status=? WHERE id=?");
+                        if (!$stmt) {
+                            throw new Exception("SQL hazırlama hatası: " . $conn->error);
+                        }
+                        $stmt->bind_param("sssssssi", $fullname, $username, $phone, $email, $about, $password, $status, $id);
+                    } else {
+                        $stmt = $conn->prepare("UPDATE agents SET fullname=?, username=?, phone=?, email=?, about=?, status=? WHERE id=?");
+                        if (!$stmt) {
+                            throw new Exception("SQL hazırlama hatası: " . $conn->error);
+                        }
+                        $stmt->bind_param("ssssssi", $fullname, $username, $phone, $email, $about, $status, $id);
+                    }
+                    
+                    if (!$stmt->execute()) {
+                        throw new Exception("SQL çalıştırma hatası: " . $stmt->error);
+                    }
+
                     $_SESSION['success'] = "Emlakçı bilgileri güncellendi.";
-                } else {
-                    $_SESSION['error'] = "Güncelleme sırasında bir hata oluştu.";
+                } catch (Exception $e) {
+                    error_log("Emlakçı güncelleme hatası: " . $e->getMessage());
+                    $_SESSION['error'] = "Güncelleme sırasında bir hata oluştu: " . $e->getMessage();
                 }
                 break;
                 
             case 'delete':
-                $id = sanitize_input($_POST['id']);
-                
-                // Resmi sil
-                $image_query = $conn->prepare("SELECT image FROM agents WHERE id = ?");
-                $image_query->bind_param("i", $id);
-                $image_query->execute();
-                $image_result = $image_query->get_result();
-                $image = $image_result->fetch_assoc();
-                
-                if ($image && $image['image']) {
-                    @unlink("../uploads/agents/" . $image['image']);
-                }
-                
-                $stmt = $conn->prepare("DELETE FROM agents WHERE id=?");
-                $stmt->bind_param("i", $id);
-                
-                if ($stmt->execute()) {
+                try {
+                    if (!isset($_POST['id'])) {
+                        throw new Exception("Silinecek emlakçı ID'si eksik.");
+                    }
+
+                    $id = sanitize_input($_POST['id']);
+                    
+                    // Resmi sil
+                    $image_query = $conn->prepare("SELECT image FROM agents WHERE id = ?");
+                    if (!$image_query) {
+                        throw new Exception("SQL hazırlama hatası: " . $conn->error);
+                    }
+
+                    $image_query->bind_param("i", $id);
+                    if (!$image_query->execute()) {
+                        throw new Exception("SQL çalıştırma hatası: " . $image_query->error);
+                    }
+
+                    $image_result = $image_query->get_result();
+                    $image = $image_result->fetch_assoc();
+                    
+                    if ($image && $image['image']) {
+                        $file = "../uploads/agents/" . $image['image'];
+                        if (file_exists($file)) {
+                            unlink($file);
+                        }
+                    }
+                    
+                    $stmt = $conn->prepare("DELETE FROM agents WHERE id=?");
+                    if (!$stmt) {
+                        throw new Exception("SQL hazırlama hatası: " . $conn->error);
+                    }
+
+                    $stmt->bind_param("i", $id);
+                    if (!$stmt->execute()) {
+                        throw new Exception("SQL çalıştırma hatası: " . $stmt->error);
+                    }
+
                     $_SESSION['success'] = "Emlakçı silindi.";
-                } else {
-                    $_SESSION['error'] = "Silme işlemi sırasında bir hata oluştu.";
+                } catch (Exception $e) {
+                    error_log("Emlakçı silme hatası: " . $e->getMessage());
+                    $_SESSION['error'] = "Silme işlemi sırasında bir hata oluştu: " . $e->getMessage();
                 }
                 break;
+
+            default:
+                throw new Exception("Geçersiz işlem türü.");
         }
         
         header('Location: manage-agents.php');
         exit();
     }
-}
 
-// Tüm emlakçıları getir
-$result = $conn->query("SELECT * FROM agents ORDER BY created_at DESC");
-$agents = $result->fetch_all(MYSQLI_ASSOC);
+    // Tüm emlakçıları getir
+    $result = $conn->query("SELECT * FROM agents ORDER BY created_at DESC");
+    if (!$result) {
+        throw new Exception("Emlakçı listesi alınamadı: " . $conn->error);
+    }
+    $agents = $result->fetch_all(MYSQLI_ASSOC);
+
+} catch (Exception $e) {
+    error_log("Kritik hata: " . $e->getMessage());
+    die("Bir hata oluştu: " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
