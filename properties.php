@@ -212,14 +212,14 @@ if (!file_exists('uploads')) {
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
+  <!-- Vendor CSS Dosyaları -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-  <!-- Main CSS File -->
+  <!-- Ana CSS Dosyası -->
   <link href="assets/css/main.css" rel="stylesheet">
 
   <style>
@@ -295,6 +295,7 @@ if (!file_exists('uploads')) {
       overflow: hidden;
       transition: all 0.3s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      height: 250px;
     }
 
     .property-card:hover {
@@ -318,43 +319,57 @@ if (!file_exists('uploads')) {
       background-color: #ffffff;
     }
 
+    .card-body {
+      padding: 0.75rem 1rem;
+    }
+
     .property-details {
       display: flex;
-      gap: 1.5rem;
-      margin: 1rem 0;
+      gap: 1rem;
+      margin: 0.5rem 0;
     }
 
     .detail-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.25rem;
       color: #4b5563;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .detail-item i {
       color: #2563eb;
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
     .property-location {
       color: #6b7280;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
     }
 
     .property-location i {
       color: #2563eb;
-      margin-right: 0.5rem;
+      margin-right: 0.25rem;
     }
 
     .property-features {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #6b7280;
     }
 
     .property-features i {
       color: #2563eb;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+
+    .text-primary {
+      font-size: 1.1rem !important;
     }
 
     /* Sayfalama Stilleri */
@@ -407,7 +422,7 @@ if (!file_exists('uploads')) {
       margin-right: 0.5rem;
     }
 
-    /* Responsive Düzenlemeler */
+    /* Mobil Cihazlar İçin Düzenlemeler */
     @media (max-width: 768px) {
       .page-title h1 {
         font-size: 2rem;
@@ -455,14 +470,14 @@ if (!file_exists('uploads')) {
       }
     }
 
-    /* Tablet için düzenlemeler */
+    /* Tablet İçin Düzenlemeler */
     @media (min-width: 769px) and (max-width: 991px) {
       .property-item {
         width: calc(50% - 15px) !important;
       }
     }
 
-    /* Genel düzenlemeler */
+    /* Genel Düzenlemeler */
     .property-item img {
       width: 100%;
       height: auto;
@@ -895,20 +910,20 @@ if (!file_exists('uploads')) {
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
+  <!-- Yükleniyor Göstergesi -->
   <div id="preloader"></div>
 
-  <!-- Vendor JS Files -->
+  <!-- Gerekli JS Dosyaları -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
 
-  <!-- Main JS File -->
+  <!-- Ana JS Dosyası -->
   <script src="assets/js/main.js"></script>
 
-  <!-- AJAX Filtreleme Script -->
+  <!-- AJAX Filtreleme Scripti -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const filterForm = document.getElementById('filterForm');
@@ -922,12 +937,12 @@ if (!file_exists('uploads')) {
       // Input değişikliklerini dinle
       filterInputs.forEach(input => {
         if (input.tagName.toLowerCase() === 'select') {
-          // Select elementleri için change event'i
+          // Select elemanları için değişiklik olayı
           input.addEventListener('change', function() {
             submitForm();
           });
         } else {
-          // Text ve number inputlar için input event'i
+          // Metin ve sayı girişleri için yazma olayı
           input.addEventListener('input', function() {
             clearTimeout(typingTimer);
             typingTimer = setTimeout(() => {
@@ -937,7 +952,7 @@ if (!file_exists('uploads')) {
         }
       });
 
-      // Form submit olayını dinle
+      // Form gönderme olayını dinle
       filterForm.addEventListener('submit', function(e) {
         e.preventDefault();
         submitForm();
@@ -955,6 +970,7 @@ if (!file_exists('uploads')) {
 
       // Form gönderme fonksiyonu
       function submitForm() {
+        // Yükleniyor göstergesini göster
         loadingSpinner.classList.remove('d-none');
         const formData = new FormData(filterForm);
         const params = new URLSearchParams();
@@ -966,14 +982,14 @@ if (!file_exists('uploads')) {
           }
         }
 
-        // Mevcut sayfa numarasını sıfırla
+        // Sayfa numarasını sıfırla
         params.delete('sayfa');
 
         // URL'i güncelle
         const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
         window.history.pushState({}, '', newUrl);
 
-        // AJAX isteği
+        // AJAX isteği gönder
         fetch(newUrl)
           .then(response => response.text())
           .then(html => {
@@ -1012,6 +1028,7 @@ if (!file_exists('uploads')) {
             const hasFilters = Array.from(filterInputs).some(input => input.value.trim() !== '');
             clearFiltersBtn.style.display = hasFilters ? 'block' : 'none';
 
+            // Yükleniyor göstergesini gizle
             loadingSpinner.classList.add('d-none');
           })
           .catch(error => {
