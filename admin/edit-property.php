@@ -803,19 +803,33 @@ $required_fields = [
             const propertyType = document.getElementById('property_type').value;
             const landFields = document.getElementById('landFields');
             const residentialFields = document.getElementById('residentialFields');
+            const zoningStatus = document.getElementById('zoning_status');
 
             if (propertyType === 'Arsa') {
                 landFields.style.display = 'block';
                 residentialFields.style.display = 'none';
+                // Arsa için zorunlu alanları etkinleştir
+                zoningStatus.required = true;
+                // Konut alanlarının required özelliğini kaldır
+                document.getElementById('beds').required = false;
+                document.getElementById('living_room').required = false;
+                document.getElementById('bathroom_count').required = false;
             } else {
                 landFields.style.display = 'none';
                 residentialFields.style.display = 'block';
+                // Arsa alanlarının required özelliğini kaldır
+                zoningStatus.required = false;
+                // Konut için zorunlu alanları etkinleştir
+                document.getElementById('beds').required = true;
+                document.getElementById('living_room').required = true;
+                document.getElementById('bathroom_count').required = true;
             }
         }
 
-        // Sayfa yüklendiğinde form alanlarını düzenle
+        // Sayfa yüklendiğinde ve emlak tipi değiştiğinde form alanlarını düzenle
         document.addEventListener('DOMContentLoaded', function() {
             togglePropertyFields();
+            document.getElementById('property_type').addEventListener('change', togglePropertyFields);
         });
 
         document.addEventListener('DOMContentLoaded', function() {
