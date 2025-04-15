@@ -147,7 +147,7 @@ if ($result->num_rows == 0) {
 
 // Tüm danışmanları getir
 $agents = [];
-$sql = "SELECT * FROM agents ORDER BY agent_name";
+$sql = "SELECT * FROM agents";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
