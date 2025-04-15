@@ -5,6 +5,25 @@ require_once 'check_login.php';
 // Giriş kontrolü
 checkLogin();
 
+// Tabloyu yeniden oluştur
+$conn->query("DROP TABLE IF EXISTS agents");
+$create_table_query = "CREATE TABLE agents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    agent_name VARCHAR(255) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    about TEXT,
+    image VARCHAR(255),
+    sahibinden_link VARCHAR(255),
+    emlakjet_link VARCHAR(255),
+    facebook_link VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+$conn->query($create_table_query);
+
 // Form işlemleri
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['action'])) {
@@ -117,41 +136,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         header("Location: manage-agents.php");
         exit;
-    }
-}
-
-// Agents tablosunu kontrol et ve oluştur
-$check_table_query = "SELECT 1 FROM agents LIMIT 1";
-$table_exists = true;
-try {
-    $conn->query($check_table_query);
-} catch (Exception $e) {
-    $table_exists = false;
-}
-
-if (!$table_exists) {
-    // Drop table if exists
-    $conn->query("DROP TABLE IF EXISTS agents");
-    
-    // Create table with correct column names
-    $create_table_query = "CREATE TABLE agents (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        agent_name VARCHAR(255) NOT NULL,
-        username VARCHAR(50) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        phone VARCHAR(50) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        about TEXT,
-        image VARCHAR(255),
-        sahibinden_link VARCHAR(255),
-        emlakjet_link VARCHAR(255),
-        facebook_link VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-    
-    if (!$conn->query($create_table_query)) {
-        die("Tablo oluşturma hatası: " . $conn->error);
     }
 }
 
