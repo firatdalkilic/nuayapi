@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
 // İlanları getir
 if (isAgent()) {
     // Danışman sadece kendi ilanlarını görür
-    $sql = "SELECT p.*, a.agent_name FROM properties p 
+    $sql = "SELECT p.*, a.name as agent_name FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
             WHERE p.agent_id = ? 
             ORDER BY p.created_at DESC";
@@ -43,7 +43,7 @@ if (isAgent()) {
     $stmt->bind_param("i", getAgentId());
 } else {
     // Admin tüm ilanları görür
-    $sql = "SELECT p.*, a.agent_name FROM properties p 
+    $sql = "SELECT p.*, a.name as agent_name FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
             ORDER BY p.created_at DESC";
     $stmt = $conn->prepare($sql);
