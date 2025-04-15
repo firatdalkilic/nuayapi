@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Parametre tiplerini ve değerlerini düzenle
-        $stmt->bind_param("sdssssdssssssssdssss", 
+        if (!$stmt->bind_param("sdssssdssssssssdssss", 
             $title,         // s (string)
             $price,         // d (decimal)
             $status,        // s (string)
@@ -106,9 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usage_status,  // s (string)
             $video_call_available, // s (string)
             $video_file    // s (string)
-        );
-        
-        if (!$bind_result) {
+        )) {
             throw new Exception("Binding parameters failed: " . $stmt->error);
         }
 
