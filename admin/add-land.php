@@ -42,10 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = trim($_POST['title']);
     $price = str_replace('.', '', $_POST['price']); // Noktalı sayı formatını temizle
     $price = str_replace(',', '.', $price); // Virgülü nokta ile değiştir
-    $status = trim($_POST['status']);
+    $raw_status = trim($_POST['status']); // Orijinal durumu sakla
+    $property_type = 'Arsa';
+    $status = $raw_status . ' ' . $property_type; // Durumu ve emlak tipini birleştir
     $location = 'Didim';
     $description = trim($_POST['description']);
-    $property_type = 'Arsa';
     $net_area = floatval($_POST['net_area']);
     $zoning_status = trim($_POST['zoning_status']);
     $block_no = trim($_POST['block_no']);
