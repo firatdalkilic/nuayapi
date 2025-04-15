@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = str_replace(',', '.', $price); // Virgülü nokta ile değiştir
     $raw_status = trim($_POST['status']); // Orijinal durumu sakla
     $property_type = 'Arsa';
-    $status = $raw_status . ' ' . $property_type; // Durumu ve emlak tipini birleştir
+    $status = $raw_status; // Sadece durumu kullan
     $location = 'Didim';
     $description = trim($_POST['description']);
     $net_area = floatval($_POST['net_area']);
@@ -73,43 +73,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
-        title, description, price, location, neighborhood, property_type,
-        status, net_area, zoning_status, block_no, parcel_no,
-        sheet_no, floor_area_ratio, height_limit, eligible_for_credit,
-        deed_status, price_per_sqm, usage_status, video_call_available,
-        video_file
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        title, price, status, property_type, location, description,
+        net_area, zoning_status, block_no, parcel_no, sheet_no,
+        floor_area_ratio, height_limit, eligible_for_credit,
+        deed_status, neighborhood, usage_status, video_call_available,
+        video_file, price_per_sqm, created_at
+    ) VALUES (
+        ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?,
+        ?, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?, NOW()
+    )";
     
     try {
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
+            throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
         }
 
-        // Parametre tiplerini ve değerlerini düzenle
-        if (!$stmt->bind_param("ssdsssdssssssssdssss", 
-            $title,              // s (string)
-            $description,        // s (string)
-            $price,              // d (decimal)
-            $location,           // s (string)
-            $neighborhood,       // s (string)
-            $property_type,      // s (string)
-            $status,             // s (string)
-            $net_area,           // d (decimal)
-            $zoning_status,      // s (string)
-            $block_no,           // s (string)
-            $parcel_no,          // s (string)
-            $sheet_no,           // s (string)
-            $floor_area_ratio,   // s (string)
-            $height_limit,       // s (string)
-            $eligible_for_credit,// s (string)
-            $deed_status,        // s (string)
-            $price_per_sqm,      // d (decimal)
-            $usage_status,       // s (string)
-            $video_call_available,// s (string)
-            $video_file          // s (string)
+        if (!$stmt->bind_param("sdssss" . "dssss" . "ssss" . "ssssd",
+            $title, $price, $status, $property_type, $location, $description,
+            $net_area, $zoning_status, $block_no, $parcel_no, $sheet_no,
+            $floor_area_ratio, $height_limit, $eligible_for_credit,
+            $deed_status, $neighborhood, $usage_status, $video_call_available,
+            $video_file, $price_per_sqm
         )) {
-            throw new Exception("Binding parameters failed: " . $stmt->error);
+            throw new Exception("Parametre bağlama hatası: " . $stmt->error);
         }
 
         if (!$stmt->execute()) {
@@ -317,9 +307,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="title" class="form-label">İlan Başlığı</label>
-                                <input type="text" class="form-control" id="title" name="title" required>
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="title" class="form-label">İlan Başlığı</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="status" class="form-label">Durum</label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="">Seçiniz</option>
+                                        <option value="Kiralık">Kiralık</option>
+                                        <option value="Satılık">Satılık</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="row mb-3">
@@ -342,13 +342,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
 
                             <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="status" class="form-label">Durum</label>
-                                    <select class="form-select" id="status" name="status" required>
-                                        <option value="Satılık">Satılık</option>
-                                        <option value="Kiralık">Kiralık</option>
-                                    </select>
-                                </div>
                                 <div class="col-md-6">
                                     <label for="location" class="form-label">Konum</label>
                                     <input type="text" class="form-control" id="location" value="Didim" readonly>
