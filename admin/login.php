@@ -77,8 +77,9 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         <div class="row justify-content-center">
             <div class="col-md-5">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="text-center mb-0">Admin Girişi</h3>
+                    <div class="card-header text-center">
+                        <img src="../assets/img/nua_logo.jpg" alt="Nua Logo" class="mb-3" style="max-width: 120px; border-radius: 50%;">
+                        <h3 class="mb-0">Admin Girişi</h3>
                     </div>
                     <div class="card-body">
                         <?php if(isset($error)): ?>
