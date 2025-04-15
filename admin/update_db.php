@@ -16,6 +16,14 @@ try {
         echo "agent_id sütunu zaten mevcut.<br>";
     }
 
+    // Önce mevcut foreign key'i kaldıralım
+    $sql = "ALTER TABLE properties DROP FOREIGN KEY properties_ibfk_1";
+    if ($conn->query($sql)) {
+        echo "Eski foreign key başarıyla kaldırıldı.<br>";
+    } else {
+        echo "Foreign key zaten kaldırılmış veya mevcut değil.<br>";
+    }
+
     // Agents tablosunu yeniden oluşturalım
     $sql = "DROP TABLE IF EXISTS agents";
     if ($conn->query($sql)) {
