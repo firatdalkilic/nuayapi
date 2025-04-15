@@ -21,7 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'height_limit' => 'Gabari',
         'eligible_for_credit' => 'Krediye Uygunluk',
         'deed_status' => 'Tapu Durumu',
-        'description' => 'Açıklama'
+        'description' => 'Açıklama',
+        'neighborhood' => 'Mahalle'
     ];
 
     $errors = [];
@@ -71,11 +72,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
-        title, price, status, location, description, property_type,
-        net_area, zoning_status, block_no, parcel_no, sheet_no,
-        floor_area_ratio, height_limit, eligible_for_credit,
-        deed_status, neighborhood, price_per_sqm, usage_status,
-        video_call_available, video_file
+        title, description, price, location, neighborhood, property_type,
+        status, net_area, zoning_status, block_no, parcel_no,
+        sheet_no, floor_area_ratio, height_limit, eligible_for_credit,
+        deed_status, price_per_sqm, usage_status, video_call_available,
+        video_file
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
@@ -85,27 +86,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Parametre tiplerini ve değerlerini düzenle
-        if (!$stmt->bind_param("sdssssdssssssssdssss", 
-            $title,         // s (string)
-            $price,         // d (decimal)
-            $status,        // s (string)
-            $location,      // s (string)
-            $description,   // s (string)
-            $property_type, // s (string)
-            $net_area,      // d (decimal)
-            $zoning_status, // s (string)
-            $block_no,      // s (string)
-            $parcel_no,     // s (string)
-            $sheet_no,      // s (string)
-            $floor_area_ratio, // s (string)
-            $height_limit,  // s (string)
-            $eligible_for_credit, // s (string)
-            $deed_status,   // s (string)
-            $neighborhood,  // s (string)
-            $price_per_sqm, // d (decimal)
-            $usage_status,  // s (string)
-            $video_call_available, // s (string)
-            $video_file    // s (string)
+        if (!$stmt->bind_param("ssdsssdssssssssdssss", 
+            $title,              // s (string)
+            $description,        // s (string)
+            $price,              // d (decimal)
+            $location,           // s (string)
+            $neighborhood,       // s (string)
+            $property_type,      // s (string)
+            $status,             // s (string)
+            $net_area,           // d (decimal)
+            $zoning_status,      // s (string)
+            $block_no,           // s (string)
+            $parcel_no,          // s (string)
+            $sheet_no,           // s (string)
+            $floor_area_ratio,   // s (string)
+            $height_limit,       // s (string)
+            $eligible_for_credit,// s (string)
+            $deed_status,        // s (string)
+            $price_per_sqm,      // d (decimal)
+            $usage_status,       // s (string)
+            $video_call_available,// s (string)
+            $video_file          // s (string)
         )) {
             throw new Exception("Binding parameters failed: " . $stmt->error);
         }
