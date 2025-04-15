@@ -6,9 +6,55 @@ require_once 'check_login.php';
 // Giriş kontrolü
 checkLogin();
 
+// İlan silme işlemi
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
+    $delete_id = $_POST['delete_id'];
+    
+    // Danışman ise sadece kendi ilanlarını silebilir
+    if (isAgent()) {
+        $sql = "DELETE FROM properties WHERE id = ? AND agent_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $delete_id, getAgentId());
+    } else {
+        // Admin tüm ilanları silebilir
+        $sql = "DELETE FROM properties WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $delete_id);
+    }
+    
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "İlan başarıyla silindi.";
+    } else {
+        $_SESSION['error'] = "İlan silinirken bir hata oluştu.";
+    }
+    
+    header("Location: dashboard.php");
+    exit;
+}
+
 // İlanları getir
-$sql = "SELECT * FROM properties ORDER BY id DESC";
-$result = $conn->query($sql);
+if (isAgent()) {
+    // Danışman sadece kendi ilanlarını görür
+    $sql = "SELECT p.*, a.agent_name FROM properties p 
+            LEFT JOIN agents a ON p.agent_id = a.id 
+            WHERE p.agent_id = ? 
+            ORDER BY p.created_at DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", getAgentId());
+} else {
+    // Admin tüm ilanları görür
+    $sql = "SELECT p.*, a.agent_name FROM properties p 
+            LEFT JOIN agents a ON p.agent_id = a.id 
+            ORDER BY p.created_at DESC";
+    $stmt = $conn->prepare($sql);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$properties = [];
+while ($row = $result->fetch_assoc()) {
+    $properties[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +62,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel - Nua Yapı Admin</title>
+    <title>Dashboard - Nua Yapı Admin</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -31,7 +77,10 @@ $result = $conn->query($sql);
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="../assets/img/nua_logo.jpg" alt="Nua Logo" style="max-height: 60px; border-radius: 50%;">
+                <img src="../assets/img/nua_logo.jpg" alt="Nua Logo" style="max-height: 40px; border-radius: 50%;">
+                <?php if (isAgent()): ?>
+                    <span class="ms-2"><?php echo htmlspecialchars($_SESSION['agent_name']); ?></span>
+                <?php endif; ?>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -41,11 +90,11 @@ $result = $conn->query($sql);
                     <li class="nav-item">
                         <a class="nav-link active" href="dashboard.php">İlanlar</a>
                     </li>
+                    <?php if (isAdmin()): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="manage-agents.php">
-                            <i class="bi bi-people"></i> Danışman Yönetimi
-                        </a>
+                        <a class="nav-link" href="manage-agents.php">Danışmanlar</a>
                     </li>
+                    <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -127,42 +176,21 @@ $result = $conn->query($sql);
                                     <th>Durum</th>
                                     <th>Konum</th>
                                     <th>Mahalle</th>
+                                    <?php if (isAdmin()): ?>
+                                    <th>Danışman</th>
+                                    <?php endif; ?>
                                     <th>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                // İlanları ve vitrin fotoğraflarını getir
-                                $query = "SELECT p.*, pi.image_name 
-                                         FROM properties p 
-                                         LEFT JOIN property_images pi ON p.id = pi.property_id 
-                                         AND (
-                                             pi.is_featured = TRUE 
-                                             OR pi.id = (
-                                                 SELECT MIN(id) 
-                                                 FROM property_images 
-                                                 WHERE property_id = p.id 
-                                                 AND NOT EXISTS (
-                                                     SELECT 1 
-                                                     FROM property_images 
-                                                     WHERE property_id = p.id 
-                                                     AND is_featured = TRUE
-                                                 )
-                                             )
-                                         )
-                                         ORDER BY p.id DESC";
-                                $result = $conn->query($query);
-                                
-                                if ($result->num_rows > 0) {
-                                    while ($row = $result->fetch_assoc()):
-                                ?>
+                                <?php foreach($properties as $property): ?>
                                 <tr>
-                                    <td><?php echo $row['id']; ?></td>
+                                    <td><?php echo $property['id']; ?></td>
                                     <td>
-                                        <?php if (!empty($row['image_name'])): ?>
+                                        <?php if (!empty($property['image_name'])): ?>
                                             <div style="width: 100px; height: 100px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                                <img src="../uploads/<?php echo htmlspecialchars($row['image_name']); ?>" 
-                                                     alt="<?php echo htmlspecialchars($row['title']); ?>"
+                                                <img src="../uploads/<?php echo htmlspecialchars($property['image_name']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($property['title']); ?>"
                                                      style="width: 100%; height: 100%; object-fit: contain;">
                                             </div>
                                         <?php else: ?>
@@ -171,33 +199,31 @@ $result = $conn->query($sql);
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo htmlspecialchars($row['title']); ?></td>
-                                    <td><?php echo number_format($row['price'], 2, ',', '.') . ' TL'; ?></td>
-                                    <td><?php echo htmlspecialchars($row['status']); ?></td>
-                                    <td><?php echo !empty($row['location']) ? htmlspecialchars($row['location']) : 'Didim'; ?></td>
-                                    <td><?php echo htmlspecialchars($row['neighborhood']); ?></td>
+                                    <td><?php echo htmlspecialchars($property['title']); ?></td>
+                                    <td><?php echo number_format($property['price'], 2, ',', '.') . ' TL'; ?></td>
+                                    <td><?php echo htmlspecialchars($property['status']); ?></td>
+                                    <td><?php echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim'; ?></td>
+                                    <td><?php echo htmlspecialchars($property['neighborhood']); ?></td>
+                                    <?php if (isAdmin()): ?>
+                                    <td><?php echo htmlspecialchars($property['agent_name'] ?? 'Admin'); ?></td>
+                                    <?php endif; ?>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="edit-property.php?id=<?php echo $row['id']; ?>" 
+                                            <a href="edit-property.php?id=<?php echo $property['id']; ?>" 
                                                class="btn btn-primary btn-sm">
                                                 <i class="bi bi-pencil"></i> Düzenle
                                             </a>
-                                            <a href="javascript:void(0);" 
-                                               onclick="if(confirm('Bu ilanı silmek istediğinizden emin misiniz?')) window.location.href='delete-property.php?id=<?php echo $row['id']; ?>'" 
-                                               class="btn btn-danger btn-sm">
+                                            <button type="button" class="btn btn-danger btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#deleteModal" 
+                                                    data-id="<?php echo $property['id']; ?>"
+                                                    data-title="<?php echo htmlspecialchars($property['title']); ?>">
                                                 <i class="bi bi-trash"></i> Sil
-                                            </a>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
-                                <?php 
-                                    endwhile;
-                                } else {
-                                ?>
-                                <tr>
-                                    <td colspan="8" class="text-center">Henüz ilan bulunmamaktadır.</td>
-                                </tr>
-                                <?php } ?>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -206,13 +232,38 @@ $result = $conn->query($sql);
         </div>
     </section>
 
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="">
+                    <input type="hidden" name="delete_id" id="delete_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title">İlanı Sil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bu ilanı silmek istediğinizden emin misiniz?</p>
+                        <p class="text-danger" id="delete_title"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-danger">Sil</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-    function ilanSil(id) {
-        if (confirm('Bu ilanı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
-            window.location.href = 'delete-property.php?id=' + id;
-        }
-    }
+        // Delete modal için veri aktarımı
+        document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('delete_id').value = this.dataset.id;
+                document.getElementById('delete_title').textContent = this.dataset.title;
+            });
+        });
     </script>
 </body>
 </html> 

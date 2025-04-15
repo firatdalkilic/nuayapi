@@ -80,23 +80,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
+    // Danışman ID'sini belirle
+    $agent_id = null;
+    if (isAgent()) {
+        $agent_id = getAgentId();
+    }
+
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, beds, bathroom_count, balcony,
         parking, site, floor_location, total_floors, gross_area, living_room_count,
         building_age, eligible_for_credit, heating, furnished, sahibinden_link,
-        emlakjet_link, facebook_link
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        emlakjet_link, facebook_link, agent_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdsisssssidisssssss", 
+        $stmt->bind_param("ssdssssdsisssssssi", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
             $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
             $building_age, $eligible_for_credit, $heating, $furnished, $sahibinden_link,
-            $emlakjet_link, $facebook_link
+            $emlakjet_link, $facebook_link, $agent_id
         );
         
         if ($stmt->execute()) {

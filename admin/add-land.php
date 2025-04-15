@@ -63,6 +63,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $video_call_available = 'Hayır';
     $video_file = '';
 
+    // Danışman ID'sini belirle
+    $agent_id = null;
+    if (isAgent()) {
+        $agent_id = getAgentId();
+    }
+
     // Metrekare başına fiyatı hesapla
     $price_per_sqm = $net_area > 0 ? floatval($price) / floatval($net_area) : 0;
 
@@ -79,13 +85,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         net_area, zoning_status, block_no, parcel_no, sheet_no,
         floor_area_ratio, height_limit, eligible_for_credit,
         deed_status, neighborhood, usage_status, video_call_available,
-        video_file, price_per_sqm, created_at
+        video_file, price_per_sqm, created_at, agent_id
     ) VALUES (
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?,
         ?, ?, ?,
         ?, ?, ?, ?,
-        ?, ?, NOW()
+        ?, ?, ?, ?,
+        ?, NOW()
     )";
     
     try {
@@ -94,12 +101,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
         }
 
-        if (!$stmt->bind_param("sdssss" . "dssss" . "ssssd",
+        if (!$stmt->bind_param("sdssss" . "dssss" . "ssssdii",
             $title, $price, $status, $property_type, $location, $description,
             $net_area, $zoning_status, $block_no, $parcel_no, $sheet_no,
             $floor_area_ratio, $height_limit, $eligible_for_credit,
             $deed_status, $neighborhood, $usage_status, $video_call_available,
-            $video_file, $price_per_sqm
+            $video_file, $price_per_sqm, $agent_id
         )) {
             throw new Exception("Parametre bağlama hatası: " . $stmt->error);
         }

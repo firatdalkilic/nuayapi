@@ -8,24 +8,35 @@ require_once 'check_login.php';
 // Giriş kontrolü
 checkLogin();
 
-if (!isset($_GET['id'])) {
-    header('Location: dashboard.php');
+// İlan ID'sini al
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($id <= 0) {
+    header("Location: dashboard.php");
     exit;
 }
 
-$id = (int)$_GET['id'];
+// İlanı getir
+if (isAgent()) {
+    $sql = "SELECT * FROM properties WHERE id = ? AND agent_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $id, getAgentId());
+} else {
+    $sql = "SELECT * FROM properties WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+}
 
-// Mevcut ilan bilgilerini getir
-$stmt = $conn->prepare("SELECT * FROM properties WHERE id = ?");
-$stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
-$property = $result->fetch_assoc();
 
-if (!$property) {
-    header('Location: dashboard.php');
+if ($result->num_rows === 0) {
+    $_SESSION['error'] = "İlan bulunamadı veya bu ilana erişim yetkiniz yok.";
+    header("Location: dashboard.php");
     exit;
 }
+
+$property = $result->fetch_assoc();
 
 // Debug için POST verilerini kontrol et
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -33,238 +44,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("POST data: " . print_r($_POST, true));
 
     // Form verilerini al
-    $title = $_POST['title'];
-    $price = str_replace(['.', ','], '', $_POST['price']);
-    $price = (float)$price;
-    $raw_status = trim($_POST['status']); // Orijinal durumu sakla
-    $status = $raw_status; // Sadece durumu kullan
-    $location = $_POST['location'];
-    $description = $_POST['description'];
-    $property_type = $_POST['property_type'];
-    $gross_area = $_POST['gross_area'];
-    $eligible_for_credit = $_POST['eligible_for_credit'];
-    $usage_status = $_POST['usage_status'];
-    $video_call_available = $_POST['video_call_available'];
-
-    // Video işlemleri için video_file değişkenini hazırla
-    $video_file = $property['video_file']; // Mevcut video dosyasını al
-
-    // Video silme işlemi
-    if (isset($_POST['delete_video']) && $_POST['delete_video'] == '1') {
-        if (!empty($video_file)) {
-            $video_path = "../uploads/videos/" . $video_file;
-            if (file_exists($video_path)) {
-                unlink($video_path);
-            }
-            $video_file = null;
-        }
-    }
-
-    // Yeni video yükleme
-    if (isset($_FILES["property_video"]) && !empty($_FILES["property_video"]["name"])) {
-        $video_dir = "../uploads/videos/";
-        if (!file_exists($video_dir)) {
-            mkdir($video_dir, 0777, true);
-        }
-
-        // Eski videoyu sil
-        if (!empty($video_file)) {
-            $old_video_path = $video_dir . $video_file;
-            if (file_exists($old_video_path)) {
-                unlink($old_video_path);
-            }
-        }
-
-        $video_name = time() . '_' . basename($_FILES["property_video"]["name"]);
-        $video_target = $video_dir . $video_name;
-        
-        $allowed_types = ['video/mp4', 'video/webm', 'video/ogg'];
-        
-        if (in_array($_FILES["property_video"]["type"], $allowed_types)) {
-            if (move_uploaded_file($_FILES["property_video"]["tmp_name"], $video_target)) {
-                $video_file = $video_name;
-            }
-        }
-    }
-
-    // Emlak tipine göre farklı alanları işle
-    if ($property_type === 'Arsa') {
-        // Arsa özellikleri
-        $zoning_status = $_POST['zoning_status'];
-        $block_no = $_POST['block_no'];
-        $parcel_no = $_POST['parcel_no'];
-        $floor_area_ratio = $_POST['floor_area_ratio'];
-        $height_limit = $_POST['height_limit'];
-        $deed_status = $_POST['deed_status'];
-        $neighborhood = $_POST['neighborhood'];
-        $sheet_no = $_POST['sheet_no'];
-
-        // Arsa için SQL sorgusu
-        $sql = "UPDATE properties SET 
-            title = ?,
-            price = ?,
-            status = ?,
-            location = ?,
-            description = ?,
-            property_type = ?,
-            gross_area = ?,
-            zoning_status = ?,
-            block_no = ?,
-            parcel_no = ?,
-            floor_area_ratio = ?,
-            height_limit = ?,
-            eligible_for_credit = ?,
-            deed_status = ?,
-            neighborhood = ?,
-            usage_status = ?,
-            video_call_available = ?,
-            video_file = ?,
-            sheet_no = ?
-            WHERE id = ?";
-
+    $title = trim($_POST['title']);
+    $description = trim($_POST['description']);
+    $price = trim($_POST['price']);
+    $location = trim($_POST['location']);
+    $neighborhood = trim($_POST['neighborhood']);
+    $type = trim($_POST['type']);
+    $status = trim($_POST['status']);
+    $rooms = trim($_POST['rooms']);
+    $bathrooms = trim($_POST['bathrooms']);
+    $area = trim($_POST['area']);
+    $features = isset($_POST['features']) ? implode(',', $_POST['features']) : '';
+    
+    // İlanı güncelle
+    if (isAgent()) {
+        $sql = "UPDATE properties SET title=?, description=?, price=?, location=?, neighborhood=?, type=?, status=?, rooms=?, bathrooms=?, area=?, features=? WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdssssdssssssssssssi", 
-            $title,
-            $price,
-            $status,
-            $location,
-            $description,
-            $property_type,
-            $gross_area,
-            $zoning_status,
-            $block_no,
-            $parcel_no,
-            $floor_area_ratio,
-            $height_limit,
-            $eligible_for_credit,
-            $deed_status,
-            $neighborhood,
-            $usage_status,
-            $video_call_available,
-            $video_file,
-            $sheet_no,
-            $id
-        );
+        $stmt->bind_param("ssdssssssssis", $title, $description, $price, $location, $neighborhood, $type, $status, $rooms, $bathrooms, $area, $features, $id, getAgentId());
     } else {
-        // Konut özellikleri
-        $beds = $_POST['beds'];
-        $living_room = $_POST['living_room'];
-        $bathroom_count = $_POST['bathroom_count'];
-        $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
-        $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
-        $total_floors = $_POST['total_floors'];
-        $heating = trim($_POST['heating']);
-        $balcony = $_POST['balcony'];
-        $furnished = $_POST['furnished'];
-        $site_status = $_POST['site_status'];
-        $parking = $_POST['parking'];
-        $net_area = $_POST['net_area'];
-        $neighborhood = $_POST['neighborhood'];
-
-        // Konut için SQL sorgusu
-        $sql = "UPDATE properties SET 
-            title = ?,
-            price = ?,
-            status = ?,
-            beds = ?,
-            location = ?,
-            neighborhood = ?,
-            description = ?,
-            property_type = ?,
-            gross_area = ?,
-            net_area = ?,
-            floor_location = ?,
-            total_floors = ?,
-            heating = ?,
-            bathroom_count = ?,
-            balcony = ?,
-            furnished = ?,
-            site_status = ?,
-            eligible_for_credit = ?,
-            building_age = ?,
-            living_room = ?,
-            parking = ?,
-            usage_status = ?,
-            video_call_available = ?,
-            video_file = ?
-            WHERE id = ?";
-
+        $sql = "UPDATE properties SET title=?, description=?, price=?, location=?, neighborhood=?, type=?, status=?, rooms=?, bathrooms=?, area=?, features=? WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdsissssddsisissssisssssi", 
-            $title,
-            $price,
-            $status,
-            $beds,
-            $location,
-            $neighborhood,
-            $description,
-            $property_type,
-            $gross_area,
-            $net_area,
-            $floor_location,
-            $total_floors,
-            $heating,
-            $bathroom_count,
-            $balcony,
-            $furnished,
-            $site_status,
-            $eligible_for_credit,
-            $building_age,
-            $living_room,
-            $parking,
-            $usage_status,
-            $video_call_available,
-            $video_file,
-            $id
-        );
+        $stmt->bind_param("ssdsssssssi", $title, $description, $price, $location, $neighborhood, $type, $status, $rooms, $bathrooms, $area, $features, $id);
     }
-
+    
     if ($stmt->execute()) {
-        // Yeni resimler yüklendiyse ekle
-        if (isset($_FILES["images"]) && !empty($_FILES["images"]["name"][0])) {
-            $target_dir = "../uploads/";
-            if (!file_exists($target_dir)) {
-                mkdir($target_dir, 0777, true);
+        // Fotoğrafları güncelle
+        if (isset($_FILES['images'])) {
+            $uploadDir = "../uploads/";
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
             }
             
-            $total = count($_FILES["images"]["name"]);
-            
-            for($i = 0; $i < $total; $i++) {
-                if($_FILES["images"]["error"][$i] == 0) {
-                    $imageFileType = strtolower(pathinfo($_FILES["images"]["name"][$i], PATHINFO_EXTENSION));
+            foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['images']['error'][$key] == 0) {
+                    $fileName = time() . '_' . $_FILES['images']['name'][$key];
+                    $targetFile = $uploadDir . $fileName;
                     
-                    if($imageFileType == "jpg" || $imageFileType == "jpeg" || $imageFileType == "png" || $imageFileType == "gif") {
-                        $unique_name = time() . '_' . uniqid() . '.' . $imageFileType;
-                        $target_file = $target_dir . $unique_name;
+                    if (move_uploaded_file($tmp_name, $targetFile)) {
+                        $is_featured = isset($_POST['featured_image']) && $_POST['featured_image'] == $key;
                         
-                        $check = getimagesize($_FILES["images"]["tmp_name"][$i]);
-                        if($check !== false && move_uploaded_file($_FILES["images"]["tmp_name"][$i], $target_file)) {
-                            $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name) VALUES (?, ?)");
-                            $img_stmt->bind_param("is", $id, $unique_name);
-                            $img_stmt->execute();
-                        }
+                        $sql = "INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("isi", $id, $fileName, $is_featured);
+                        $stmt->execute();
                     }
                 }
             }
         }
         
-        // Vitrin fotoğrafını güncelle
-        if (isset($_POST['featured_image'])) {
-            $reset_stmt = $conn->prepare("UPDATE property_images SET is_featured = FALSE WHERE property_id = ?");
-            $reset_stmt->bind_param("i", $id);
-            $reset_stmt->execute();
-            
-            $featured_image_id = $_POST['featured_image'];
-            $feature_stmt = $conn->prepare("UPDATE property_images SET is_featured = TRUE WHERE id = ? AND property_id = ?");
-            $feature_stmt->bind_param("ii", $featured_image_id, $id);
-            $feature_stmt->execute();
-        }
-
         $_SESSION['success'] = "İlan başarıyla güncellendi.";
-        header("Location: edit-property.php?id=" . $id);
+        header("Location: dashboard.php");
         exit;
     } else {
-        $error = "İlan güncellenirken bir hata oluştu.";
+        $_SESSION['error'] = "İlan güncellenirken bir hata oluştu.";
     }
 }
 
