@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST['password']);
     
     // Önce agents tablosunda kontrol et
-    $sql = "SELECT * FROM agents WHERE username_panel = ?";
+    $sql = "SELECT * FROM agents WHERE username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $agent['password'])) {
             $_SESSION['agent_logged_in'] = true;
             $_SESSION['agent_id'] = $agent['id'];
-            $_SESSION['agent_name'] = $agent['name'];
+            $_SESSION['agent_name'] = $agent['agent_name'];
             header("Location: dashboard.php");
             exit;
         }
