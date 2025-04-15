@@ -414,10 +414,12 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                         <option value="İş Yeri" <?php echo $property['property_type'] == 'İş Yeri' ? 'selected' : ''; ?>>İş Yeri</option>
                                     </select>
                                 </div>
+                                <?php if ($property['property_type'] !== 'Arsa'): ?>
                                 <div class="col-md-6">
-                                    <label for="gross_area" class="form-label">m² (Brüt)</label>
+                                    <label for="gross_area" class="form-label">Alan (m²) (Brüt)</label>
                                     <input type="number" class="form-control" id="gross_area" name="gross_area" value="<?php echo htmlspecialchars($property['gross_area']); ?>">
                                 </div>
+                                <?php endif; ?>
                             </div>
 
                             <!-- Arsa özellikleri -->
