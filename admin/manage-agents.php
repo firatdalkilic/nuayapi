@@ -121,9 +121,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Agents tablosunu kontrol et ve oluştur
-$check_table_query = "SHOW TABLES LIKE 'agents'";
-$result = $conn->query($check_table_query);
-if ($result->num_rows == 0) {
+$check_table_query = "SELECT 1 FROM agents LIMIT 1";
+$table_exists = true;
+try {
+    $conn->query($check_table_query);
+} catch (Exception $e) {
+    $table_exists = false;
+}
+
+if (!$table_exists) {
+    // Drop table if exists
+    $conn->query("DROP TABLE IF EXISTS agents");
+    
+    // Create table with correct column names
     $create_table_query = "CREATE TABLE agents (
         id INT AUTO_INCREMENT PRIMARY KEY,
         agent_name VARCHAR(255) NOT NULL,
