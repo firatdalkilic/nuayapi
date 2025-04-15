@@ -618,14 +618,15 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             </div>
 
                             <div class="row mb-3">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for="eligible_for_credit" class="form-label">Krediye Uygun</label>
                                     <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
                                         <option value="Evet" <?php echo $property['eligible_for_credit'] == 'Evet' ? 'selected' : ''; ?>>Evet</option>
                                         <option value="Hayır" <?php echo $property['eligible_for_credit'] == 'Hayır' ? 'selected' : ''; ?>>Hayır</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <?php if ($property['property_type'] !== 'Arsa'): ?>
+                                <div class="col-md-6">
                                     <label for="usage_status" class="form-label">Kullanım Durumu</label>
                                     <select class="form-select" id="usage_status" name="usage_status" required>
                                         <option value="Boş" <?php echo ($property['usage_status'] == 'Boş') ? 'selected' : ''; ?>>Boş</option>
@@ -633,6 +634,9 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                         <option value="Mülk Sahibi" <?php echo ($property['usage_status'] == 'Mülk Sahibi') ? 'selected' : ''; ?>>Mülk Sahibi</option>
                                     </select>
                                 </div>
+                                <?php else: ?>
+                                <input type="hidden" name="usage_status" value="NULL">
+                                <?php endif; ?>
                             </div>
 
                             <?php if ($property['property_type'] !== 'Arsa'): ?>
