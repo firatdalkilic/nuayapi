@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $phone = trim($_POST['phone']);
                 $email = trim($_POST['email']);
 
-                $sql = "INSERT INTO agents (name, phone, email) VALUES (?, ?, ?)";
+                $sql = "INSERT INTO agents (agent_name, phone, email) VALUES (?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("sss", $name, $phone, $email);
                 
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $phone = trim($_POST['phone']);
                 $email = trim($_POST['email']);
 
-                $sql = "UPDATE agents SET name=?, phone=?, email=? WHERE id=?";
+                $sql = "UPDATE agents SET agent_name=?, phone=?, email=? WHERE id=?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("sssi", $name, $phone, $email, $id);
                 
@@ -66,7 +66,7 @@ $result = $conn->query($check_table_query);
 if ($result->num_rows == 0) {
     $create_table_query = "CREATE TABLE agents (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
+        agent_name VARCHAR(255) NOT NULL,
         phone VARCHAR(50) NOT NULL,
         email VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -80,7 +80,7 @@ if ($result->num_rows == 0) {
 
 // Tüm danışmanları getir
 $agents = [];
-$sql = "SELECT * FROM agents ORDER BY name";
+$sql = "SELECT * FROM agents ORDER BY agent_name";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
@@ -218,7 +218,7 @@ if ($result->num_rows > 0) {
                                 <tbody>
                                     <?php foreach($agents as $agent): ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($agent['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($agent['agent_name']); ?></td>
                                         <td><?php echo htmlspecialchars($agent['phone']); ?></td>
                                         <td><?php echo htmlspecialchars($agent['email']); ?></td>
                                         <td>
@@ -226,7 +226,7 @@ if ($result->num_rows > 0) {
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#editAgentModal"
                                                     data-id="<?php echo $agent['id']; ?>"
-                                                    data-name="<?php echo htmlspecialchars($agent['name']); ?>"
+                                                    data-name="<?php echo htmlspecialchars($agent['agent_name']); ?>"
                                                     data-phone="<?php echo htmlspecialchars($agent['phone']); ?>"
                                                     data-email="<?php echo htmlspecialchars($agent['email']); ?>">
                                                 <i class="bi bi-pencil"></i>
@@ -235,7 +235,7 @@ if ($result->num_rows > 0) {
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteAgentModal"
                                                     data-id="<?php echo $agent['id']; ?>"
-                                                    data-name="<?php echo htmlspecialchars($agent['name']); ?>">
+                                                    data-name="<?php echo htmlspecialchars($agent['agent_name']); ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
