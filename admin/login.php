@@ -6,6 +6,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     
+    // Debug bilgisi ekle
+    error_log("Login attempt for username: " . $username);
+    
     // Önce agents tablosunda kontrol et
     $sql = "SELECT * FROM agents WHERE username = ?";
     $stmt = $conn->prepare($sql);
@@ -13,15 +16,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $result = $stmt->get_result();
     
+    error_log("Query executed, found rows: " . $result->num_rows);
+    
     if ($result->num_rows > 0) {
         $agent = $result->fetch_assoc();
+        error_log("Agent found: " . json_encode($agent));
+        
         if (password_verify($password, $agent['password'])) {
+            error_log("Password verified successfully");
             $_SESSION['agent_logged_in'] = true;
             $_SESSION['agent_id'] = $agent['id'];
             $_SESSION['agent_name'] = $agent['agent_name'];
             header("Location: dashboard.php");
             exit;
+        } else {
+            error_log("Password verification failed");
         }
+    } else {
+        error_log("No agent found with username: " . $username);
     }
     
     // Danışman girişi başarısız, admin girişini kontrol et

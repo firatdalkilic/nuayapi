@@ -79,13 +79,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             case 'add':
                 $name = trim($_POST['name']);
                 $username = trim($_POST['username']);
-                $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+                $raw_password = trim($_POST['password']);
+                $password = password_hash($raw_password, PASSWORD_DEFAULT);
                 $phone = trim($_POST['phone']);
                 $email = trim($_POST['email']);
                 $about = trim($_POST['about']);
                 $sahibinden_link = trim($_POST['sahibinden_link']);
                 $emlakjet_link = trim($_POST['emlakjet_link']);
                 $facebook_link = trim($_POST['facebook_link']);
+                
+                // Debug bilgisi ekle
+                error_log("Creating new agent with username: " . $username);
+                error_log("Password hash: " . $password);
                 
                 // Resim yükleme işlemi
                 $image = '';
