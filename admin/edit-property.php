@@ -90,6 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $height_limit = $_POST['height_limit'];
         $deed_status = $_POST['deed_status'];
         $neighborhood = $_POST['neighborhood'];
+        $sheet_no = $_POST['sheet_no'];
 
         // Arsa için SQL sorgusu
         $sql = "UPDATE properties SET 
@@ -110,7 +111,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             neighborhood = ?,
             usage_status = ?,
             video_call_available = ?,
-            video_file = ?
+            video_file = ?,
+            sheet_no = ?
             WHERE id = ?";
 
         $stmt = $conn->prepare($sql);
@@ -133,6 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usage_status,
             $video_call_available,
             $video_file,
+            $sheet_no,
             $id
         );
     } else {
@@ -439,25 +442,31 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="parcel_no" class="form-label">Parsel No</label>
-                                        <input type="text" class="form-control" id="parcel_no" name="parcel_no" value="<?php echo htmlspecialchars($property['parcel_no']); ?>">
+                                        <label for="block_no" class="form-label">Ada No</label>
+                                        <input type="text" class="form-control" id="block_no" name="block_no" value="<?php echo htmlspecialchars($property['block_no']); ?>">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label for="block_no" class="form-label">Ada No</label>
-                                        <input type="text" class="form-control" id="block_no" name="block_no" value="<?php echo htmlspecialchars($property['block_no']); ?>">
+                                        <label for="parcel_no" class="form-label">Parsel No</label>
+                                        <input type="text" class="form-control" id="parcel_no" name="parcel_no" value="<?php echo htmlspecialchars($property['parcel_no']); ?>">
                                     </div>
+                                    <div class="col-md-6">
+                                        <label for="sheet_no" class="form-label">Pafta No</label>
+                                        <input type="text" class="form-control" id="sheet_no" name="sheet_no" value="<?php echo htmlspecialchars($property['sheet_no']); ?>">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="floor_area_ratio" class="form-label">Kaks (Emsal)</label>
                                         <input type="text" class="form-control" id="floor_area_ratio" name="floor_area_ratio" value="<?php echo htmlspecialchars($property['floor_area_ratio']); ?>">
                                     </div>
-                                </div>
-                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="height_limit" class="form-label">Gabari</label>
                                         <input type="text" class="form-control" id="height_limit" name="height_limit" value="<?php echo htmlspecialchars($property['height_limit']); ?>">
                                     </div>
+                                </div>
+                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="deed_status" class="form-label">Tapu Durumu</label>
                                         <select class="form-select" id="deed_status" name="deed_status">
