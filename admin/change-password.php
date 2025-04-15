@@ -38,17 +38,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Yeni şifre en az 6 karakter uzunluğunda olmalıdır.");
         }
 
-        // config.php dosyasını güncelle
-        $config_file = file_get_contents('config.php');
-        $config_file = preg_replace(
-            "/define\('ADMIN_PASSWORD',\s*'[^']*'\);/",
-            "define('ADMIN_PASSWORD', '" . addslashes($new_password) . "');",
-            $config_file
-        );
-        file_put_contents('config.php', $config_file);
+        // Heroku config vars'ı güncellemek için API çağrısı yap
+        $app_name = 'nuayapi';
+        $api_key = getenv('HEROKU_API_KEY');
+        
+        if (!$api_key) {
+            throw new Exception("Heroku API anahtarı bulunamadı. Lütfen sistem yöneticisi ile iletişime geçin.");
+        }
 
-        $_SESSION['success_message'] = "Şifreniz başarıyla güncellendi.";
-        header("Location: change-password.php");
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://api.heroku.com/apps/{$app_name}/config-vars");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['ADMIN_PASSWORD' => $new_password]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/vnd.heroku+json; version=3',
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $api_key
+        ]);
+
+        $result = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code !== 200) {
+            throw new Exception("Şifre güncellenirken bir hata oluştu. HTTP Kodu: " . $http_code);
+        }
+
+        $_SESSION['success_message'] = "Şifreniz başarıyla güncellendi. Lütfen yeni şifrenizle tekrar giriş yapın.";
+        header("Location: logout.php");
         exit;
 
     } catch (Exception $e) {
