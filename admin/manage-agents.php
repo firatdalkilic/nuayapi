@@ -5,7 +5,36 @@ require_once 'check_login.php';
 // Giriş kontrolü
 checkLogin();
 
-// Foreign key'i kaldır ve tabloyu yeniden oluştur
+// Properties tablosunu kontrol et ve oluştur
+$check_properties_query = "SELECT 1 FROM properties LIMIT 1";
+$table_exists = true;
+try {
+    $conn->query($check_properties_query);
+} catch (Exception $e) {
+    $table_exists = false;
+}
+
+if (!$table_exists) {
+    // Properties tablosunu oluştur
+    $create_properties_query = "CREATE TABLE properties (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        price DECIMAL(15,2),
+        location VARCHAR(255),
+        neighborhood VARCHAR(255),
+        status VARCHAR(50),
+        property_type VARCHAR(50),
+        image_name VARCHAR(255),
+        agent_id INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (agent_id) REFERENCES agents(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    $conn->query($create_properties_query);
+}
+
+// Foreign key'i kaldır ve agents tablosunu yeniden oluştur
 $conn->query("SET FOREIGN_KEY_CHECKS=0");
 
 // Önce mevcut foreign key'i kaldır
