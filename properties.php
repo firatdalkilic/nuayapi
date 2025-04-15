@@ -295,7 +295,7 @@ if (!file_exists('uploads')) {
       overflow: hidden;
       transition: all 0.3s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      height: 200px;
+      height: 170px;
     }
 
     .property-card:hover {
@@ -322,12 +322,16 @@ if (!file_exists('uploads')) {
 
     .card-body {
       padding: 0.5rem 0.75rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .property-details {
       display: flex;
       gap: 0.75rem;
-      margin: 0.35rem 0;
+      margin: 0;
+      padding: 0.25rem 0;
     }
 
     .detail-item {
@@ -336,18 +340,13 @@ if (!file_exists('uploads')) {
       gap: 0.2rem;
       color: #4b5563;
       font-size: 0.8rem;
-      margin-bottom: -30px;
-    }
-
-    .detail-item i {
-      color: #2563eb;
-      font-size: 0.85rem;
     }
 
     .property-location {
       color: #6b7280;
       font-size: 0.8rem;
       margin-bottom: 0.2rem;
+      padding: 0;
     }
 
     .property-location i {
@@ -358,7 +357,8 @@ if (!file_exists('uploads')) {
     .property-features {
       font-size: 0.75rem;
       color: #6b7280;
-      margin-top: 0.2rem;
+      margin: 0;
+      padding: 0.2rem 0;
     }
 
     .property-features i {
@@ -369,6 +369,7 @@ if (!file_exists('uploads')) {
       font-size: 1rem;
       line-height: 1.2;
       margin-bottom: 0.2rem;
+      padding: 0;
     }
 
     .text-primary {
