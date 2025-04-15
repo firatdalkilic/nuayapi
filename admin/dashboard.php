@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once 'config.php';
+require_once 'check_login.php';
+
+// Giriş kontrolü
 checkLogin();
 
 // İlanları getir
