@@ -359,21 +359,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="zoning_status" class="form-label">İmar Durumu</label>
-                                    <select class="form-select" id="zoning_status" name="zoning_status" required>
-                                        <option value="">Seçiniz</option>
-                                        <option value="Konut">Konut</option>
-                                        <option value="Ticari">Ticari</option>
-                                        <option value="Karma">Karma</option>
-                                        <option value="İmarsız">İmarsız</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
                                     <label for="deed_status" class="form-label">Tapu Durumu</label>
                                     <select class="form-select" id="deed_status" name="deed_status" required>
                                         <option value="">Seçiniz</option>
                                         <option value="Müstakil">Müstakil</option>
                                         <option value="Hisseli">Hisseli</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="eligible_for_credit" class="form-label">Krediye Uygunluk</label>
+                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
+                                        <option value="Evet">Evet</option>
+                                        <option value="Hayır">Hayır</option>
                                     </select>
                                 </div>
                             </div>
@@ -404,22 +401,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="eligible_for_credit" class="form-label">Krediye Uygunluk</label>
-                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
-                                        <option value="Evet">Evet</option>
-                                        <option value="Hayır">Hayır</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="usage_status" class="form-label">Kullanım Durumu</label>
-                                    <select class="form-select" id="usage_status" name="usage_status" required>
-                                        <option value="Boş">Boş</option>
-                                        <option value="Kiracılı">Kiracılı</option>
-                                        <option value="Mülk Sahibi">Mülk Sahibi</option>
-                                    </select>
-                                </div>
+                            <div class="mb-3">
+                                <label for="usage_status" class="form-label">Kullanım Durumu</label>
+                                <select class="form-select" id="usage_status" name="usage_status" required>
+                                    <option value="Boş">Boş</option>
+                                    <option value="Kiracılı">Kiracılı</option>
+                                    <option value="Mülk Sahibi">Mülk Sahibi</option>
+                                </select>
                             </div>
 
                             <div class="mb-3">
