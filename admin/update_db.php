@@ -37,6 +37,7 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
+        username_panel VARCHAR(50) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         phone VARCHAR(20),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

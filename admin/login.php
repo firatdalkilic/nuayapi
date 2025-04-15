@@ -3,13 +3,13 @@ session_start();
 require_once 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
+    $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     
     // Önce agents tablosunda kontrol et
-    $sql = "SELECT * FROM agents WHERE email = ?";
+    $sql = "SELECT * FROM agents WHERE username_panel = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -25,13 +25,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     // Danışman girişi başarısız, admin girişini kontrol et
-    if ($email === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
         $_SESSION['admin_logged_in'] = true;
         header("Location: dashboard.php");
         exit;
     }
     
-    $error = "Geçersiz e-posta veya şifre!";
+    $error = "Geçersiz kullanıcı adı veya şifre!";
 }
 ?>
 
@@ -81,8 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <form method="POST" action="">
                 <div class="mb-3">
-                    <label for="email" class="form-label">E-posta</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <label for="username" class="form-label">Kullanıcı Adı</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Şifre</label>
