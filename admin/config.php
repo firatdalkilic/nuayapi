@@ -107,13 +107,4 @@ if ($result->num_rows == 0) {
         die("Resim tablosu oluşturma hatası: " . $conn->error);
     }
 }
-
-// Oturum kontrolü için fonksiyon
-function checkLogin() {
-    if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-        $_SESSION['error'] = "Lütfen önce giriş yapın.";
-        header("Location: login.php");
-        exit;
-    }
-}
 ?> 
