@@ -336,6 +336,7 @@ if (!file_exists('uploads')) {
       gap: 0.2rem;
       color: #4b5563;
       font-size: 0.8rem;
+      margin-bottom: -30px;
     }
 
     .detail-item i {
