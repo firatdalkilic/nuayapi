@@ -79,9 +79,6 @@ if ($result->num_rows == 0) {
         height_limit VARCHAR(50),
         deed_status VARCHAR(100),
         price_per_sqm DECIMAL(12,2),
-        sahibinden_link VARCHAR(255),
-        emlakjet_link VARCHAR(255),
-        facebook_link VARCHAR(255),
         room_count INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -116,9 +113,6 @@ if ($result->num_rows == 0) {
 $required_columns = [
     'status' => 'VARCHAR(50)',
     'room_count' => 'INT',
-    'sahibinden_link' => 'VARCHAR(255)',
-    'emlakjet_link' => 'VARCHAR(255)',
-    'facebook_link' => 'VARCHAR(255)',
     'block_no' => 'VARCHAR(50)',
     'parcel_no' => 'VARCHAR(50)',
     'sheet_no' => 'VARCHAR(50)',
