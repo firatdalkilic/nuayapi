@@ -269,6 +269,23 @@ if (!$images_stmt) {
 $images_stmt->bind_param("i", $id);
 $images_stmt->execute();
 $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+$required_fields = [
+    'title' => 'İlan Başlığı',
+    'price' => 'Fiyat',
+    'status' => 'Durum',
+    'net_area' => 'Alan (m²)',
+    'zoning_status' => 'İmar Durumu',
+    'block_no' => 'Ada No',
+    'parcel_no' => 'Parsel No',
+    'sheet_no' => 'Pafta No',
+    'floor_area_ratio' => 'Kaks (Emsal)',
+    'height_limit' => 'Gabari',
+    'eligible_for_credit' => 'Krediye Uygunluk',
+    'deed_status' => 'Tapu Durumu',
+    'description' => 'Açıklama',
+    'neighborhood' => 'Mahalle'
+];
 ?>
 
 <!DOCTYPE html>
