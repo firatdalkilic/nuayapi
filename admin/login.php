@@ -3,13 +3,13 @@ session_start();
 require_once 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     
     // Önce agents tablosunda kontrol et
-    $sql = "SELECT * FROM agents WHERE username = ?";
+    $sql = "SELECT * FROM agents WHERE email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -18,20 +18,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $agent['password'])) {
             $_SESSION['agent_logged_in'] = true;
             $_SESSION['agent_id'] = $agent['id'];
-            $_SESSION['agent_name'] = $agent['agent_name'];
+            $_SESSION['agent_name'] = $agent['name'];
             header("Location: dashboard.php");
             exit;
         }
     }
     
     // Danışman girişi başarısız, admin girişini kontrol et
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+    if ($email === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
         $_SESSION['admin_logged_in'] = true;
         header("Location: dashboard.php");
         exit;
     }
     
-    $error = "Geçersiz kullanıcı adı veya şifre!";
+    $error = "Geçersiz e-posta veya şifre!";
 }
 ?>
 
@@ -81,8 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <form method="POST" action="">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Kullanıcı Adı</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <label for="email" class="form-label">E-posta</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Şifre</label>
