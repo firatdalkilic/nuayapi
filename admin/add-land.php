@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $deed_status = trim($_POST['deed_status']);
     $neighborhood = trim($_POST['neighborhood']);
     $usage_status = NULL; // Arsa ilanları için NULL
-    $video_call_available = isset($_POST['video_call_available']) ? $_POST['video_call_available'] : 'Hayır';
+    $video_call_available = 'Hayır';
     $video_file = '';
 
     // Metrekare başına fiyatı hesapla
@@ -405,13 +405,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="video_call_available" class="form-label">Görüntülü Arama ile Gezilebilir</label>
-                                <select class="form-select" id="video_call_available" name="video_call_available">
-                                    <option value="Evet">Evet</option>
-                                    <option value="Hayır">Hayır</option>
-                                </select>
-                            </div>
+                            <input type="hidden" name="video_call_available" value="Hayır">
 
                             <div class="mb-3">
                                 <label for="images" class="form-label">İlan Fotoğrafları</label>

@@ -633,7 +633,11 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                         <option value="Mülk Sahibi" <?php echo ($property['usage_status'] == 'Mülk Sahibi') ? 'selected' : ''; ?>>Mülk Sahibi</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                            </div>
+
+                            <?php if ($property['property_type'] !== 'Arsa'): ?>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
                                     <label for="video_call_available" class="form-label">Görüntülü Arama</label>
                                     <select class="form-select" id="video_call_available" name="video_call_available" required>
                                         <option value="Evet" <?php echo ($property['video_call_available'] == 'Evet') ? 'selected' : ''; ?>>Evet</option>
@@ -641,6 +645,9 @@ $images = $images_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                                     </select>
                                 </div>
                             </div>
+                            <?php else: ?>
+                            <input type="hidden" name="video_call_available" value="Hayır">
+                            <?php endif; ?>
 
                             <div class="mb-3">
                                 <label for="description" class="form-label">Açıklama</label>
