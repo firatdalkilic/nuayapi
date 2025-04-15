@@ -805,6 +805,13 @@ try {
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="detail-item">
+                                <i class="bi bi-clipboard-check"></i>
+                                <span>İmar Durumu:</span>
+                                <?php echo htmlspecialchars($property['zoning_status']); ?>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>m²:</span>
                                 <?php echo number_format($property['net_area'], 0, ',', '.'); ?>
@@ -812,9 +819,16 @@ try {
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="detail-item">
-                                <i class="bi bi-clipboard-check"></i>
-                                <span>İmar Durumu:</span>
-                                <?php echo htmlspecialchars($property['zoning_status']); ?>
+                                <i class="bi bi-cash"></i>
+                                <span>m² Fiyatı:</span>
+                                <?php 
+                                    if ($property['net_area'] > 0) {
+                                        $price_per_sqm = $property['price'] / $property['net_area'];
+                                        echo number_format($price_per_sqm, 2, ',', '.') . ' ₺/m²';
+                                    } else {
+                                        echo "Hesaplanamadı";
+                                    }
+                                ?>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
@@ -864,20 +878,6 @@ try {
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Tapu Durumu:</span>
                                 <?php echo htmlspecialchars($property['deed_status']); ?>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="detail-item">
-                                <i class="bi bi-cash"></i>
-                                <span>m² Fiyatı:</span>
-                                <?php 
-                                    if ($property['net_area'] > 0) {
-                                        $price_per_sqm = $property['price'] / $property['net_area'];
-                                        echo number_format($price_per_sqm, 2, ',', '.') . ' ₺/m²';
-                                    } else {
-                                        echo "Hesaplanamadı";
-                                    }
-                                ?>
                             </div>
                         </div>
                     </div>
