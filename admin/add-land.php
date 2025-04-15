@@ -152,15 +152,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->affected_rows > 0 && $upload_success) {
             $_SESSION['success'] = "İlan başarıyla eklendi.";
-            header("Location: properties.php");
-            exit;
         } else {
             throw new Exception("İlan eklenirken bir hata oluştu.");
         }
     } catch (Exception $e) {
         $_SESSION['error'] = $e->getMessage();
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
     }
 }
 ?>
@@ -248,6 +244,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <h3 class="mb-0">Arsa İlanı Ekle</h3>
                     </div>
                     <div class="card-body">
+                        <?php if(isset($_SESSION['success'])): ?>
+                            <div class="alert alert-success">
+                                <?php 
+                                echo $_SESSION['success'];
+                                unset($_SESSION['success']);
+                                ?>
+                            </div>
+                        <?php endif; ?>
+
                         <?php if(isset($_SESSION['error'])): ?>
                             <div class="alert alert-danger">
                                 <?php 
