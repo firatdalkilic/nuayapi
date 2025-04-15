@@ -79,6 +79,9 @@ if ($result->num_rows == 0) {
         height_limit VARCHAR(50),
         deed_status VARCHAR(100),
         price_per_sqm DECIMAL(12,2),
+        sahibinden_link VARCHAR(255),
+        emlakjet_link VARCHAR(255),
+        facebook_link VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
@@ -105,6 +108,20 @@ if ($result->num_rows == 0) {
     if (!$conn->query($create_images_table)) {
         error_log("Images table creation error: " . $conn->error);
         die("Resim tablosu oluşturma hatası: " . $conn->error);
+    }
+}
+
+// Mevcut properties tablosunda yeni alanları kontrol et ve ekle
+$alter_queries = [
+    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS sahibinden_link VARCHAR(255)",
+    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS emlakjet_link VARCHAR(255)",
+    "ALTER TABLE properties ADD COLUMN IF NOT EXISTS facebook_link VARCHAR(255)"
+];
+
+foreach ($alter_queries as $query) {
+    if (!$conn->query($query)) {
+        error_log("Alter table error: " . $conn->error);
+        die("Tablo güncelleme hatası: " . $conn->error);
     }
 }
 ?> 
