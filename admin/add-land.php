@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $video_file = '';
 
     // Metrekare başına fiyatı hesapla
-    $price_per_sqm = $net_area > 0 ? $price / $net_area : 0;
+    $price_per_sqm = $net_area > 0 ? floatval($price) / floatval($net_area) : 0;
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
