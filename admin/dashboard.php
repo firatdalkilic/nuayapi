@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session_manager.php';
 require_once 'config.php';
 require_once 'check_login.php';
 
