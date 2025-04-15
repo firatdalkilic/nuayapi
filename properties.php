@@ -295,7 +295,7 @@ if (!file_exists('uploads')) {
       overflow: hidden;
       transition: all 0.3s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      height: 250px;
+      height: 200px;
     }
 
     .property-card:hover {
@@ -304,58 +304,60 @@ if (!file_exists('uploads')) {
     }
 
     .property-card .property-image {
-      height: 250px;
+      height: 200px;
+      width: 200px;
       overflow: hidden;
       position: relative;
-      border-radius: 8px 8px 0 0;
+      border-radius: 8px 0 0 8px;
       background-color: #ffffff;
     }
 
     .property-card .property-image img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
       background-color: #ffffff;
     }
 
     .card-body {
-      padding: 0.75rem 1rem;
+      padding: 0.5rem 0.75rem;
     }
 
     .property-details {
       display: flex;
-      gap: 1rem;
-      margin: 0.5rem 0;
+      gap: 0.75rem;
+      margin: 0.35rem 0;
     }
 
     .detail-item {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.2rem;
       color: #4b5563;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
     .detail-item i {
       color: #2563eb;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .property-location {
       color: #6b7280;
-      font-size: 0.85rem;
-      margin-bottom: 0.25rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
     }
 
     .property-location i {
       color: #2563eb;
-      margin-right: 0.25rem;
+      margin-right: 0.2rem;
     }
 
     .property-features {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #6b7280;
+      margin-top: 0.2rem;
     }
 
     .property-features i {
@@ -363,13 +365,18 @@ if (!file_exists('uploads')) {
     }
 
     .card-title {
-      font-size: 1.1rem;
-      line-height: 1.3;
-      margin-bottom: 0.25rem;
+      font-size: 1rem;
+      line-height: 1.2;
+      margin-bottom: 0.2rem;
     }
 
     .text-primary {
-      font-size: 1.1rem !important;
+      font-size: 1rem !important;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
     }
 
     /* Sayfalama Stilleri */
