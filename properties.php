@@ -746,7 +746,7 @@ if (!file_exists('uploads')) {
                         <?php if ($ilan['property_type'] == 'Arsa'): ?>
                             <div class="detail-item me-4">
                                 <i class="bi bi-building"></i>
-                                <span><?php echo htmlspecialchars($ilan['status']); ?></span>
+                                <span><?php echo htmlspecialchars($ilan['status'] . ' ' . $ilan['property_type']); ?></span>
                             </div>
                             <div class="detail-item me-4">
                                 <i class="bi bi-rulers"></i>
