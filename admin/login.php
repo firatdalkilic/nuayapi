@@ -1,7 +1,7 @@
 <?php
-session_start();
-require_once 'config.php';
 require_once 'session_manager.php';
+require_once 'config.php';
+
 error_log("Login sayfası yükleniyor");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

@@ -1,4 +1,6 @@
 <?php
+require_once 'session_manager.php';
+
 error_log("Check Login: Başlatılıyor");
 error_log("Session Status: " . session_status());
 error_log("Session ID: " . session_id());
