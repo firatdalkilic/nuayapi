@@ -151,6 +151,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if ($stmt->affected_rows > 0 && $upload_success) {
+            // Video yükleme
+            if (isset($_FILES["property_video"]) && !empty($_FILES["property_video"]["name"])) {
+                $video_dir = "../uploads/videos/";
+                if (!file_exists($video_dir)) {
+                    mkdir($video_dir, 0777, true);
+                }
+
+                $video_name = time() . '_' . basename($_FILES["property_video"]["name"]);
+                $video_target = $video_dir . $video_name;
+                
+                $allowed_types = ['video/mp4', 'video/webm', 'video/ogg'];
+                
+                if (in_array($_FILES["property_video"]["type"], $allowed_types)) {
+                    if (move_uploaded_file($_FILES["property_video"]["tmp_name"], $video_target)) {
+                        $video_stmt = $conn->prepare("UPDATE properties SET video_file = ? WHERE id = ?");
+                        $video_stmt->bind_param("si", $video_name, $property_id);
+                        $video_stmt->execute();
+                    }
+                }
+            }
             $_SESSION['success'] = "İlan başarıyla eklendi.";
         } else {
             throw new Exception("İlan eklenirken bir hata oluştu.");
@@ -411,6 +431,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label for="images" class="form-label">İlan Fotoğrafları</label>
                                 <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*" required>
                                 <small class="text-muted">Birden fazla fotoğraf seçebilirsiniz. İlk fotoğraf vitrin fotoğrafı olarak kullanılacaktır.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="property_video" class="form-label">Video</label>
+                                <input type="file" class="form-control" id="property_video" name="property_video" accept="video/mp4,video/webm,video/ogg">
+                                <small class="text-muted">Desteklenen formatlar: MP4, WebM, OGG</small>
                             </div>
 
                             <div class="d-grid">
