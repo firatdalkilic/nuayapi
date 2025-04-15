@@ -38,6 +38,11 @@ $result = $conn->query($sql);
                     <li class="nav-item">
                         <a class="nav-link active" href="dashboard.php">İlanlar</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="add-agent.php">
+                            <i class="bi bi-person-plus"></i> Danışman Tanımla
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -82,10 +87,6 @@ $result = $conn->query($sql);
                     </a>
                     <a href="add-land.php" class="btn btn-success me-2">
                         <i class="fas fa-plus"></i> Arsa İlanı Ekle
-                    </a>
-                    <a href="add-agent.php" class="btn btn-secondary me-2">
-                        <i class="bi bi-person-plus"></i>
-                        <span>Danışman Tanımla</span>
                     </a>
                 </div>
             </div>
