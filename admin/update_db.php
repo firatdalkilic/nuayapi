@@ -2,12 +2,18 @@
 require_once 'config.php';
 
 try {
-    // Önce agent_id sütununu ekleyelim (eğer yoksa)
-    $sql = "ALTER TABLE properties ADD COLUMN IF NOT EXISTS agent_id INT";
-    if ($conn->query($sql)) {
-        echo "agent_id sütunu başarıyla eklendi veya zaten mevcut.<br>";
+    // Önce agent_id sütununun var olup olmadığını kontrol edelim
+    $check_column = $conn->query("SHOW COLUMNS FROM properties LIKE 'agent_id'");
+    if ($check_column->num_rows == 0) {
+        // Sütun yoksa ekleyelim
+        $sql = "ALTER TABLE properties ADD COLUMN agent_id INT";
+        if ($conn->query($sql)) {
+            echo "agent_id sütunu başarıyla eklendi.<br>";
+        } else {
+            throw new Exception($conn->error);
+        }
     } else {
-        throw new Exception($conn->error);
+        echo "agent_id sütunu zaten mevcut.<br>";
     }
 
     // Agents tablosunu yeniden oluşturalım
