@@ -1,8 +1,13 @@
 <?php
 session_start();
 require_once 'config.php';
+require_once 'session_manager.php';
+error_log("Login sayfası yükleniyor");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    error_log("Login POST isteği alındı");
+    error_log("POST verisi: " . print_r($_POST, true));
+    
     $username = $_POST['username'];
     $password = $_POST['password'];
     
@@ -15,15 +20,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
         if (password_verify($password, $row['password'])) {
+            error_log("Login başarılı - Session başlatılıyor");
             $_SESSION['admin_logged_in'] = true;
             $_SESSION['admin_id'] = $row['id'];
             $_SESSION['admin_username'] = $row['username'];
+            error_log("Session değişkenleri ayarlandı: " . print_r($_SESSION, true));
             header("Location: dashboard.php");
             exit;
         } else {
+            error_log("Login başarısız - Hatalı kullanıcı adı veya şifre");
             $error = "Kullanıcı adı veya şifre hatalı!";
         }
     } else {
+        error_log("Login başarısız - Kullanıcı bulunamadı");
         $error = "Kullanıcı adı veya şifre hatalı!";
     }
 }
