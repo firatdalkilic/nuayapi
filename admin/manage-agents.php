@@ -5,7 +5,8 @@ require_once 'check_login.php';
 // Giriş kontrolü
 checkLogin();
 
-// Tabloyu yeniden oluştur
+// Foreign key'i kaldır ve tabloyu yeniden oluştur
+$conn->query("SET FOREIGN_KEY_CHECKS=0");
 $conn->query("DROP TABLE IF EXISTS agents");
 $create_table_query = "CREATE TABLE agents (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,6 +24,12 @@ $create_table_query = "CREATE TABLE agents (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 $conn->query($create_table_query);
+
+// Properties tablosundaki foreign key'i yeniden ekle
+$add_foreign_key = "ALTER TABLE properties ADD CONSTRAINT properties_ibfk_1 FOREIGN KEY (agent_id) REFERENCES agents(id)";
+$conn->query($add_foreign_key);
+
+$conn->query("SET FOREIGN_KEY_CHECKS=1");
 
 // Form işlemleri
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
