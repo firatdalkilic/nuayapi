@@ -39,8 +39,8 @@ $result = $conn->query($sql);
                         <a class="nav-link active" href="dashboard.php">İlanlar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="add-agent.php">
-                            <i class="bi bi-person-plus"></i> Danışman Tanımla
+                        <a class="nav-link" href="manage-agents.php">
+                            <i class="bi bi-people"></i> Danışman Yönetimi
                         </a>
                     </li>
                 </ul>
