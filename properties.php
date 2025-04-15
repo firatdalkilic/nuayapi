@@ -756,25 +756,6 @@ if (!file_exists('uploads')) {
                                 <i class="bi bi-clipboard-check"></i>
                                 <span><?php echo htmlspecialchars($ilan['zoning_status']); ?></span>
                             </div>
-                            <div class="detail-item me-4">
-                                <i class="bi bi-cash"></i>
-                                <span><?php 
-                                    if ($ilan['net_area'] > 0) {
-                                        $price_per_sqm = $ilan['price'] / $ilan['net_area'];
-                                        echo number_format($price_per_sqm, 2, ',', '.') . ' ₺/m²';
-                                    } else {
-                                        echo "Hesaplanamadı";
-                                    }
-                                ?></span>
-                            </div>
-                            <div class="detail-item me-4">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Ada: <?php echo htmlspecialchars($ilan['block_no']); ?></span>
-                            </div>
-                            <div class="detail-item me-4">
-                                <i class="bi bi-geo"></i>
-                                <span>Parsel: <?php echo htmlspecialchars($ilan['parcel_no']); ?></span>
-                            </div>
                         <?php else: ?>
                             <div class="detail-item me-4">
                                 <i class="bi bi-building"></i>
