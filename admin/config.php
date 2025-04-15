@@ -82,6 +82,7 @@ if ($result->num_rows == 0) {
         sahibinden_link VARCHAR(255),
         emlakjet_link VARCHAR(255),
         facebook_link VARCHAR(255),
+        room_count INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
@@ -111,7 +112,26 @@ if ($result->num_rows == 0) {
     }
 }
 
-// Mevcut properties tablosunda yeni alanları kontrol et ve ekle
+// Mevcut sütunları kontrol et ve eksik olanları ekle
+$required_columns = [
+    'status' => 'VARCHAR(50)',
+    'room_count' => 'INT',
+    'sahibinden_link' => 'VARCHAR(255)',
+    'emlakjet_link' => 'VARCHAR(255)',
+    'facebook_link' => 'VARCHAR(255)',
+    'block_no' => 'VARCHAR(50)',
+    'parcel_no' => 'VARCHAR(50)',
+    'sheet_no' => 'VARCHAR(50)',
+    'floor_area_ratio' => 'VARCHAR(50)',
+    'height_limit' => 'VARCHAR(50)',
+    'deed_status' => 'VARCHAR(100)',
+    'price_per_sqm' => 'DECIMAL(12,2)',
+    'video_call_available' => 'VARCHAR(50)',
+    'video_file' => 'VARCHAR(255)',
+    'site_name' => 'VARCHAR(255)',
+    'living_room' => 'INT'
+];
+
 $check_columns_query = "SHOW COLUMNS FROM properties";
 $result = $conn->query($check_columns_query);
 $existing_columns = [];
@@ -119,13 +139,7 @@ while($row = $result->fetch_assoc()) {
     $existing_columns[] = $row['Field'];
 }
 
-$columns_to_add = [
-    'sahibinden_link' => 'VARCHAR(255)',
-    'emlakjet_link' => 'VARCHAR(255)',
-    'facebook_link' => 'VARCHAR(255)'
-];
-
-foreach ($columns_to_add as $column => $type) {
+foreach ($required_columns as $column => $type) {
     if (!in_array($column, $existing_columns)) {
         $alter_query = "ALTER TABLE properties ADD COLUMN $column $type";
         if (!$conn->query($alter_query)) {
