@@ -1,39 +1,27 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'config.php';
 
 try {
-    // Show table structure
-    $sql = "SHOW CREATE TABLE properties";
-    $result = $conn->query($sql);
-    
+    // Tablo yapısını kontrol et
+    $result = $conn->query("DESCRIBE properties");
     if ($result) {
-        $row = $result->fetch_assoc();
-        echo "Table Structure:\n";
-        echo $row['Create Table'] . "\n\n";
-    } else {
-        echo "Error getting table structure: " . $conn->error . "\n";
-    }
-    
-    // Show columns
-    $sql = "SHOW COLUMNS FROM properties";
-    $result = $conn->query($sql);
-    
-    if ($result) {
-        echo "Columns in properties table:\n";
+        echo "<h2>Properties Tablosu Yapısı:</h2>";
+        echo "<pre>";
         while ($row = $result->fetch_assoc()) {
-            echo "Field: " . $row['Field'] . "\n";
-            echo "Type: " . $row['Type'] . "\n";
-            echo "Null: " . $row['Null'] . "\n";
-            echo "Default: " . $row['Default'] . "\n";
-            echo "------------------------\n";
+            print_r($row);
         }
+        echo "</pre>";
     } else {
-        echo "Error getting columns: " . $conn->error . "\n";
+        echo "Tablo yapısı alınamadı: " . $conn->error;
     }
-    
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
+    echo "Bir hata oluştu: " . $e->getMessage();
+} finally {
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
-
-$conn->close();
 ?> 
