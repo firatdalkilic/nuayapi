@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? $_POST['eligible_for_credit'] : 'Hayır';
     $deed_status = trim($_POST['deed_status']);
     $neighborhood = trim($_POST['neighborhood']);
-    $usage_status = trim($_POST['usage_status']);
+    $usage_status = NULL; // Arsa ilanları için NULL
     $video_call_available = isset($_POST['video_call_available']) ? $_POST['video_call_available'] : 'Hayır';
     $video_file = '';
 
@@ -402,11 +402,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
 
                             <div class="mb-3">
-                                <label for="usage_status" class="form-label">Kullanım Durumu</label>
-                                <select class="form-select" id="usage_status" name="usage_status" required>
-                                    <option value="Boş">Boş</option>
-                                    <option value="Kiracılı">Kiracılı</option>
-                                    <option value="Mülk Sahibi">Mülk Sahibi</option>
+                                <label for="video_call_available" class="form-label">Görüntülü Arama ile Gezilebilir</label>
+                                <select class="form-select" id="video_call_available" name="video_call_available">
+                                    <option value="Evet">Evet</option>
+                                    <option value="Hayır">Hayır</option>
                                 </select>
                             </div>
 
@@ -414,14 +413,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label for="images" class="form-label">İlan Fotoğrafları</label>
                                 <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*" required>
                                 <small class="text-muted">Birden fazla fotoğraf seçebilirsiniz. İlk fotoğraf vitrin fotoğrafı olarak kullanılacaktır.</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="video_call_available" class="form-label">Görüntülü Arama ile Gezilebilir</label>
-                                <select class="form-select" id="video_call_available" name="video_call_available">
-                                    <option value="Evet">Evet</option>
-                                    <option value="Hayır">Hayır</option>
-                                </select>
                             </div>
 
                             <div class="d-grid">
