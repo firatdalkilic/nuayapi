@@ -17,7 +17,9 @@
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'add-land.php' ? 'active' : ''; ?>" href="add-land.php">Arsa İlanı Ekle</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage-agents.php' ? 'active' : ''; ?>" href="manage-agents.php">Emlakçılar</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage-agents.php' ? 'active' : ''; ?>" href="manage-agents.php">
+                        <i class="bi bi-people"></i> Danışman Yönetimi
+                    </a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
