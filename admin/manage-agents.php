@@ -11,12 +11,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         switch ($_POST['action']) {
             case 'add':
                 $name = trim($_POST['name']);
+                $username = trim($_POST['username']);
+                $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
                 $phone = trim($_POST['phone']);
                 $email = trim($_POST['email']);
+                $about = trim($_POST['about']);
+                $sahibinden_link = trim($_POST['sahibinden_link']);
+                $emlakjet_link = trim($_POST['emlakjet_link']);
+                $facebook_link = trim($_POST['facebook_link']);
+                
+                // Resim yükleme işlemi
+                $image = '';
+                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                    $target_dir = "../uploads/agents/";
+                    if (!file_exists($target_dir)) {
+                        mkdir($target_dir, 0777, true);
+                    }
+                    $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+                    $image = "agent_" . time() . "." . $imageFileType;
+                    $target_file = $target_dir . $image;
+                    
+                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                        $image = "uploads/agents/" . $image;
+                    }
+                }
 
-                $sql = "INSERT INTO agents (agent_name, phone, email) VALUES (?, ?, ?)";
+                $sql = "INSERT INTO agents (agent_name, username, password, phone, email, about, image, sahibinden_link, emlakjet_link, facebook_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sss", $name, $phone, $email);
+                $stmt->bind_param("ssssssssss", $name, $username, $password, $phone, $email, $about, $image, $sahibinden_link, $emlakjet_link, $facebook_link);
                 
                 if ($stmt->execute()) {
                     $_SESSION['success'] = "Danışman başarıyla eklendi.";
@@ -28,12 +50,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             case 'edit':
                 $id = $_POST['id'];
                 $name = trim($_POST['name']);
+                $username = trim($_POST['username']);
                 $phone = trim($_POST['phone']);
                 $email = trim($_POST['email']);
-
-                $sql = "UPDATE agents SET agent_name=?, phone=?, email=? WHERE id=?";
+                $about = trim($_POST['about']);
+                $sahibinden_link = trim($_POST['sahibinden_link']);
+                $emlakjet_link = trim($_POST['emlakjet_link']);
+                $facebook_link = trim($_POST['facebook_link']);
+                
+                // Şifre kontrolü
+                $password_sql = "";
+                $types = "sssssssssi"; // Başlangıç parametre tipleri
+                $params = array($name, $username, $phone, $email, $about, $sahibinden_link, $emlakjet_link, $facebook_link);
+                
+                if (!empty($_POST['password'])) {
+                    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+                    $password_sql = ", password=?";
+                    $types = "ssssssssssi"; // Şifre için ekstra 's' eklendi
+                    $params[] = $password;
+                }
+                
+                // Resim yükleme işlemi
+                $image_sql = "";
+                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                    $target_dir = "../uploads/agents/";
+                    if (!file_exists($target_dir)) {
+                        mkdir($target_dir, 0777, true);
+                    }
+                    $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+                    $image = "agent_" . time() . "." . $imageFileType;
+                    $target_file = $target_dir . $image;
+                    
+                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                        $image = "uploads/agents/" . $image;
+                        $image_sql = ", image=?";
+                        $types .= "s";
+                        $params[] = $image;
+                    }
+                }
+                
+                $params[] = $id; // ID en sona eklenir
+                
+                $sql = "UPDATE agents SET agent_name=?, username=?, phone=?, email=?, about=?, sahibinden_link=?, emlakjet_link=?, facebook_link=?" . $password_sql . $image_sql . " WHERE id=?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sssi", $name, $phone, $email, $id);
+                $stmt->bind_param($types, ...$params);
                 
                 if ($stmt->execute()) {
                     $_SESSION['success'] = "Danışman bilgileri güncellendi.";
@@ -67,8 +127,15 @@ if ($result->num_rows == 0) {
     $create_table_query = "CREATE TABLE agents (
         id INT AUTO_INCREMENT PRIMARY KEY,
         agent_name VARCHAR(255) NOT NULL,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
         phone VARCHAR(50) NOT NULL,
         email VARCHAR(255) NOT NULL,
+        about TEXT,
+        image VARCHAR(255),
+        sahibinden_link VARCHAR(255),
+        emlakjet_link VARCHAR(255),
+        facebook_link VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
@@ -227,8 +294,14 @@ if ($result->num_rows > 0) {
                                                     data-bs-target="#editAgentModal"
                                                     data-id="<?php echo $agent['id']; ?>"
                                                     data-name="<?php echo htmlspecialchars($agent['agent_name']); ?>"
+                                                    data-username="<?php echo htmlspecialchars($agent['username']); ?>"
                                                     data-phone="<?php echo htmlspecialchars($agent['phone']); ?>"
-                                                    data-email="<?php echo htmlspecialchars($agent['email']); ?>">
+                                                    data-email="<?php echo htmlspecialchars($agent['email']); ?>"
+                                                    data-about="<?php echo htmlspecialchars($agent['about']); ?>"
+                                                    data-image="<?php echo htmlspecialchars($agent['image']); ?>"
+                                                    data-sahibinden_link="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>"
+                                                    data-emlakjet_link="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>"
+                                                    data-facebook_link="<?php echo htmlspecialchars($agent['facebook_link']); ?>">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-danger delete-agent"
@@ -252,26 +325,60 @@ if ($result->num_rows > 0) {
 
     <!-- Add Agent Modal -->
     <div class="modal fade" id="addAgentModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form method="POST" action="">
+                <form method="POST" action="" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="add">
                     <div class="modal-header">
                         <h5 class="modal-title">Yeni Danışman Ekle</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">İsim</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Telefon</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">E-posta</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">İsim Soyisim</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Kullanıcı Adı</label>
+                                    <input type="text" class="form-control" id="username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Şifre</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">E-posta</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="about" class="form-label">Hakkımda</label>
+                                    <textarea class="form-control" id="about" name="about" rows="4"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Profil Resmi</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="sahibinden_link" class="form-label">Sahibinden Linki</label>
+                                    <input type="url" class="form-control" id="sahibinden_link" name="sahibinden_link">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="emlakjet_link" class="form-label">Emlakjet Linki</label>
+                                    <input type="url" class="form-control" id="emlakjet_link" name="emlakjet_link">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="facebook_link" class="form-label">Facebook Linki</label>
+                                    <input type="url" class="form-control" id="facebook_link" name="facebook_link">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -285,9 +392,9 @@ if ($result->num_rows > 0) {
 
     <!-- Edit Agent Modal -->
     <div class="modal fade" id="editAgentModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form method="POST" action="">
+                <form method="POST" action="" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" id="edit_id" name="id">
                     <div class="modal-header">
@@ -295,17 +402,52 @@ if ($result->num_rows > 0) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="edit_name" class="form-label">İsim</label>
-                            <input type="text" class="form-control" id="edit_name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_phone" class="form-label">Telefon</label>
-                            <input type="tel" class="form-control" id="edit_phone" name="phone" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_email" class="form-label">E-posta</label>
-                            <input type="email" class="form-control" id="edit_email" name="email" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit_name" class="form-label">İsim Soyisim</label>
+                                    <input type="text" class="form-control" id="edit_name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_username" class="form-label">Kullanıcı Adı</label>
+                                    <input type="text" class="form-control" id="edit_username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_password" class="form-label">Şifre (Boş bırakılırsa değişmez)</label>
+                                    <input type="password" class="form-control" id="edit_password" name="password">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_phone" class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" id="edit_phone" name="phone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_email" class="form-label">E-posta</label>
+                                    <input type="email" class="form-control" id="edit_email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit_about" class="form-label">Hakkımda</label>
+                                    <textarea class="form-control" id="edit_about" name="about" rows="4"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_image" class="form-label">Profil Resmi</label>
+                                    <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
+                                    <div id="current_image" class="mt-2"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_sahibinden_link" class="form-label">Sahibinden Linki</label>
+                                    <input type="url" class="form-control" id="edit_sahibinden_link" name="sahibinden_link">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_emlakjet_link" class="form-label">Emlakjet Linki</label>
+                                    <input type="url" class="form-control" id="edit_emlakjet_link" name="emlakjet_link">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_facebook_link" class="form-label">Facebook Linki</label>
+                                    <input type="url" class="form-control" id="edit_facebook_link" name="facebook_link">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -348,8 +490,21 @@ if ($result->num_rows > 0) {
             button.addEventListener('click', function() {
                 document.getElementById('edit_id').value = this.dataset.id;
                 document.getElementById('edit_name').value = this.dataset.name;
+                document.getElementById('edit_username').value = this.dataset.username;
                 document.getElementById('edit_phone').value = this.dataset.phone;
                 document.getElementById('edit_email').value = this.dataset.email;
+                document.getElementById('edit_about').value = this.dataset.about;
+                document.getElementById('edit_sahibinden_link').value = this.dataset.sahibinden_link;
+                document.getElementById('edit_emlakjet_link').value = this.dataset.emlakjet_link;
+                document.getElementById('edit_facebook_link').value = this.dataset.facebook_link;
+                
+                // Mevcut resmi göster
+                const currentImage = document.getElementById('current_image');
+                if (this.dataset.image) {
+                    currentImage.innerHTML = `<img src="../${this.dataset.image}" alt="Mevcut Profil Resmi" style="max-width: 100px; max-height: 100px;">`;
+                } else {
+                    currentImage.innerHTML = 'Profil resmi yok';
+                }
             });
         });
 
