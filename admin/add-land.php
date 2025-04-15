@@ -311,7 +311,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="price_per_sqm" class="form-label">m² Birim Fiyatı (TL)</label>
-                                    <input type="text" class="form-control" id="price_per_sqm" name="price_per_sqm" readonly>
+                                    <input type="text" class="form-control" id="price_per_sqm" readonly>
+                                    <input type="hidden" name="price_per_sqm" id="price_per_sqm_hidden">
                                 </div>
                             </div>
 
@@ -431,6 +432,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         const priceInput = document.getElementById('price');
         const areaInput = document.getElementById('net_area');
         const pricePerSqmInput = document.getElementById('price_per_sqm');
+        const pricePerSqmHidden = document.getElementById('price_per_sqm_hidden');
 
         // Fiyat formatı için yardımcı fonksiyon
         function formatPrice(price) {
@@ -450,8 +452,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!isNaN(price) && !isNaN(area) && area > 0) {
                 const pricePerSqm = price / area;
                 pricePerSqmInput.value = formatPrice(pricePerSqm.toFixed(2));
+                pricePerSqmHidden.value = pricePerSqm.toFixed(2);
             } else {
                 pricePerSqmInput.value = '';
+                pricePerSqmHidden.value = '';
             }
         }
 
