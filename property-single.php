@@ -24,7 +24,14 @@ try {
 
     // İlan bilgilerini getir
     $stmt = $conn->prepare("
-        SELECT p.*, a.image as agent_photo, a.agent_name, a.phone as agent_phone, a.email as agent_email
+        SELECT 
+            p.*,
+            a.image as agent_photo,
+            a.agent_name,
+            a.phone as agent_phone,
+            a.email as agent_email,
+            a.id as debug_agent_id, -- Debug için eklendi
+            a.image as debug_image -- Debug için eklendi
         FROM properties p
         LEFT JOIN agents a ON p.agent_id = a.id
         WHERE p.id = ?
@@ -1154,9 +1161,19 @@ try {
                 <div class="card">
                     <div class="card-body">
                         <div class="text-center">
-                            <?php if (!empty($property['agent_photo']) && !empty($property['agent_name'])): ?>
+                            <?php 
+                            // Debug bilgilerini yazdır
+                            echo "<!-- Debug Bilgileri:
+                            agent_id: " . ($property['agent_id'] ?? 'null') . "
+                            debug_agent_id: " . ($property['debug_agent_id'] ?? 'null') . "
+                            agent_photo: " . ($property['agent_photo'] ?? 'null') . "
+                            debug_image: " . ($property['debug_image'] ?? 'null') . "
+                            agent_name: " . ($property['agent_name'] ?? 'null') . "
+                            -->";
+                            
+                            if (!empty($property['agent_photo'])): ?>
                                 <img src="admin/uploads/agents/<?php echo htmlspecialchars($property['agent_photo']); ?>" 
-                                     alt="<?php echo htmlspecialchars($property['agent_name']); ?>" 
+                                     alt="<?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'Nua Yapı'; ?>" 
                                      class="agent-image rounded-circle mb-2" 
                                      style="width: 150px; height: 150px; object-fit: cover;">
                             <?php else: ?>
