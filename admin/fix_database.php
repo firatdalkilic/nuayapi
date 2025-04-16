@@ -164,6 +164,48 @@ try {
         echo "Admin kullanıcısı zaten mevcut olabilir.<br>";
     }
 
+    // Eklenecek sütunların listesi
+    $columns = [
+        'bathroom_count' => 'INT DEFAULT 0',
+        'parking' => "ENUM('Var', 'Yok') DEFAULT 'Yok'",
+        'site' => "ENUM('Evet', 'Hayır') DEFAULT 'Hayır'",
+        'floor_location' => 'VARCHAR(50) DEFAULT NULL',
+        'total_floors' => 'INT DEFAULT 0',
+        'gross_area' => 'DECIMAL(10,2) DEFAULT 0',
+        'living_room' => 'INT DEFAULT 0',
+        'building_age' => 'VARCHAR(20) DEFAULT NULL',
+        'eligible_for_credit' => "ENUM('Evet', 'Hayır') DEFAULT 'Hayır'",
+        'heating' => 'VARCHAR(50) DEFAULT NULL',
+        'furnished' => "ENUM('Evet', 'Hayır') DEFAULT 'Hayır'",
+        'video_call_available' => "ENUM('Evet', 'Hayır') DEFAULT 'Hayır'",
+        'usage_status' => "ENUM('Boş', 'Kiracılı', 'Mülk Sahibi') DEFAULT 'Boş'"
+    ];
+
+    // Her sütun için kontrol et ve ekle
+    foreach ($columns as $column_name => $definition) {
+        // Sütunun var olup olmadığını kontrol et
+        $check_column = "SHOW COLUMNS FROM properties LIKE '$column_name'";
+        $column_exists = $conn->query($check_column)->num_rows > 0;
+
+        if (!$column_exists) {
+            // Sütun yoksa ekle
+            $add_column = "ALTER TABLE properties ADD COLUMN $column_name $definition";
+            if ($conn->query($add_column)) {
+                echo "$column_name sütunu eklendi.<br>";
+            } else {
+                echo "Hata: $column_name sütunu eklenemedi. " . $conn->error . "<br>";
+            }
+        } else {
+            // Sütun varsa güncelle
+            $alter_column = "ALTER TABLE properties MODIFY COLUMN $column_name $definition";
+            if ($conn->query($alter_column)) {
+                echo "$column_name sütunu güncellendi.<br>";
+            } else {
+                echo "Hata: $column_name sütunu güncellenemedi. " . $conn->error . "<br>";
+            }
+        }
+    }
+
     echo "Tüm veritabanı güncellemeleri başarıyla tamamlandı!";
 
 } catch(Exception $e) {
