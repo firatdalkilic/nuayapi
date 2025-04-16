@@ -6,11 +6,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     
-    // Debug bilgisi ekle
-    error_log("Login attempt for username: " . $username);
+    // Debug bilgilerini logla
+    error_log("Login attempt:");
+    error_log("Username: " . $username);
+    error_log("Password length: " . strlen($password));
     
     // Önce agents tablosunda kontrol et
     $sql = "SELECT * FROM agents WHERE username = ?";
+    error_log("SQL Query: " . $sql);
+    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -20,10 +24,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($result->num_rows > 0) {
         $agent = $result->fetch_assoc();
-        error_log("Agent found: " . json_encode($agent));
+        error_log("Agent found:");
+        error_log("ID: " . $agent['id']);
+        error_log("Agent name: " . $agent['agent_name']);
+        error_log("Stored password hash: " . $agent['password']);
+        error_log("Stored hash length: " . strlen($agent['password']));
         
-        if (password_verify($password, $agent['password'])) {
-            error_log("Password verified successfully");
+        // Şifre doğrulamasını test et
+        $verify_result = password_verify($password, $agent['password']);
+        error_log("Password verification result: " . ($verify_result ? "true" : "false"));
+        
+        if ($verify_result) {
+            error_log("Login successful for agent: " . $agent['agent_name']);
             $_SESSION['agent_logged_in'] = true;
             $_SESSION['agent_id'] = $agent['id'];
             $_SESSION['agent_name'] = $agent['agent_name'];
@@ -31,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         } else {
             error_log("Password verification failed");
+            error_log("Input password hash: " . password_hash($password, PASSWORD_DEFAULT));
         }
     } else {
         error_log("No agent found with username: " . $username);
@@ -38,11 +51,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Danışman girişi başarısız, admin girişini kontrol et
     if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+        error_log("Admin login successful");
         $_SESSION['admin_logged_in'] = true;
         header("Location: dashboard.php");
         exit;
     }
     
+    error_log("Login failed for username: " . $username);
     $error = "Geçersiz kullanıcı adı veya şifre!";
 }
 ?>

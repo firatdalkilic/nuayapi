@@ -80,7 +80,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $name = trim($_POST['name']);
                 $username = trim($_POST['username']);
                 $raw_password = trim($_POST['password']);
+                
+                // Debug için şifre bilgilerini logla
+                error_log("Creating new agent:");
+                error_log("Username: " . $username);
+                error_log("Raw password length: " . strlen($raw_password));
+                
+                // Şifreyi hashle
                 $password = password_hash($raw_password, PASSWORD_DEFAULT);
+                error_log("Hashed password: " . $password);
+                error_log("Hash length: " . strlen($password));
+                
                 $phone = trim($_POST['phone']);
                 $email = trim($_POST['email']);
                 $about = trim($_POST['about']);
@@ -88,33 +98,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $emlakjet_link = trim($_POST['emlakjet_link']);
                 $facebook_link = trim($_POST['facebook_link']);
                 
-                // Debug bilgisi ekle
-                error_log("Creating new agent with username: " . $username);
-                error_log("Password hash: " . $password);
-                
-                // Resim yükleme işlemi
-                $image = '';
-                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "../uploads/agents/";
-                    if (!file_exists($target_dir)) {
-                        mkdir($target_dir, 0777, true);
-                    }
-                    $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-                    $image = "agent_" . time() . "." . $imageFileType;
-                    $target_file = $target_dir . $image;
-                    
-                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                        $image = "uploads/agents/" . $image;
-                    }
-                }
-
+                // SQL sorgusunu logla
                 $sql = "INSERT INTO agents (agent_name, username, password, phone, email, about, image, sahibinden_link, emlakjet_link, facebook_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                error_log("SQL Query: " . $sql);
+                
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssssssss", $name, $username, $password, $phone, $email, $about, $image, $sahibinden_link, $emlakjet_link, $facebook_link);
                 
                 if ($stmt->execute()) {
+                    error_log("Agent created successfully with ID: " . $conn->insert_id);
                     $_SESSION['success'] = "Danışman başarıyla eklendi.";
                 } else {
+                    error_log("Error creating agent: " . $conn->error);
                     $_SESSION['error'] = "Danışman eklenirken bir hata oluştu.";
                 }
                 break;
