@@ -1060,23 +1060,47 @@ try {
                     <div class="card-body text-center">
                         <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                         
-                        <h4 class="mb-2">NUA YAPI</h4>
+                        <h4 class="mb-2"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
                         
+                        <?php if (!empty($property['agent_phone'])): ?>
+                        <p class="mb-2">
+                            <i class="bi bi-telephone me-2"></i>
+                            <a href="tel:<?php echo htmlspecialchars($property['agent_phone']); ?>" class="text-dark">
+                                <?php echo htmlspecialchars($property['agent_phone']); ?>
+                            </a>
+                        </p>
+                        <?php else: ?>
                         <p class="mb-2">
                             <i class="bi bi-telephone me-2"></i>
                             <a href="tel:905304416873" class="text-dark">
                                 0530 441 68 73
                             </a>
                         </p>
+                        <?php endif; ?>
                         
+                        <?php if (!empty($property['agent_email'])): ?>
+                        <p class="mb-3">
+                            <i class="bi bi-envelope me-2"></i>
+                            <a href="mailto:<?php echo htmlspecialchars($property['agent_email']); ?>" class="text-dark">
+                                <?php echo htmlspecialchars($property['agent_email']); ?>
+                            </a>
+                        </p>
+                        <?php else: ?>
                         <p class="mb-3">
                             <i class="bi bi-envelope me-2"></i>
                             <a href="mailto:info@nuayapi.com" class="text-dark">
                                 info@nuayapi.com
                             </a>
                         </p>
+                        <?php endif; ?>
                         
-                        <a href="https://wa.me/905304416873" class="btn btn-success w-100" target="_blank">
+                        <a href="https://wa.me/<?php 
+                            $phone = !empty($property['agent_phone']) ? preg_replace('/[^0-9]/', '', $property['agent_phone']) : '905304416873';
+                            if (substr($phone, 0, 1) !== '9') {
+                                $phone = '9' . $phone;
+                            }
+                            echo $phone;
+                        ?>" class="btn btn-success w-100" target="_blank">
                             <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Mesaj Gönder
                         </a>
                     </div>
