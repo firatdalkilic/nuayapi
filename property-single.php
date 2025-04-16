@@ -24,8 +24,9 @@ try {
 
     // İlan bilgilerini getir
     $stmt = $conn->prepare("
-        SELECT p.*
+        SELECT p.*, a.photo as agent_photo
         FROM properties p
+        LEFT JOIN agents a ON p.agent_id = a.id
         WHERE p.id = ?
     ");
     
@@ -1153,7 +1154,17 @@ try {
                 <div class="card">
                     <div class="card-body">
                         <div class="text-center">
-                            <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+                            <?php if (!empty($property['agent_photo']) && !empty($property['agent_name'])): ?>
+                                <img src="uploads/agents/<?php echo htmlspecialchars($property['agent_photo']); ?>" 
+                                     alt="<?php echo htmlspecialchars($property['agent_name']); ?>" 
+                                     class="agent-image rounded-circle mb-2" 
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            <?php else: ?>
+                                <img src="assets/img/nua_logo.jpg" 
+                                     alt="Nua Yapı" 
+                                     class="agent-image rounded-circle mb-2" 
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            <?php endif; ?>
                             <h4 class="agent-name"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
                         </div>
                         
