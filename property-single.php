@@ -5,59 +5,48 @@ ini_set('display_errors', 1);
 require_once 'admin/config.php';
 
 try {
-    // İlan ID'sini al
-    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-    if ($id <= 0) {
-        header("Location: properties.php");
+    if (isset($_GET['id'])) {
+        $property_id = (int)$_GET['id'];
+        
+        // İlan detaylarını ve öne çıkan resmi al
+        $sql = "SELECT p.*, pi.image_name 
+                FROM properties p 
+                LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
+                WHERE p.id = ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $property_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $property = $result->fetch_assoc();
+            
+            // Tüm resimleri al
+            $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
+            $images_stmt = $conn->prepare($images_sql);
+            $images_stmt->bind_param("i", $property_id);
+            $images_stmt->execute();
+            $images_result = $images_stmt->get_result();
+            
+            $images = [];
+            while ($image = $images_result->fetch_assoc()) {
+                $images[] = $image;
+            }
+        } else {
+            header("Location: index.html");
+            exit;
+        }
+    } else {
+        header("Location: index.html");
         exit;
     }
-
-    // İlanı getir
-    $sql = "SELECT p.*, pi.image_name, pi.is_featured 
-            FROM properties p 
-            LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
-            WHERE p.id = ?";
-    
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 0) {
-        header("Location: properties.php");
-        exit;
-    }
-
-    $property = $result->fetch_assoc();
 
     // Debug bilgisi
     echo '<div style="background-color: #fff3cd; padding: 10px; margin: 10px; border-radius: 5px;">';
     echo 'Debug: SQL Query = ' . $sql . '<br>';
     echo 'Debug: Property Data = <pre>' . print_r($property, true) . '</pre>';
     echo '</div>';
-
-    // Fotoğrafları getir
-    $images_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY id ASC");
-    if (!$images_stmt) {
-        throw new Exception("Fotoğraf sorgusu hazırlanamadı: " . $conn->error);
-    }
-    
-    $images_stmt->bind_param("i", $id);
-    
-    if (!$images_stmt->execute()) {
-        throw new Exception("Fotoğraf sorgusu çalıştırılamadı: " . $images_stmt->error);
-    }
-    
-    $images_result = $images_stmt->get_result();
-    if (!$images_result) {
-        throw new Exception("Fotoğraf sonuçları alınamadı: " . $images_stmt->error);
-    }
-    
-    $images = [];
-    while ($image = $images_result->fetch_assoc()) {
-        $images[] = $image;
-    }
 
     // Sayfalama için değişkenleri tanımla
     $imagesPerPage = 10;
@@ -1156,15 +1145,6 @@ try {
                     <div class="card-body">
                         <div class="text-center">
                             <?php 
-                            // Debug bilgilerini yazdır
-                            echo "<!-- Debug Bilgileri:
-                            agent_id: " . ($property['agent_id'] ?? 'null') . "
-                            debug_agent_id: " . ($property['debug_agent_id'] ?? 'null') . "
-                            agent_photo: " . ($property['agent_photo'] ?? 'null') . "
-                            debug_image: " . ($property['debug_image'] ?? 'null') . "
-                            agent_name: " . ($property['agent_name'] ?? 'null') . "
-                            -->";
-                            
                             // Danışman fotoğrafı kontrolü
                             $agent_photo = 'assets/img/nua_logo.jpg'; // Varsayılan fotoğraf olarak Nua Yapı logosu
                             if (!empty($property['agent_photo'])) {
