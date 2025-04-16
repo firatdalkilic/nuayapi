@@ -445,6 +445,7 @@ if ($result->num_rows > 0) {
                                                     data-bs-target="#editAgentModal"
                                                     data-id="<?php echo $agent['id']; ?>"
                                                     data-name="<?php echo htmlspecialchars($agent['agent_name'] ?? ''); ?>"
+                                                    data-username="<?php echo htmlspecialchars($agent['username_panel'] ?? ''); ?>"
                                                     data-phone="<?php echo htmlspecialchars($agent['phone'] ?? ''); ?>"
                                                     data-email="<?php echo htmlspecialchars($agent['email'] ?? ''); ?>"
                                                     data-about="<?php echo htmlspecialchars($agent['about'] ?? ''); ?>"
@@ -567,7 +568,8 @@ if ($result->num_rows > 0) {
                                 </div>
                                 <div class="mb-3">
                                     <label for="edit_username" class="form-label">Kullanıcı Adı</label>
-                                    <input type="text" class="form-control" id="edit_username" name="username" required>
+                                    <input type="text" class="form-control" id="edit_username" name="username_panel" readonly>
+                                    <small class="form-text text-muted">Kullanıcı adı değiştirilemez.</small>
                                 </div>
                                 <div class="mb-3">
                                     <label for="edit_password" class="form-label">Şifre (Boş bırakılırsa değişmez)</label>
