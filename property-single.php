@@ -23,14 +23,12 @@ try {
     }
 
     // İlan bilgilerini getir
-    $stmt = $conn->prepare("SELECT *, 
-        COALESCE(parking, 'Yok') as parking,
-        COALESCE(usage_status, 'Boş') as usage_status,
-        COALESCE(video_call_available, 'Hayır') as video_call_available,
-        COALESCE(room_count, '') as room_count,
-        COALESCE(living_room_count, '') as living_room_count,
-        COALESCE(floor, '') as floor
-    FROM properties WHERE id = ?");
+    $stmt = $conn->prepare("
+        SELECT p.*, a.name as agent_name, a.phone, a.email, a.image as agent_image
+        FROM properties p
+        LEFT JOIN agents a ON p.agent_id = a.id
+        WHERE p.id = ?
+    ");
     
     if (!$stmt) {
         throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
@@ -960,16 +958,12 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-door-closed"></i>
                                 <span>Oda Sayısı:</span>
-                                <strong><?php echo htmlspecialchars($property['room_count']); ?></strong>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                        <?php if (!empty($property['living_room'])): ?>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <i class="bi bi-tv"></i>
-                                <span>Salon Sayısı:</span>
-                                <strong><?php echo htmlspecialchars($property['living_room']); ?></strong>
+                                <strong><?php 
+                                    echo htmlspecialchars($property['room_count']); 
+                                    if (!empty($property['living_room'])) {
+                                        echo '+' . htmlspecialchars($property['living_room']);
+                                    }
+                                ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -1059,27 +1053,49 @@ try {
             </div>
           </div>
 
-          <!-- Sağ Kolon - Firma ve İletişim Bilgileri -->
+          <!-- Sağ Kolon - İlan ve Danışman Bilgileri -->
           <div class="col-lg-3">
-            <div class="agent-info">
-              <div class="agent-logo text-center mb-4">
-                <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="img-fluid rounded-circle" style="max-width: 150px;">
-              </div>
-              <h3 class="text-center mb-4">NUA YAPI</h3>
-              <div class="contact-info">
-                <p><i class="bi bi-person"></i> Ayşenur Eker</p>
-                <p><i class="bi bi-telephone"></i> <a href="tel:05304416873" class="text-dark text-decoration-none">0 (530) 441 68 73</a></p>
-                <p><i class="bi bi-envelope"></i> <a href="mailto:bilgi@didim.com" class="text-dark text-decoration-none">bilgi@didim.com</a></p>
-                <a href="https://wa.me/905304416873?text=<?php 
-                $propertyUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                $message = $property['title'] . " ilanı hakkında bilgi almak istiyorum.\n\nİlan No: " . str_pad($property['id'], 10, '0', STR_PAD_LEFT) . "\n\nİlan detayları: " . $propertyUrl;
-                echo urlencode($message);
-                ?>" 
-                   class="btn btn-whatsapp w-100 mt-3" 
-                   target="_blank">
-                  <i class="bi bi-whatsapp"></i> WhatsApp'tan Mesaj Gönder
-                </a>
-              </div>
+            <!-- Danışman Bilgileri Kartı -->
+            <div class="agent-card mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <?php if (!empty($property['agent_image'])): ?>
+                            <img src="<?php echo htmlspecialchars($property['agent_image']); ?>" alt="<?php echo htmlspecialchars($property['agent_name']); ?>" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        <?php else: ?>
+                            <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        <?php endif; ?>
+                        
+                        <h4 class="mb-2"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
+                        
+                        <?php if (!empty($property['phone'])): ?>
+                            <p class="mb-2">
+                                <i class="bi bi-telephone me-2"></i>
+                                <a href="tel:<?php echo htmlspecialchars($property['phone']); ?>" class="text-dark">
+                                    <?php echo htmlspecialchars($property['phone']); ?>
+                                </a>
+                            </p>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($property['email'])): ?>
+                            <p class="mb-3">
+                                <i class="bi bi-envelope me-2"></i>
+                                <a href="mailto:<?php echo htmlspecialchars($property['email']); ?>" class="text-dark">
+                                    <?php echo htmlspecialchars($property['email']); ?>
+                                </a>
+                            </p>
+                        <?php endif; ?>
+                        
+                        <a href="https://wa.me/<?php 
+                            $phone = !empty($property['phone']) ? preg_replace('/[^0-9]/', '', $property['phone']) : '905304416873';
+                            if (substr($phone, 0, 1) !== '9') {
+                                $phone = '9' . $phone;
+                            }
+                            echo $phone;
+                        ?>" class="btn btn-success w-100" target="_blank">
+                            <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Mesaj Gönder
+                        </a>
+                    </div>
+                </div>
             </div>
           </div>
         </div>
