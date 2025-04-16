@@ -68,11 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
     $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
 
-    // Link alanlarını al
-    $sahibinden_link = isset($_POST['sahibinden_link']) ? trim($_POST['sahibinden_link']) : NULL;
-    $emlakjet_link = isset($_POST['emlakjet_link']) ? trim($_POST['emlakjet_link']) : NULL;
-    $facebook_link = isset($_POST['facebook_link']) ? trim($_POST['facebook_link']) : NULL;
-
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
         $_SESSION['error'] = "En az bir resim yüklemelisiniz.";
@@ -91,18 +86,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, beds, bathroom_count, balcony,
         parking, site, floor_location, total_floors, gross_area, living_room_count,
-        building_age, eligible_for_credit, heating, furnished, sahibinden_link,
-        emlakjet_link, facebook_link, agent_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        building_age, eligible_for_credit, heating, furnished, agent_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdsisssssssi", 
+        $stmt->bind_param("ssdssssdsissssssissssssi", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $beds, $bathroom_count, $balcony,
             $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
-            $building_age, $eligible_for_credit, $heating, $furnished, $sahibinden_link,
-            $emlakjet_link, $facebook_link, $agent_id
+            $building_age, $eligible_for_credit, $heating, $furnished, $agent_id
         );
         
         if ($stmt->execute()) {
@@ -368,21 +361,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="mb-3">
                                 <label for="description" class="form-label">Açıklama</label>
                                 <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="sahibinden_link" class="form-label">Sahibinden Linki</label>
-                                    <input type="url" class="form-control" id="sahibinden_link" name="sahibinden_link" placeholder="https://www.sahibinden.com/...">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="emlakjet_link" class="form-label">Emlak Jet Linki</label>
-                                    <input type="url" class="form-control" id="emlakjet_link" name="emlakjet_link" placeholder="https://www.emlakjet.com/...">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="facebook_link" class="form-label">Facebook Linki</label>
-                                    <input type="url" class="form-control" id="facebook_link" name="facebook_link" placeholder="https://www.facebook.com/...">
-                                </div>
                             </div>
 
                             <div class="row mb-3">
