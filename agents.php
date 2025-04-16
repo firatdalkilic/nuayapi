@@ -101,8 +101,8 @@
                   while($agent = $result->fetch_assoc()) {
                       // Fotoğraf yolunu kontrol et
                       $agent_photo = 'assets/img/team/team-1.jpg'; // Varsayılan fotoğraf
-                      if (!empty($agent['agent_photo'])) {
-                          $photo_path = 'admin/uploads/agents/' . $agent['agent_photo'];
+                      if (!empty($agent['image'])) {
+                          $photo_path = $agent['image'];
                           if (file_exists($photo_path)) {
                               $agent_photo = $photo_path;
                           }
