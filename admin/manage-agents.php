@@ -129,12 +129,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Resmi yeniden boyutlandır
                         list($width, $height) = getimagesize($target_file);
                         $new_width = 800;
-                        $new_height = ($height / $width) * $new_width;
+                        $new_height = (int)(($height / $width) * $new_width);
                         
                         $temp = imagecreatetruecolor($new_width, $new_height);
                         
                         if ($imageFileType == "png") {
                             $source = imagecreatefrompng($target_file);
+                            // PNG için şeffaflığı koru
+                            imagealphablending($temp, false);
+                            imagesavealpha($temp, true);
                         } else {
                             $source = imagecreatefromjpeg($target_file);
                         }
@@ -156,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                 }
 
-                $sql = "INSERT INTO agents (agent_name, username, password, phone, email, about, image, sahibinden_link, emlakjet_link, facebook_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO agents (agent_name, username_panel, password, phone, email, about, image, sahibinden_link, emlakjet_link, facebook_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssssssss", $name, $username, $password, $phone, $email, $about, $image, $sahibinden_link, $emlakjet_link, $facebook_link);
                 
@@ -220,7 +223,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // Resmi yeniden boyutlandır
                             list($width, $height) = getimagesize("../" . $newname);
                             $new_width = 800;
-                            $new_height = ($height / $width) * $new_width;
+                            $new_height = (int)(($height / $width) * $new_width);
                             
                             $temp = imagecreatetruecolor($new_width, $new_height);
                             
