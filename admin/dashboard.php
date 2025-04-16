@@ -35,7 +35,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
 // İlanları getir
 if (isAgent()) {
     // Danışman sadece kendi ilanlarını görür
-    $sql = "SELECT p.*, a.agent_name, pi.image_name 
+    $sql = "SELECT p.*, a.agent_name, pi.image_name,
+            CONCAT(
+                CASE 
+                    WHEN p.room_count > 0 THEN p.room_count
+                    ELSE ''
+                END,
+                CASE 
+                    WHEN p.room_count > 0 AND p.living_room > 0 THEN '+'
+                    ELSE ''
+                END,
+                CASE 
+                    WHEN p.living_room > 0 THEN p.living_room
+                    ELSE ''
+                END
+            ) as room_display
             FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
             LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1
@@ -46,7 +60,21 @@ if (isAgent()) {
     $stmt->bind_param("i", $agent_id);
 } else {
     // Admin tüm ilanları görür
-    $sql = "SELECT p.*, a.agent_name, pi.image_name 
+    $sql = "SELECT p.*, a.agent_name, pi.image_name,
+            CONCAT(
+                CASE 
+                    WHEN p.room_count > 0 THEN p.room_count
+                    ELSE ''
+                END,
+                CASE 
+                    WHEN p.room_count > 0 AND p.living_room > 0 THEN '+'
+                    ELSE ''
+                END,
+                CASE 
+                    WHEN p.living_room > 0 THEN p.living_room
+                    ELSE ''
+                END
+            ) as room_display
             FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
             LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1
@@ -235,16 +263,7 @@ while ($row = $result->fetch_assoc()) {
                                     <td><?php echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim'; ?></td>
                                     <td><?php echo htmlspecialchars($property['neighborhood']); ?></td>
                                     <td>
-                                        <?php if (!empty($property['room_count'])): ?>
-                                            <?php 
-                                                echo htmlspecialchars($property['room_count']); 
-                                                if (!empty($property['living_room'])) {
-                                                    echo '+' . htmlspecialchars($property['living_room']);
-                                                }
-                                            ?>
-                                        <?php else: ?>
-                                            -
-                                        <?php endif; ?>
+                                        <?php echo htmlspecialchars($property['room_display']); ?>
                                     </td>
                                     <?php if (isAdmin()): ?>
                                     <td><?php echo htmlspecialchars($property['agent_name'] ?? 'Admin'); ?></td>
