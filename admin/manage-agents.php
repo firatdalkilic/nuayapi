@@ -172,108 +172,109 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             case 'edit':
                 $id = $_POST['id'];
-                $name = trim($_POST['name']);
-                $username = trim($_POST['username']);
-                $phone = trim($_POST['phone']);
-                $email = trim($_POST['email']);
-                $about = trim($_POST['about']);
-                $sahibinden_link = trim($_POST['sahibinden_link']);
-                $emlakjet_link = trim($_POST['emlakjet_link']);
-                $facebook_link = trim($_POST['facebook_link']);
+                $name = $_POST['name'];
+                $email = $_POST['email'];
+                $phone = $_POST['phone'];
+                $title = $_POST['title'];
+                $status = $_POST['status'];
                 
-                // Temel SQL sorgusu ve parametreleri
-                $sql = "UPDATE agents SET agent_name=?, username=?, phone=?, email=?, about=?, sahibinden_link=?, emlakjet_link=?, facebook_link=?";
-                $types = "ssssssss";
-                $params = array($name, $username, $phone, $email, $about, $sahibinden_link, $emlakjet_link, $facebook_link);
+                // Fotoğraf işlemleri
+                $image_path = '';
+                $current_image = '';
                 
-                // Şifre kontrolü
-                if (!empty($_POST['password'])) {
-                    $password = password_hash(trim($_POST['password']), PASSWORD_BCRYPT, ['cost' => 10]);
-                    $sql .= ", password=?";
-                    $types .= "s";
-                    $params[] = $password;
+                // Mevcut fotoğrafı al
+                $stmt = $conn->prepare("SELECT image FROM agents WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                if ($row = $result->fetch_assoc()) {
+                    $current_image = $row['image'];
                 }
                 
-                // Resim yükleme işlemi
-                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "uploads/agents/";
-                    if (!file_exists($target_dir)) {
-                        mkdir($target_dir, 0755, true);
+                // Fotoğraf kaldırma işlemi
+                if (isset($_POST['remove_photo']) && $_POST['remove_photo'] == 'on') {
+                    if (!empty($current_image) && file_exists("../" . $current_image)) {
+                        unlink("../" . $current_image);
                     }
-
-                    // Dosya uzantısını kontrol et
+                    $image_path = '';
+                }
+                // Yeni fotoğraf yükleme işlemi
+                else if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                     $allowed = ['jpg', 'jpeg', 'png'];
-                    $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-                    if (!in_array($imageFileType, $allowed)) {
+                    $filename = $_FILES['image']['name'];
+                    $filetype = pathinfo($filename, PATHINFO_EXTENSION);
+                    
+                    if (in_array(strtolower($filetype), $allowed)) {
+                        // Yükleme dizinini kontrol et ve oluştur
+                        $upload_dir = "../uploads/agents/";
+                        if (!file_exists($upload_dir)) {
+                            mkdir($upload_dir, 0755, true);
+                        }
+                        
+                        // Eski fotoğrafı sil
+                        if (!empty($current_image) && file_exists("../" . $current_image)) {
+                            unlink("../" . $current_image);
+                        }
+                        
+                        // Yeni fotoğrafı yükle
+                        $newname = 'uploads/agents/' . uniqid() . '_' . bin2hex(random_bytes(8)) . '.' . $filetype;
+                        if (move_uploaded_file($_FILES['image']['tmp_name'], "../" . $newname)) {
+                            // Resmi yeniden boyutlandır
+                            list($width, $height) = getimagesize("../" . $newname);
+                            $new_width = 800;
+                            $new_height = ($height / $width) * $new_width;
+                            
+                            $temp = imagecreatetruecolor($new_width, $new_height);
+                            
+                            if ($filetype == "png") {
+                                $source = imagecreatefrompng("../" . $newname);
+                                // PNG için şeffaflığı koru
+                                imagealphablending($temp, false);
+                                imagesavealpha($temp, true);
+                            } else {
+                                $source = imagecreatefromjpeg("../" . $newname);
+                            }
+                            
+                            imagecopyresampled($temp, $source, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                            
+                            if ($filetype == "png") {
+                                imagepng($temp, "../" . $newname, 8);
+                            } else {
+                                imagejpeg($temp, "../" . $newname, 80);
+                            }
+                            
+                            imagedestroy($temp);
+                            imagedestroy($source);
+                            
+                            $image_path = $newname;
+                        } else {
+                            $_SESSION['error'] = "Fotoğraf yüklenirken bir hata oluştu.";
+                            header("Location: manage-agents.php");
+                            exit();
+                        }
+                    } else {
                         $_SESSION['error'] = "Sadece JPG, JPEG ve PNG dosyaları yüklenebilir.";
                         header("Location: manage-agents.php");
-                        exit;
-                    }
-
-                    // Eski fotoğrafı sil
-                    $old_image_query = "SELECT image FROM agents WHERE id = ?";
-                    $stmt = $conn->prepare($old_image_query);
-                    $stmt->bind_param("i", $id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($row = $result->fetch_assoc()) {
-                        if (!empty($row['image']) && file_exists($row['image'])) {
-                            unlink($row['image']);
-                        }
-                    }
-
-                    // Yeni fotoğrafı yükle
-                    $image = $username . "_" . time() . "." . $imageFileType;
-                    $target_file = $target_dir . $image;
-                    
-                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                        // Resmi yeniden boyutlandır
-                        list($width, $height) = getimagesize($target_file);
-                        $new_width = 800;
-                        $new_height = ($height / $width) * $new_width;
-                        
-                        $temp = imagecreatetruecolor($new_width, $new_height);
-                        
-                        if ($imageFileType == "png") {
-                            $source = imagecreatefrompng($target_file);
-                        } else {
-                            $source = imagecreatefromjpeg($target_file);
-                        }
-                        
-                        imagecopyresampled($temp, $source, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-                        
-                        if ($imageFileType == "png") {
-                            imagepng($temp, $target_file, 8);
-                        } else {
-                            imagejpeg($temp, $target_file, 80);
-                        }
-                        
-                        imagedestroy($temp);
-                        imagedestroy($source);
-                    } else {
-                        $_SESSION['error'] = "Fotoğraf yüklenirken bir hata oluştu.";
-                        header("Location: manage-agents.php");
-                        exit;
+                        exit();
                     }
                 }
+                // Fotoğraf değişmedi
+                else {
+                    $image_path = $current_image;
+                }
                 
-                // WHERE koşulu ekle
-                $sql .= " WHERE id=?";
-                $types .= "i";
-                $params[] = $id;
-                
-                // SQL sorgusunu hazırla ve çalıştır
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param($types, ...$params);
+                // Veritabanını güncelle
+                $stmt = $conn->prepare("UPDATE agents SET name=?, email=?, phone=?, title=?, status=?, image=? WHERE id=?");
+                $stmt->bind_param("ssssssi", $name, $email, $phone, $title, $status, $image_path, $id);
                 
                 if ($stmt->execute()) {
-                    $_SESSION['success'] = "Danışman bilgileri güncellendi.";
-                    if (!empty($_POST['password'])) {
-                        $_SESSION['success'] .= " Yeni şifre başarıyla kaydedildi.";
-                    }
+                    $_SESSION['success'] = "Danışman başarıyla güncellendi.";
                 } else {
-                    $_SESSION['error'] = "Güncelleme sırasında bir hata oluştu.";
+                    $_SESSION['error'] = "Danışman güncellenirken bir hata oluştu.";
                 }
+                
+                header("Location: manage-agents.php");
+                exit();
                 break;
 
             case 'delete':
@@ -588,8 +589,28 @@ if ($result->num_rows > 0) {
                                 </div>
                                 <div class="mb-3">
                                     <label for="edit_image" class="form-label">Profil Resmi</label>
+                                    <div class="current-photo mb-2">
+                                        <div id="current_image" class="text-center">
+                                            <!-- JavaScript ile doldurulacak -->
+                                        </div>
+                                        <div class="mt-2" id="remove_photo_container" style="display: none;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="remove_photo" name="remove_photo">
+                                                <label class="form-check-label text-danger" for="remove_photo">
+                                                    Mevcut fotoğrafı kaldır
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <input type="file" class="form-control" id="edit_image" name="image" accept=".jpg,.jpeg,.png">
-                                    <div id="current_image" class="mt-2"></div>
+                                    <div id="image_preview" class="mt-2 text-center" style="display: none;">
+                                        <img id="preview_img" src="#" alt="Fotoğraf Önizleme" style="max-width: 200px; height: auto;" class="img-thumbnail">
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Önerilen boyut: 800x800 piksel<br>
+                                        İzin verilen formatlar: JPG, JPEG, PNG<br>
+                                        Maksimum dosya boyutu: 2MB
+                                    </small>
                                 </div>
                                 <?php if (!empty($agent['image']) && file_exists($agent['image'])): ?>
                                 <div class="form-group mt-2">
@@ -662,11 +683,21 @@ if ($result->num_rows > 0) {
                 
                 // Mevcut resmi göster
                 const currentImage = document.getElementById('current_image');
+                const removePhotoContainer = document.getElementById('remove_photo_container');
                 if (this.dataset.image) {
-                    currentImage.innerHTML = `<img src="../${this.dataset.image}" alt="Mevcut Profil Resmi" style="max-width: 100px; max-height: 100px;">`;
+                    currentImage.innerHTML = `
+                        <img src="../${this.dataset.image}" alt="Mevcut Profil Resmi" 
+                             style="max-width: 300px; max-height: 300px;" class="img-thumbnail">`;
+                    removePhotoContainer.style.display = 'block';
                 } else {
-                    currentImage.innerHTML = 'Profil resmi yok';
+                    currentImage.innerHTML = '<p class="text-muted">Profil fotoğrafı yok</p>';
+                    removePhotoContainer.style.display = 'none';
                 }
+                
+                // Önizlemeyi temizle
+                document.getElementById('image_preview').style.display = 'none';
+                document.getElementById('edit_image').value = '';
+                document.getElementById('remove_photo').checked = false;
             });
         });
 
@@ -676,6 +707,25 @@ if ($result->num_rows > 0) {
                 document.getElementById('delete_id').value = this.dataset.id;
                 document.getElementById('delete_agent_name').textContent = this.dataset.name;
             });
+        });
+
+        // Fotoğraf önizleme
+        document.getElementById('edit_image').addEventListener('change', function(e) {
+            const preview = document.getElementById('image_preview');
+            const previewImg = document.getElementById('preview_img');
+            
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
         });
     </script>
 </body>
