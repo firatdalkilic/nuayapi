@@ -679,14 +679,18 @@ try {
     }
 
     .agent-card .card-body {
-        padding: 2rem;
+        padding: 1.5rem;
     }
 
     .agent-name {
         font-size: 1.5rem;
         font-weight: 600;
         color: #2c3e50;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .agent-image {
+        margin-bottom: 0.5rem;
     }
 
     .agent-contact-info {
@@ -1148,8 +1152,8 @@ try {
             <div class="agent-card mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <div class="text-center mb-4">
-                            <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        <div class="text-center">
+                            <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-2" style="width: 150px; height: 150px; object-fit: cover;">
                             <h4 class="agent-name"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
                         </div>
                         
