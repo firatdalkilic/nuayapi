@@ -20,7 +20,8 @@ if ($id <= 0) {
 if (isAgent()) {
     $sql = "SELECT * FROM properties WHERE id = ? AND agent_id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $id, getAgentId());
+    $agent_id = getAgentId();
+    $stmt->bind_param("ii", $id, $agent_id);
 } else {
     $sql = "SELECT * FROM properties WHERE id = ?";
     $stmt = $conn->prepare($sql);
@@ -43,28 +44,80 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("POST request received");
     error_log("POST data: " . print_r($_POST, true));
 
-    // Form verilerini al
-    $title = trim($_POST['title']);
-    $description = trim($_POST['description']);
-    $price = trim($_POST['price']);
-    $location = trim($_POST['location']);
-    $neighborhood = trim($_POST['neighborhood']);
-    $type = trim($_POST['type']);
-    $status = trim($_POST['status']);
-    $rooms = trim($_POST['rooms']);
-    $bathrooms = trim($_POST['bathrooms']);
-    $area = trim($_POST['area']);
+    // Form verilerini al ve varsayılan değerler ata
+    $title = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $price = isset($_POST['price']) ? str_replace('.', '', trim($_POST['price'])) : 0;
+    $location = isset($_POST['location']) ? trim($_POST['location']) : '';
+    $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
+    $property_type = isset($_POST['property_type']) ? trim($_POST['property_type']) : '';
+    $status = isset($_POST['status']) ? trim($_POST['status']) : '';
+    $beds = isset($_POST['beds']) ? (int)trim($_POST['beds']) : 0;
+    $bathrooms = isset($_POST['bathrooms']) ? (int)trim($_POST['bathrooms']) : 0;
+    $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
     $features = isset($_POST['features']) ? implode(',', $_POST['features']) : '';
     
     // İlanı güncelle
     if (isAgent()) {
-        $sql = "UPDATE properties SET title=?, description=?, price=?, location=?, neighborhood=?, type=?, status=?, rooms=?, bathrooms=?, area=?, features=? WHERE id=? AND agent_id=?";
+        $sql = "UPDATE properties SET 
+                title=?, 
+                description=?, 
+                price=?, 
+                location=?, 
+                neighborhood=?, 
+                property_type=?, 
+                status=?, 
+                beds=?, 
+                bathrooms=?, 
+                net_area=?, 
+                features=? 
+                WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssssssis", $title, $description, $price, $location, $neighborhood, $type, $status, $rooms, $bathrooms, $area, $features, $id, getAgentId());
+        $agent_id = getAgentId();
+        $stmt->bind_param("ssdssssiisisi", 
+            $title, 
+            $description, 
+            $price, 
+            $location, 
+            $neighborhood, 
+            $property_type, 
+            $status, 
+            $beds, 
+            $bathrooms, 
+            $net_area, 
+            $features, 
+            $id, 
+            $agent_id
+        );
     } else {
-        $sql = "UPDATE properties SET title=?, description=?, price=?, location=?, neighborhood=?, type=?, status=?, rooms=?, bathrooms=?, area=?, features=? WHERE id=?";
+        $sql = "UPDATE properties SET 
+                title=?, 
+                description=?, 
+                price=?, 
+                location=?, 
+                neighborhood=?, 
+                property_type=?, 
+                status=?, 
+                beds=?, 
+                bathrooms=?, 
+                net_area=?, 
+                features=? 
+                WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdsssssssi", $title, $description, $price, $location, $neighborhood, $type, $status, $rooms, $bathrooms, $area, $features, $id);
+        $stmt->bind_param("ssdssssiissi", 
+            $title, 
+            $description, 
+            $price, 
+            $location, 
+            $neighborhood, 
+            $property_type, 
+            $status, 
+            $beds, 
+            $bathrooms, 
+            $net_area, 
+            $features, 
+            $id
+        );
     }
     
     if ($stmt->execute()) {
@@ -265,8 +318,8 @@ $required_fields = [
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
-                                        <option value="Kiralık" <?php echo $property['status'] == 'Kiralık' ? 'selected' : ''; ?>>Kiralık</option>
-                                        <option value="Satılık" <?php echo $property['status'] == 'Satılık' ? 'selected' : ''; ?>>Satılık</option>
+                                        <option value="rent" <?php echo $property['status'] == 'rent' ? 'selected' : ''; ?>>Kiralık</option>
+                                        <option value="sale" <?php echo $property['status'] == 'sale' ? 'selected' : ''; ?>>Satılık</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -346,8 +399,15 @@ $required_fields = [
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="beds" class="form-label">Oda Sayısı</label>
-                                        <input type="number" class="form-control" id="beds" name="beds" min="0" value="<?php echo htmlspecialchars($property['beds']); ?>">
+                                        <input type="number" class="form-control" id="beds" name="beds" value="<?php echo htmlspecialchars($property['beds']); ?>">
                                     </div>
+                                    <div class="col-md-6">
+                                        <label for="bathrooms" class="form-label">Banyo Sayısı</label>
+                                        <input type="number" class="form-control" id="bathrooms" name="bathrooms" value="<?php echo htmlspecialchars($property['bathrooms']); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="living_room" class="form-label">Salon Sayısı</label>
                                         <input type="number" class="form-control" id="living_room" name="living_room" min="0" value="<?php echo isset($property['living_room']) ? htmlspecialchars($property['living_room']) : ''; ?>">
@@ -355,10 +415,6 @@ $required_fields = [
                                 </div>
 
                                 <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="bathroom_count" class="form-label">Banyo Sayısı</label>
-                                        <input type="number" class="form-control" id="bathroom_count" name="bathroom_count" value="<?php echo htmlspecialchars($property['bathroom_count']); ?>">
-                                    </div>
                                     <div class="col-md-6">
                                         <label for="building_age" class="form-label">Bina Yaşı</label>
                                         <select class="form-select" id="building_age" name="building_age">
@@ -454,29 +510,11 @@ $required_fields = [
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="location" class="form-label">Konum</label>
-                                    <input type="text" class="form-control" id="location" name="location" value="Didim" readonly>
+                                    <input type="text" class="form-control" id="location" name="location" value="<?php echo htmlspecialchars($property['location']); ?>" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="neighborhood" class="form-label">Mahalle</label>
-                                    <select class="form-select" id="neighborhood" name="neighborhood" required>
-                                        <option value="">Mahalle Seçiniz</option>
-                                        <option value="Ak-yeniköy Mah." <?php echo $property['neighborhood'] == 'Ak-yeniköy Mah.' ? 'selected' : ''; ?>>Ak-yeniköy Mah.</option>
-                                        <option value="Akbük Mah." <?php echo $property['neighborhood'] == 'Akbük Mah.' ? 'selected' : ''; ?>>Akbük Mah.</option>
-                                        <option value="Akköy Mah." <?php echo $property['neighborhood'] == 'Akköy Mah.' ? 'selected' : ''; ?>>Akköy Mah.</option>
-                                        <option value="Altınkum Mah." <?php echo $property['neighborhood'] == 'Altınkum Mah.' ? 'selected' : ''; ?>>Altınkum Mah.</option>
-                                        <option value="Balat Mah." <?php echo $property['neighborhood'] == 'Balat Mah.' ? 'selected' : ''; ?>>Balat Mah.</option>
-                                        <option value="Batıköy Mah." <?php echo $property['neighborhood'] == 'Batıköy Mah.' ? 'selected' : ''; ?>>Batıköy Mah.</option>
-                                        <option value="Cumhuriyet Mah." <?php echo $property['neighborhood'] == 'Cumhuriyet Mah.' ? 'selected' : ''; ?>>Cumhuriyet Mah.</option>
-                                        <option value="Çamlık Mah." <?php echo $property['neighborhood'] == 'Çamlık Mah.' ? 'selected' : ''; ?>>Çamlık Mah.</option>
-                                        <option value="Denizköy Mah." <?php echo $property['neighborhood'] == 'Denizköy Mah.' ? 'selected' : ''; ?>>Denizköy Mah.</option>
-                                        <option value="Efeler Mah." <?php echo $property['neighborhood'] == 'Efeler Mah.' ? 'selected' : ''; ?>>Efeler Mah.</option>
-                                        <option value="Fevzipaşa Mah." <?php echo $property['neighborhood'] == 'Fevzipaşa Mah.' ? 'selected' : ''; ?>>Fevzipaşa Mah.</option>
-                                        <option value="Hisar Mah." <?php echo $property['neighborhood'] == 'Hisar Mah.' ? 'selected' : ''; ?>>Hisar Mah.</option>
-                                        <option value="Mavişehir Mah." <?php echo $property['neighborhood'] == 'Mavişehir Mah.' ? 'selected' : ''; ?>>Mavişehir Mah.</option>
-                                        <option value="Mersindere Mah." <?php echo $property['neighborhood'] == 'Mersindere Mah.' ? 'selected' : ''; ?>>Mersindere Mah.</option>
-                                        <option value="Yalıköy Mah." <?php echo $property['neighborhood'] == 'Yalıköy Mah.' ? 'selected' : ''; ?>>Yalıköy Mah.</option>
-                                        <option value="Yeni Mah." <?php echo $property['neighborhood'] == 'Yeni Mah.' ? 'selected' : ''; ?>>Yeni Mah.</option>
-                                    </select>
+                                    <input type="text" class="form-control" id="neighborhood" name="neighborhood" value="<?php echo htmlspecialchars($property['neighborhood']); ?>" required>
                                 </div>
                             </div>
 
@@ -647,7 +685,7 @@ $required_fields = [
                 // Konut alanlarının required özelliğini kaldır
                 document.getElementById('beds').required = false;
                 document.getElementById('living_room').required = false;
-                document.getElementById('bathroom_count').required = false;
+                document.getElementById('bathrooms').required = false;
             } else {
                 landFields.style.display = 'none';
                 residentialFields.style.display = 'block';
@@ -656,7 +694,7 @@ $required_fields = [
                 // Konut için zorunlu alanları etkinleştir
                 document.getElementById('beds').required = true;
                 document.getElementById('living_room').required = true;
-                document.getElementById('bathroom_count').required = true;
+                document.getElementById('bathrooms').required = true;
             }
         }
 
