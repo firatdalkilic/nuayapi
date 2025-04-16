@@ -69,7 +69,7 @@
           <li><a href="about.html">Hakkımızda</a></li>
           <li><a href="services.html">Hizmetlerimiz</a></li>
           <li><a href="properties.php">İlanlar</a></li>
-          <li><a href="agents.html" class="active">Danışmanlarımız</a></li>
+          <li><a href="agents.php" class="active">Danışmanlarımız</a></li>
           <li><a href="contact.html">İletişim</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -139,6 +139,7 @@
                       
                       <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="member">
+                          <a href="agents-portfolio.php?id=<?php echo $agent['id']; ?>" class="text-decoration-none">
                           <div class="pic"><img src="<?php echo htmlspecialchars($agent_photo); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($agent_name); ?>"></div>
                           <div class="member-info">
                             <h4><?php echo htmlspecialchars($agent_name); ?></h4>
@@ -158,6 +159,7 @@
                               <?php endif; ?>
                             </div>
                           </div>
+                          </a>
                         </div>
                       </div><!-- End Team Member -->
 
