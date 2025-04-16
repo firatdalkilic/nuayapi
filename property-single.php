@@ -763,6 +763,15 @@ try {
     .btn-whatsapp i {
         font-size: 1.1rem;
     }
+
+    .agent-photo {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 

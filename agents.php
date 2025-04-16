@@ -27,6 +27,31 @@
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
+  <style>
+    .member .pic {
+      width: 300px;
+      height: 300px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .member .pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .member {
+      text-align: center;
+      margin-bottom: 30px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+
 </head>
 
 <body class="agents-page">
