@@ -7,8 +7,10 @@ checkLogin();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Debug için POST verilerini kontrol et
-    error_log("POST request received");
-    error_log("POST data: " . print_r($_POST, true));
+    echo "<pre>";
+    echo "POST request received\n";
+    echo "POST data: " . print_r($_POST, true) . "\n";
+    echo "</pre>";
 
     // Form verilerini kontrol et
     $required_fields = [
@@ -26,15 +28,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     foreach ($required_fields as $field => $label) {
         if (!isset($_POST[$field]) || trim($_POST[$field]) === '') {
             $errors[] = $label . " alanı boş bırakılamaz.";
-            // Debug: Eksik alan bilgisini logla
-            error_log("Missing required field: " . $field . " (Label: " . $label . ")");
+            // Debug: Eksik alan bilgisini ekrana yaz
+            echo "<pre>Missing required field: " . $field . " (Label: " . $label . ")</pre>";
         }
     }
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
-        // Debug: Hataları logla
-        error_log("Form validation errors: " . print_r($errors, true));
+        // Debug: Hataları ekrana yaz
+        echo "<pre>Form validation errors: " . print_r($errors, true) . "</pre>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
@@ -43,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = trim($_POST['title']);
     
     // Debug: Fiyat alanını işlemeden önce kontrol et
-    error_log("Raw price value: " . $_POST['price']);
+    echo "<pre>Raw price value: " . $_POST['price'] . "</pre>";
     
     // Fiyat alanını işle
     $price = trim($_POST['price']);
@@ -51,18 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = str_replace(',', '.', $price); // Virgülü noktaya çevir
     
     // Debug: İşlenmiş fiyat değerini kontrol et
-    error_log("Processed price value: " . $price);
+    echo "<pre>Processed price value: " . $price . "</pre>";
 
     if (!is_numeric($price) || $price <= 0) {
         $_SESSION['error'] = "Geçerli bir fiyat girmelisiniz.";
-        error_log("Invalid price value after processing: " . $price);
+        echo "<pre>Invalid price value after processing: " . $price . "</pre>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
     $price = (float)$price;
     
-    // Debug: İşlenmiş form verilerini kontrol et
-    error_log("Processing other form fields...");
+    // Debug: Diğer form verilerini kontrol et
+    echo "<pre>Processing other form fields...</pre>";
     
     $status = trim($_POST['status']);
     $beds = (int)$_POST['beds'];
@@ -87,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
 
     // Debug: İşlenmiş form verilerini kontrol et
-    error_log("Processed form data: " . print_r([
+    echo "<pre>Processed form data: " . print_r([
         'title' => $title,
         'price' => $price,
         'status' => $status,
@@ -95,18 +97,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'bathroom_count' => $bathroom_count,
         'living_room' => $living_room,
         'property_type' => $property_type
-    ], true));
+    ], true) . "</pre>";
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
         $_SESSION['error'] = "En az bir resim yüklemelisiniz.";
-        error_log("No images uploaded");
+        echo "<pre>No images uploaded</pre>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
 
     // Debug: Resim yükleme bilgilerini kontrol et
-    error_log("Image upload data: " . print_r($_FILES["images"], true));
+    echo "<pre>Image upload data: " . print_r($_FILES["images"], true) . "</pre>";
 
     // Danışman bilgilerini al
     $agent_id = null;
