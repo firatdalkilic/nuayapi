@@ -107,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Resim yükleme işlemi
                 $image = '';
                 if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "uploads/agents/";
+                    $target_dir = "../uploads/agents/";
                     if (!file_exists($target_dir)) {
                         mkdir($target_dir, 0755, true);
                     }
@@ -122,8 +122,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
 
                     // Benzersiz dosya adı oluştur
-                    $image = $username . "_" . time() . "." . $imageFileType;
-                    $target_file = $target_dir . $image;
+                    $image = 'uploads/agents/' . uniqid() . '_' . bin2hex(random_bytes(8)) . '.' . $imageFileType;
+                    $target_file = "../" . $image;
                     
                     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
                         // Resmi yeniden boyutlandır
