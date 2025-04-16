@@ -35,8 +35,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
 // İlanları getir
 if (isAgent()) {
     // Danışman sadece kendi ilanlarını görür
-    $sql = "SELECT p.*, a.agent_name FROM properties p 
+    $sql = "SELECT p.*, a.agent_name, pi.image_name 
+            FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
+            LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1
             WHERE p.agent_id = ? 
             ORDER BY p.created_at DESC";
     $stmt = $conn->prepare($sql);
@@ -44,8 +46,10 @@ if (isAgent()) {
     $stmt->bind_param("i", $agent_id);
 } else {
     // Admin tüm ilanları görür
-    $sql = "SELECT p.*, a.agent_name FROM properties p 
+    $sql = "SELECT p.*, a.agent_name, pi.image_name 
+            FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
+            LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1
             ORDER BY p.created_at DESC";
     $stmt = $conn->prepare($sql);
 }
