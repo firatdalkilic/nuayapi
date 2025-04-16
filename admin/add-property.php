@@ -75,10 +75,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Danışman ID'sini belirle
+    // Danışman bilgilerini al
     $agent_id = null;
+    $agent_name = null;
+    $agent_phone = null;
+    $agent_email = null;
+
     if (isAgent()) {
         $agent_id = getAgentId();
+        
+        // Danışman bilgilerini veritabanından al
+        $agent_query = "SELECT agent_name, phone, email FROM agents WHERE id = ?";
+        $agent_stmt = $conn->prepare($agent_query);
+        $agent_stmt->bind_param("i", $agent_id);
+        $agent_stmt->execute();
+        $agent_result = $agent_stmt->get_result();
+        
+        if ($agent_row = $agent_result->fetch_assoc()) {
+            $agent_name = $agent_row['agent_name'];
+            $agent_phone = $agent_row['phone'];
+            $agent_email = $agent_row['email'];
+        }
     }
 
     // Veritabanına kaydet
@@ -86,16 +103,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         title, description, price, location, neighborhood, property_type,
         status, net_area, room_count, bathroom_count, balcony,
         parking, site, floor_location, total_floors, gross_area, living_room,
-        building_age, eligible_for_credit, heating, furnished, agent_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        building_age, eligible_for_credit, heating, furnished, agent_id,
+        agent_name, agent_phone, agent_email
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdisssssissssssi", 
+        $stmt->bind_param("ssdssssdisssssissssssisss", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $bathroom_count, $balcony,
             $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
-            $building_age, $eligible_for_credit, $heating, $furnished, $agent_id
+            $building_age, $eligible_for_credit, $heating, $furnished, $agent_id,
+            $agent_name, $agent_phone, $agent_email
         );
         
         if ($stmt->execute()) {
