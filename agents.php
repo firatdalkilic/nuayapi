@@ -100,7 +100,7 @@
               if ($result && $result->num_rows > 0) {
                   while($agent = $result->fetch_assoc()) {
                       // Fotoğraf yolunu kontrol et
-                      $agent_photo = 'assets/img/team/team-1.jpg'; // Varsayılan fotoğraf
+                      $agent_photo = 'assets/img/nua_logo.jpg'; // Varsayılan fotoğraf olarak Nua Yapı logosu
                       if (!empty($agent['image'])) {
                           $photo_path = $agent['image'];
                           if (file_exists($photo_path)) {

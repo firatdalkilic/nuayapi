@@ -1171,22 +1171,15 @@ try {
                             agent_name: " . ($property['agent_name'] ?? 'null') . "
                             -->";
                             
-                            if (!empty($property['agent_photo'])): 
-                                $photo_path = htmlspecialchars($property['agent_photo']);
-                                echo "<!-- Fotoğraf yolu: " . $photo_path . " -->";
+                            // Danışman fotoğrafı kontrolü
+                            $agent_photo = 'assets/img/nua_logo.jpg'; // Varsayılan fotoğraf olarak Nua Yapı logosu
+                            if (!empty($property['agent_photo'])) {
+                                if (file_exists($property['agent_photo'])) {
+                                    $agent_photo = $property['agent_photo'];
+                                }
+                            }
                             ?>
-                                <img src="<?php echo $photo_path; ?>" 
-                                     alt="<?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'Nua Yapı'; ?>" 
-                                     class="agent-image rounded-circle mb-2" 
-                                     style="width: 150px; height: 150px; object-fit: cover;"
-                                     onerror="this.onerror=null; this.src='assets/img/nua_logo.jpg'; console.log('Fotoğraf yüklenemedi: <?php echo $photo_path; ?>');">
-                            <?php else: ?>
-                                <img src="assets/img/nua_logo.jpg" 
-                                     alt="Nua Yapı" 
-                                     class="agent-image rounded-circle mb-2" 
-                                     style="width: 150px; height: 150px; object-fit: cover;">
-                            <?php endif; ?>
-                            <h4 class="agent-name"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
+                            <img src="<?php echo htmlspecialchars($agent_photo); ?>" alt="<?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?>" class="agent-photo">
                         </div>
                         
                         <div class="agent-contact-info">
