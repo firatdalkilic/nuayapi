@@ -7,9 +7,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST['password']);
     
     // Debug bilgilerini logla
-    error_log("Login attempt:");
+    error_log("Login attempt details:");
     error_log("Username: " . $username);
-    error_log("Password length: " . strlen($password));
+    error_log("Raw password length: " . strlen($password));
     
     // Önce agents tablosunda kontrol et
     $sql = "SELECT * FROM agents WHERE username = ?";
@@ -27,12 +27,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         error_log("Agent found:");
         error_log("ID: " . $agent['id']);
         error_log("Agent name: " . $agent['agent_name']);
-        error_log("Stored password hash: " . $agent['password']);
+        error_log("Stored hash info: " . substr($agent['password'], 0, 7) . "...");
         error_log("Stored hash length: " . strlen($agent['password']));
+        
+        // Test hash oluştur
+        $test_hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);
+        error_log("Test hash info: " . substr($test_hash, 0, 7) . "...");
         
         // Şifre doğrulamasını test et
         $verify_result = password_verify($password, $agent['password']);
-        error_log("Password verification result: " . ($verify_result ? "true" : "false"));
+        error_log("Password verification result: " . ($verify_result ? "PASSED" : "FAILED"));
         
         if ($verify_result) {
             error_log("Login successful for agent: " . $agent['agent_name']);
@@ -43,7 +47,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         } else {
             error_log("Password verification failed");
-            error_log("Input password hash: " . password_hash($password, PASSWORD_DEFAULT));
+            error_log("Raw password hash comparison:");
+            error_log("Input: " . substr(password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]), 0, 7) . "...");
+            error_log("Stored: " . substr($agent['password'], 0, 7) . "...");
         }
     } else {
         error_log("No agent found with username: " . $username);
