@@ -107,16 +107,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Resim yükleme işlemi
                 $image = '';
                 if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "../uploads/agents/";
+                    $target_dir = "uploads/agents/";
                     if (!file_exists($target_dir)) {
-                        mkdir($target_dir, 0777, true);
+                        mkdir($target_dir, 0755, true);
                     }
+
+                    // Dosya uzantısını kontrol et
+                    $allowed = ['jpg', 'jpeg', 'png'];
                     $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-                    $image = "agent_" . time() . "." . $imageFileType;
+                    if (!in_array($imageFileType, $allowed)) {
+                        $_SESSION['error'] = "Sadece JPG, JPEG ve PNG dosyaları yüklenebilir.";
+                        header("Location: manage-agents.php");
+                        exit;
+                    }
+
+                    // Benzersiz dosya adı oluştur
+                    $image = $username . "_" . time() . "." . $imageFileType;
                     $target_file = $target_dir . $image;
                     
                     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                        $image = "uploads/agents/" . $image;
+                        // Resmi yeniden boyutlandır
+                        list($width, $height) = getimagesize($target_file);
+                        $new_width = 800;
+                        $new_height = ($height / $width) * $new_width;
+                        
+                        $temp = imagecreatetruecolor($new_width, $new_height);
+                        
+                        if ($imageFileType == "png") {
+                            $source = imagecreatefrompng($target_file);
+                        } else {
+                            $source = imagecreatefromjpeg($target_file);
+                        }
+                        
+                        imagecopyresampled($temp, $source, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                        
+                        if ($imageFileType == "png") {
+                            imagepng($temp, $target_file, 8);
+                        } else {
+                            imagejpeg($temp, $target_file, 80);
+                        }
+                        
+                        imagedestroy($temp);
+                        imagedestroy($source);
+                    } else {
+                        $_SESSION['error'] = "Fotoğraf yüklenirken bir hata oluştu.";
+                        header("Location: manage-agents.php");
+                        exit;
                     }
                 }
 
@@ -160,19 +196,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 // Resim yükleme işlemi
                 if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                    $target_dir = "../uploads/agents/";
+                    $target_dir = "uploads/agents/";
                     if (!file_exists($target_dir)) {
-                        mkdir($target_dir, 0777, true);
+                        mkdir($target_dir, 0755, true);
                     }
+
+                    // Dosya uzantısını kontrol et
+                    $allowed = ['jpg', 'jpeg', 'png'];
                     $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-                    $image = "agent_" . time() . "." . $imageFileType;
+                    if (!in_array($imageFileType, $allowed)) {
+                        $_SESSION['error'] = "Sadece JPG, JPEG ve PNG dosyaları yüklenebilir.";
+                        header("Location: manage-agents.php");
+                        exit;
+                    }
+
+                    // Eski fotoğrafı sil
+                    $old_image_query = "SELECT image FROM agents WHERE id = ?";
+                    $stmt = $conn->prepare($old_image_query);
+                    $stmt->bind_param("i", $id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($row = $result->fetch_assoc()) {
+                        if (!empty($row['image']) && file_exists($row['image'])) {
+                            unlink($row['image']);
+                        }
+                    }
+
+                    // Yeni fotoğrafı yükle
+                    $image = $username . "_" . time() . "." . $imageFileType;
                     $target_file = $target_dir . $image;
                     
                     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                        $image = "uploads/agents/" . $image;
-                        $sql .= ", image=?";
-                        $types .= "s";
-                        $params[] = $image;
+                        // Resmi yeniden boyutlandır
+                        list($width, $height) = getimagesize($target_file);
+                        $new_width = 800;
+                        $new_height = ($height / $width) * $new_width;
+                        
+                        $temp = imagecreatetruecolor($new_width, $new_height);
+                        
+                        if ($imageFileType == "png") {
+                            $source = imagecreatefrompng($target_file);
+                        } else {
+                            $source = imagecreatefromjpeg($target_file);
+                        }
+                        
+                        imagecopyresampled($temp, $source, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                        
+                        if ($imageFileType == "png") {
+                            imagepng($temp, $target_file, 8);
+                        } else {
+                            imagejpeg($temp, $target_file, 80);
+                        }
+                        
+                        imagedestroy($temp);
+                        imagedestroy($source);
+                    } else {
+                        $_SESSION['error'] = "Fotoğraf yüklenirken bir hata oluştu.";
+                        header("Location: manage-agents.php");
+                        exit;
                     }
                 }
                 
@@ -432,8 +513,15 @@ if ($result->num_rows > 0) {
                                 </div>
                                 <div class="mb-3">
                                     <label for="image" class="form-label">Profil Resmi</label>
-                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <input type="file" class="form-control" id="image" name="image" accept=".jpg,.jpeg,.png">
+                                    <small class="form-text text-muted">Önerilen boyut: 800x800 piksel. Maksimum dosya boyutu: 2MB</small>
                                 </div>
+                                <?php if (!empty($agent['image']) && file_exists($agent['image'])): ?>
+                                <div class="form-group mt-2">
+                                    <label>Mevcut Fotoğraf:</label><br>
+                                    <img src="<?php echo '../' . $agent['image']; ?>" alt="<?php echo $agent['agent_name']; ?>" style="max-width: 200px; height: auto;" class="img-thumbnail">
+                                </div>
+                                <?php endif; ?>
                                 <div class="mb-3">
                                     <label for="sahibinden_link" class="form-label">Sahibinden Linki</label>
                                     <input type="url" class="form-control" id="sahibinden_link" name="sahibinden_link">
@@ -500,9 +588,15 @@ if ($result->num_rows > 0) {
                                 </div>
                                 <div class="mb-3">
                                     <label for="edit_image" class="form-label">Profil Resmi</label>
-                                    <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
+                                    <input type="file" class="form-control" id="edit_image" name="image" accept=".jpg,.jpeg,.png">
                                     <div id="current_image" class="mt-2"></div>
                                 </div>
+                                <?php if (!empty($agent['image']) && file_exists($agent['image'])): ?>
+                                <div class="form-group mt-2">
+                                    <label>Mevcut Fotoğraf:</label><br>
+                                    <img src="<?php echo '../' . $agent['image']; ?>" alt="<?php echo $agent['agent_name']; ?>" style="max-width: 200px; height: auto;" class="img-thumbnail">
+                                </div>
+                                <?php endif; ?>
                                 <div class="mb-3">
                                     <label for="edit_sahibinden_link" class="form-label">Sahibinden Linki</label>
                                     <input type="url" class="form-control" id="edit_sahibinden_link" name="sahibinden_link">
