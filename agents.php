@@ -88,12 +88,20 @@
           require_once 'admin/config.php';
 
           try {
-              $query = "SELECT * FROM agents ORDER BY agent_name ASC";
+              $query = "SELECT * FROM agents WHERE agent_photo IS NOT NULL AND agent_photo != '' ORDER BY agent_name ASC";
               $result = $conn->query($query);
 
               if ($result && $result->num_rows > 0) {
                   while($agent = $result->fetch_assoc()) {
-                      $agent_photo = !empty($agent['agent_photo']) ? $agent['agent_photo'] : 'assets/img/team/team-1.jpg';
+                      // Fotoğraf yolunu kontrol et
+                      $agent_photo = 'assets/img/team/team-1.jpg'; // Varsayılan fotoğraf
+                      if (!empty($agent['agent_photo'])) {
+                          $photo_path = 'admin/uploads/agents/' . $agent['agent_photo'];
+                          if (file_exists($photo_path)) {
+                              $agent_photo = $photo_path;
+                          }
+                      }
+                      
                       $agent_name = !empty($agent['agent_name']) ? $agent['agent_name'] : 'NUA YAPI';
                       $agent_title = !empty($agent['agent_title']) ? $agent['agent_title'] : 'Gayrimenkul Danışmanı';
                       ?>
@@ -106,16 +114,16 @@
                             <span><?php echo htmlspecialchars($agent_title); ?></span>
                             <div class="social">
                               <?php if (!empty($agent['twitter_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['twitter_url']); ?>"><i class="bi bi-twitter-x"></i></a>
+                                <a href="<?php echo htmlspecialchars($agent['twitter_url']); ?>" target="_blank"><i class="bi bi-twitter-x"></i></a>
                               <?php endif; ?>
                               <?php if (!empty($agent['facebook_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['facebook_url']); ?>"><i class="bi bi-facebook"></i></a>
+                                <a href="<?php echo htmlspecialchars($agent['facebook_url']); ?>" target="_blank"><i class="bi bi-facebook"></i></a>
                               <?php endif; ?>
                               <?php if (!empty($agent['instagram_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['instagram_url']); ?>"><i class="bi bi-instagram"></i></a>
+                                <a href="<?php echo htmlspecialchars($agent['instagram_url']); ?>" target="_blank"><i class="bi bi-instagram"></i></a>
                               <?php endif; ?>
                               <?php if (!empty($agent['linkedin_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['linkedin_url']); ?>"><i class="bi bi-linkedin"></i></a>
+                                <a href="<?php echo htmlspecialchars($agent['linkedin_url']); ?>" target="_blank"><i class="bi bi-linkedin"></i></a>
                               <?php endif; ?>
                             </div>
                           </div>
