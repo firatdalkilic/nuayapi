@@ -1,34 +1,52 @@
 <?php
 require_once 'config.php';
 
-try {
-    // Önce bathrooms sütununun var olup olmadığını kontrol et
-    $check_query = "SHOW COLUMNS FROM properties LIKE 'bathrooms'";
-    $result = $conn->query($check_query);
-    
-    if ($result->num_rows > 0) {
-        // bathrooms sütunu varsa, verileri bathroom_count'a taşı
-        $conn->query("UPDATE properties SET bathroom_count = bathrooms WHERE bathroom_count IS NULL");
-        
-        // Eski sütunu sil
-        $conn->query("ALTER TABLE properties DROP COLUMN bathrooms");
-        echo "Bathrooms sütunu başarıyla bathroom_count'a dönüştürüldü.";
-    } else {
-        echo "Bathrooms sütunu zaten mevcut değil.";
-    }
-    
-    // bathroom_count sütununun varlığını kontrol et, yoksa oluştur
-    $check_bathroom_count = "SHOW COLUMNS FROM properties LIKE 'bathroom_count'";
-    $result = $conn->query($check_bathroom_count);
-    
-    if ($result->num_rows == 0) {
-        $conn->query("ALTER TABLE properties ADD COLUMN bathroom_count INT DEFAULT NULL");
-        echo "bathroom_count sütunu oluşturuldu.";
-    }
+// Önce bathroom_count sütununun var olup olmadığını kontrol et
+$check_column = "SHOW COLUMNS FROM properties LIKE 'bathroom_count'";
+$column_exists = $conn->query($check_column)->num_rows > 0;
 
-} catch(Exception $e) {
-    echo "Hata oluştu: " . $e->getMessage();
+if (!$column_exists) {
+    // Önce bathrooms sütununun var olup olmadığını kontrol et
+    $check_old_column = "SHOW COLUMNS FROM properties LIKE 'bathrooms'";
+    $old_column_exists = $conn->query($check_old_column)->num_rows > 0;
+
+    if ($old_column_exists) {
+        // bathrooms sütunu varsa, yeni sütunu ekle ve verileri kopyala
+        $alter_table = "ALTER TABLE properties ADD COLUMN bathroom_count INT DEFAULT 0";
+        if ($conn->query($alter_table)) {
+            echo "bathroom_count sütunu eklendi.<br>";
+            
+            // Verileri kopyala
+            $copy_data = "UPDATE properties SET bathroom_count = bathrooms";
+            if ($conn->query($copy_data)) {
+                echo "Veriler bathrooms sütunundan bathroom_count sütununa kopyalandı.<br>";
+                
+                // Eski sütunu sil
+                $drop_column = "ALTER TABLE properties DROP COLUMN bathrooms";
+                if ($conn->query($drop_column)) {
+                    echo "bathrooms sütunu silindi.<br>";
+                } else {
+                    echo "Hata: bathrooms sütunu silinemedi. " . $conn->error . "<br>";
+                }
+            } else {
+                echo "Hata: Veriler kopyalanamadı. " . $conn->error . "<br>";
+            }
+        } else {
+            echo "Hata: bathroom_count sütunu eklenemedi. " . $conn->error . "<br>";
+        }
+    } else {
+        // bathrooms sütunu yoksa, direkt yeni sütunu ekle
+        $add_column = "ALTER TABLE properties ADD COLUMN bathroom_count INT DEFAULT 0";
+        if ($conn->query($add_column)) {
+            echo "bathroom_count sütunu eklendi.<br>";
+        } else {
+            echo "Hata: bathroom_count sütunu eklenemedi. " . $conn->error . "<br>";
+        }
+    }
+} else {
+    echo "bathroom_count sütunu zaten mevcut.<br>";
 }
 
 $conn->close();
+echo "İşlem tamamlandı.<br>";
 ?> 
