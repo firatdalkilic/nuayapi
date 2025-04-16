@@ -79,9 +79,6 @@ while ($row = $result->fetch_assoc()) {
         <div class="container">
             <a class="navbar-brand" href="#">
                 <img src="../assets/img/nua_logo.jpg" alt="Nua Logo" style="max-height: 40px; border-radius: 50%;">
-                <?php if (isAgent()): ?>
-                    <span class="ms-2"><?php echo htmlspecialchars($_SESSION['agent_name']); ?></span>
-                <?php endif; ?>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -103,6 +100,32 @@ while ($row = $result->fetch_assoc()) {
                             <i class="bi bi-house"></i> Siteyi Görüntüle
                         </a>
                     </li>
+                    <?php if (isAgent()): ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <?php echo htmlspecialchars($_SESSION['agent_name']); ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="edit-profile.php">
+                                    <i class="bi bi-pencil-square me-2"></i>Profili Düzenle
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="change-password.php">
+                                    <i class="bi bi-key me-2"></i>Şifre Değiştir
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="logout.php">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Çıkış Yap
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php else: ?>
                     <li class="nav-item">
                         <a class="nav-link" href="change-password.php">
                             <i class="bi bi-key"></i> Şifre Değiştir
@@ -113,6 +136,7 @@ while ($row = $result->fetch_assoc()) {
                             <i class="bi bi-box-arrow-right"></i> Çıkış Yap
                         </a>
                     </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
