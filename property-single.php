@@ -24,7 +24,7 @@ try {
 
     // İlan bilgilerini getir
     $stmt = $conn->prepare("
-        SELECT p.*, a.photo as agent_photo
+        SELECT p.*, a.photo as agent_photo, a.name as agent_name, a.phone as agent_phone, a.email as agent_email
         FROM properties p
         LEFT JOIN agents a ON p.agent_id = a.id
         WHERE p.id = ?
@@ -1155,7 +1155,7 @@ try {
                     <div class="card-body">
                         <div class="text-center">
                             <?php if (!empty($property['agent_photo']) && !empty($property['agent_name'])): ?>
-                                <img src="uploads/agents/<?php echo htmlspecialchars($property['agent_photo']); ?>" 
+                                <img src="admin/uploads/agents/<?php echo htmlspecialchars($property['agent_photo']); ?>" 
                                      alt="<?php echo htmlspecialchars($property['agent_name']); ?>" 
                                      class="agent-image rounded-circle mb-2" 
                                      style="width: 150px; height: 150px; object-fit: cover;">
