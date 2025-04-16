@@ -143,7 +143,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
+        echo "<pre>Preparing SQL statement...</pre>";
         $stmt = $conn->prepare($sql);
+        
+        echo "<pre>Binding parameters...</pre>";
+        echo "<pre>Values to bind: " . print_r([
+            $title, $description, $price, $location, $neighborhood, $property_type,
+            $status, $net_area, $beds, $bathroom_count, $balcony,
+            $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
+            $building_age, $eligible_for_credit, $heating, $furnished, $agent_id,
+            $agent_name, $agent_phone, $agent_email
+        ], true) . "</pre>";
+        
         $stmt->bind_param("ssdssssdisssssissssssisss", 
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $net_area, $beds, $bathroom_count, $balcony,
@@ -152,15 +163,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $agent_name, $agent_phone, $agent_email
         );
         
+        echo "<pre>Executing statement...</pre>";
         if ($stmt->execute()) {
+            echo "<pre>SQL executed successfully. Property ID: " . $conn->insert_id . "</pre>";
             $property_id = $conn->insert_id;
             
             // Resimleri yükle
             $upload_success = false;
             if (isset($_FILES["images"]) && !empty($_FILES["images"]["name"][0])) {
+                echo "<pre>Starting image upload process...</pre>";
                 $target_dir = "../uploads/";
                 if (!file_exists($target_dir)) {
                     mkdir($target_dir, 0777, true);
+                    echo "<pre>Created upload directory: " . $target_dir . "</pre>";
                 }
                 
                 $total = count($_FILES["images"]["name"]);
@@ -174,17 +189,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $unique_name = time() . '_' . uniqid() . '.' . $imageFileType;
                             $target_file = $target_dir . $unique_name;
                             
+                            echo "<pre>Processing image " . ($i + 1) . ": " . $_FILES["images"]["name"][$i] . "</pre>";
+                            
                             $check = getimagesize($_FILES["images"]["tmp_name"][$i]);
                             if($check !== false && move_uploaded_file($_FILES["images"]["tmp_name"][$i], $target_file)) {
+                                echo "<pre>Image " . ($i + 1) . " uploaded successfully to: " . $target_file . "</pre>";
                                 $is_featured = $first_image ? 1 : 0;
                                 $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)");
                                 $img_stmt->bind_param("isi", $property_id, $unique_name, $is_featured);
                                 if($img_stmt->execute()) {
+                                    echo "<pre>Image " . ($i + 1) . " saved to database</pre>";
                                     $upload_success = true;
                                     $first_image = false;
+                                } else {
+                                    echo "<pre>Error saving image " . ($i + 1) . " to database: " . $img_stmt->error . "</pre>";
                                 }
+                            } else {
+                                echo "<pre>Error uploading image " . ($i + 1) . "</pre>";
                             }
+                        } else {
+                            echo "<pre>Invalid file type for image " . ($i + 1) . ": " . $imageFileType . "</pre>";
                         }
+                    } else {
+                        echo "<pre>Error with image " . ($i + 1) . ": " . $_FILES["images"]["error"][$i] . "</pre>";
                     }
                 }
             }
@@ -212,15 +239,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($upload_success) {
                 $_SESSION['success'] = "İlan başarıyla eklendi.";
+                echo "<pre>Property added successfully with images. Redirecting...</pre>";
                 header("Location: dashboard.php");
                 exit;
             } else {
                 // Resim yüklenemedi, ilanı sil
                 $conn->query("DELETE FROM properties WHERE id = " . $property_id);
                 $_SESSION['error'] = "Resimler yüklenirken bir hata oluştu. İlan eklenemedi.";
+                echo "<pre>Error uploading images. Property deleted.</pre>";
             }
+        } else {
+            echo "<pre>Error executing SQL: " . $stmt->error . "</pre>";
         }
     } catch (Exception $e) {
+        echo "<pre>Exception caught: " . $e->getMessage() . "</pre>";
         $_SESSION['error'] = "İlan eklenirken bir hata oluştu: " . $e->getMessage();
     }
 }
