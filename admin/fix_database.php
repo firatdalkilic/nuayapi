@@ -2,13 +2,48 @@
 require_once 'config.php';
 
 try {
-    // Properties tablosunu yeniden oluştur
+    // Önce images tablosunu sil
+    $sql = "DROP TABLE IF EXISTS images";
+    $conn->query($sql);
+    
+    // Sonra property_images tablosunu sil
     $sql = "DROP TABLE IF EXISTS property_images";
     $conn->query($sql);
     
+    // Sonra properties tablosunu sil
     $sql = "DROP TABLE IF EXISTS properties";
     $conn->query($sql);
+    
+    // En son agents tablosunu sil
+    $sql = "DROP TABLE IF EXISTS agents";
+    $conn->query($sql);
 
+    // Şimdi tabloları doğru sırayla oluştur
+    
+    // Önce agents tablosunu oluştur
+    $sql = "CREATE TABLE agents (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        agent_name VARCHAR(255) NOT NULL,
+        username_panel VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(20),
+        about TEXT,
+        image VARCHAR(255),
+        sahibinden_link VARCHAR(255),
+        emlakjet_link VARCHAR(255),
+        facebook_link VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    
+    if ($conn->query($sql)) {
+        echo "Agents tablosu başarıyla oluşturuldu.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
+
+    // Sonra properties tablosunu oluştur
     $sql = "CREATE TABLE properties (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -18,7 +53,7 @@ try {
         neighborhood VARCHAR(255),
         status VARCHAR(50),
         property_type VARCHAR(50),
-        beds INT DEFAULT 0,
+        room_count INT DEFAULT 0,
         bathrooms INT DEFAULT 0,
         living_room INT DEFAULT 0,
         net_area DECIMAL(10,2) DEFAULT 0,
@@ -44,7 +79,8 @@ try {
         price_per_sqm DECIMAL(10,2) DEFAULT 0,
         agent_id INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
     
     if ($conn->query($sql)) {
@@ -53,33 +89,7 @@ try {
         throw new Exception($conn->error);
     }
 
-    // Agents tablosunu yeniden oluştur
-    $sql = "DROP TABLE IF EXISTS agents";
-    $conn->query($sql);
-
-    $sql = "CREATE TABLE agents (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        agent_name VARCHAR(255) NOT NULL,
-        username_panel VARCHAR(50) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        phone VARCHAR(20),
-        about TEXT,
-        image VARCHAR(255),
-        sahibinden_link VARCHAR(255),
-        emlakjet_link VARCHAR(255),
-        facebook_link VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-    
-    if ($conn->query($sql)) {
-        echo "Agents tablosu başarıyla oluşturuldu.<br>";
-    } else {
-        throw new Exception($conn->error);
-    }
-
-    // Property_images tablosunu oluştur
+    // En son property_images tablosunu oluştur
     $sql = "CREATE TABLE property_images (
         id INT AUTO_INCREMENT PRIMARY KEY,
         property_id INT NOT NULL,
@@ -91,14 +101,6 @@ try {
     
     if ($conn->query($sql)) {
         echo "Property_images tablosu başarıyla oluşturuldu.<br>";
-    } else {
-        throw new Exception($conn->error);
-    }
-
-    // Properties tablosuna foreign key ekle
-    $sql = "ALTER TABLE properties ADD FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE SET NULL";
-    if ($conn->query($sql)) {
-        echo "Properties tablosuna foreign key eklendi.<br>";
     } else {
         throw new Exception($conn->error);
     }
