@@ -1100,6 +1100,12 @@ try {
                                 $phone = '9' . $phone;
                             }
                             echo $phone;
+                        ?>?text=<?php 
+                            $message = "Merhaba, " . (!empty($property['agent_name']) ? $property['agent_name'] : 'NUA YAPI') . ", ";
+                            $message .= "ilan no " . str_pad($property['id'], 10, '0', STR_PAD_LEFT) . " olan ";
+                            $message .= $property['title'] . " ilanınız hakkında bilgi almak istiyorum.\n\n";
+                            $message .= "İlan linki: " . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                            echo urlencode($message);
                         ?>" class="btn btn-success w-100" target="_blank">
                             <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Mesaj Gönder
                         </a>
