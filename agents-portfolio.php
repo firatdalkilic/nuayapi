@@ -179,19 +179,25 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
             margin-bottom: 25px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .property-card:hover {
             transform: translateY(-5px);
+            text-decoration: none;
         }
 
         .property-image {
             height: 220px;
             object-fit: cover;
+            width: 100%;
         }
 
         .property-info {
             padding: 20px;
+            background: #fff;
         }
 
         .property-title {
@@ -199,22 +205,6 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
             font-weight: 600;
             margin-bottom: 10px;
             color: #002e5c;
-        }
-
-        .property-title a {
-            color: #002e5c;
-            text-decoration: none;
-        }
-
-        .property-title a:hover {
-            color: #004890;
-        }
-
-        .property-price {
-            font-size: 22px;
-            font-weight: 700;
-            color: #002e5c;
-            margin-bottom: 15px;
         }
 
         .property-location {
@@ -231,15 +221,48 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
         .property-details {
             display: flex;
             justify-content: space-between;
-            padding-top: 15px;
+            padding: 15px 0;
             border-top: 1px solid #eee;
             color: #666;
             font-size: 14px;
         }
 
+        .property-details span {
+            display: flex;
+            align-items: center;
+        }
+
         .property-details i {
-            color: #002e5c;
             margin-right: 5px;
+            color: #002e5c;
+        }
+
+        .property-price {
+            font-size: 20px;
+            font-weight: 600;
+            color: #002e5c;
+            margin-top: 10px;
+        }
+
+        .property-status {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-sale {
+            background: #002e5c;
+            color: #fff;
+        }
+
+        .status-rent {
+            background: #28a745;
+            color: #fff;
         }
 
         .breadcrumbs {
@@ -416,50 +439,48 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                     <?php if (!empty($properties)): ?>
                                         <div class="row">
                                             <?php foreach ($properties as $property): ?>
-                                                <div class="col-md-6 mb-4">
-                                                    <div class="property-card">
-                                                        <?php
-                                                        // İlanın ilk fotoğrafını getir
-                                                        $stmt = $conn->prepare("SELECT image_name FROM property_images WHERE property_id = ? ORDER BY id ASC LIMIT 1");
-                                                        $stmt->bind_param("i", $property['id']);
-                                                        $stmt->execute();
-                                                        $image = $stmt->get_result()->fetch_assoc();
-                                                        ?>
-                                                        <?php if ($image): ?>
-                                                            <img src="uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
-                                                                 alt="<?php echo htmlspecialchars($property['title']); ?>"
-                                                                 class="property-image w-100">
+                                                <?php
+                                                // İlan fotoğrafını al
+                                                $image_query = "SELECT image_name FROM property_images WHERE property_id = ? AND is_featured = TRUE LIMIT 1";
+                                                $stmt = $conn->prepare($image_query);
+                                                $stmt->bind_param("i", $property['id']);
+                                                $stmt->execute();
+                                                $image_result = $stmt->get_result();
+                                                $image_data = $image_result->fetch_assoc();
+                                                $image_path = $image_data ? $image_data['image_name'] : 'assets/img/property-default.jpg';
+                                                ?>
+                                                <div class="col-md-6 col-lg-4">
+                                                    <a href="property-single.php?id=<?php echo $property['id']; ?>" class="property-card">
+                                                        <?php if ($property['status'] == 'sale'): ?>
+                                                            <div class="property-status status-sale">Satılık</div>
+                                                        <?php else: ?>
+                                                            <div class="property-status status-rent">Kiralık</div>
                                                         <?php endif; ?>
-
+                                                        <img src="<?php echo htmlspecialchars($image_path); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" class="property-image">
                                                         <div class="property-info">
-                                                            <h3 class="property-title">
-                                                                <a href="property-single.php?id=<?php echo $property['id']; ?>" class="text-decoration-none">
-                                                                    <?php echo htmlspecialchars($property['title']); ?>
-                                                                </a>
-                                                            </h3>
-                                                            <div class="property-price">
-                                                                <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
-                                                            </div>
+                                                            <h3 class="property-title"><?php echo htmlspecialchars($property['title']); ?></h3>
                                                             <div class="property-location">
                                                                 <i class="bi bi-geo-alt"></i>
-                                                                <?php 
-                                                                echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim';
-                                                                if (!empty($property['neighborhood'])) {
-                                                                    echo ' / ' . htmlspecialchars($property['neighborhood']);
-                                                                }
-                                                                ?>
+                                                                <?php echo htmlspecialchars($property['location']); ?>
+                                                                <?php if (!empty($property['neighborhood'])): ?>
+                                                                    , <?php echo htmlspecialchars($property['neighborhood']); ?>
+                                                                <?php endif; ?>
                                                             </div>
                                                             <div class="property-details">
-                                                                <?php if (!empty($property['gross_area'])): ?>
-                                                                <span><i class="bi bi-arrows-angle-expand"></i> <?php echo $property['gross_area']; ?> m²</span>
+                                                                <span><i class="bi bi-house-door"></i> <?php echo $property['net_area']; ?> m²</span>
+                                                                <span><i class="bi bi-door-open"></i> <?php echo $property['beds']; ?> Oda</span>
+                                                                <?php if (!empty($property['living_room'])): ?>
+                                                                    <span><i class="bi bi-plus-circle"></i> <?php echo $property['living_room']; ?> Salon</span>
                                                                 <?php endif; ?>
-                                                                <?php if (!empty($property['room_count'])): ?>
-                                                                <span><i class="bi bi-door-closed"></i> <?php echo $property['room_count']; ?>+<?php echo $property['living_room']; ?></span>
+                                                            </div>
+                                                            <div class="property-price">
+                                                                <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
+                                                                <?php if ($property['status'] == 'rent'): ?>
+                                                                    <small>/ay</small>
                                                                 <?php endif; ?>
-                                                                <span><i class="bi bi-building"></i> <?php echo $property['property_type']; ?></span>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </a>
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
