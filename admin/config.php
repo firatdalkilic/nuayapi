@@ -7,7 +7,7 @@ ini_set('error_log', dirname(__FILE__) . '/error.log');
 
 // Admin kullanıcı bilgileri
 define('ADMIN_USERNAME', getenv('ADMIN_USERNAME') ?: 'admin');
-define('ADMIN_PASSWORD', getenv('ADMIN_PASSWORD') ?: 'Nua2024!');
+define('ADMIN_PASSWORD_HASH', getenv('ADMIN_PASSWORD_HASH') ?: '$2y$10$YourDefaultHashHere'); // Varsayılan şifre: Nua2024!
 
 $jawsdb_url = getenv("JAWSDB_URL");
 

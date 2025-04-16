@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Mevcut şifreyi kontrol et
-        if ($current_password !== ADMIN_PASSWORD) {
+        if (!password_verify($current_password, ADMIN_PASSWORD_HASH)) {
             throw new Exception("Mevcut şifre yanlış.");
         }
 
@@ -37,6 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (strlen($new_password) < 6) {
             throw new Exception("Yeni şifre en az 6 karakter uzunluğunda olmalıdır.");
         }
+
+        // Yeni şifreyi hash'le
+        $new_password_hash = password_hash($new_password, PASSWORD_BCRYPT, ['cost' => 10]);
 
         // Heroku config vars'ı güncellemek için API çağrısı yap
         $app_name = 'nuayapi';
@@ -49,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://api.heroku.com/apps/{$app_name}/config-vars");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['ADMIN_PASSWORD' => $new_password]));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['ADMIN_PASSWORD_HASH' => $new_password_hash]));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/vnd.heroku+json; version=3',

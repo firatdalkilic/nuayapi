@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     // Danışman girişi başarısız, admin girişini kontrol et
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+    if ($username === ADMIN_USERNAME && password_verify($password, ADMIN_PASSWORD_HASH)) {
         error_log("Admin login successful");
         $_SESSION['admin_logged_in'] = true;
         header("Location: dashboard.php");
