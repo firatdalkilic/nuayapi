@@ -2,60 +2,40 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-try {
-    require_once 'admin/config.php';
-    
-    if (!isset($conn) || !$conn) {
-        throw new Exception("Veritabanı bağlantısı kurulamadı.");
-    }
+require_once 'admin/config.php';
 
-    // URL'den id parametresini al
+try {
+    // İlan ID'sini al
     $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
     if ($id <= 0) {
-        throw new Exception("Geçersiz ilan ID'si");
+        header("Location: properties.php");
+        exit;
     }
 
-    // Test connection and basic query
-    $test_query = "SELECT 1";
-    if (!$conn->query($test_query)) {
-        throw new Exception("Veritabanı bağlantı testi başarısız: " . $conn->error);
-    }
-
-    // İlan bilgilerini getir
-    $stmt = $conn->prepare("
-        SELECT 
-            p.*,
-            a.image as agent_photo,
-            a.agent_name,
-            a.phone as agent_phone,
-            a.email as agent_email,
-            a.id as debug_agent_id, -- Debug için eklendi
-            a.image as debug_image -- Debug için eklendi
-        FROM properties p
-        LEFT JOIN agents a ON p.agent_id = a.id
-        WHERE p.id = ?
-    ");
+    // İlanı getir
+    $sql = "SELECT p.*, pi.image_name, pi.is_featured 
+            FROM properties p 
+            LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
+            WHERE p.id = ?";
     
-    if (!$stmt) {
-        throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
-    }
-    
+    $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
-    
-    if (!$stmt->execute()) {
-        throw new Exception("Sorgu çalıştırılamadı: " . $stmt->error);
-    }
-    
+    $stmt->execute();
     $result = $stmt->get_result();
-    if (!$result) {
-        throw new Exception("Sonuç alınamadı: " . $stmt->error);
+
+    if ($result->num_rows === 0) {
+        header("Location: properties.php");
+        exit;
     }
-    
+
     $property = $result->fetch_assoc();
-    if (!$property) {
-        throw new Exception("İlan bulunamadı");
-    }
+
+    // Debug bilgisi
+    echo '<div style="background-color: #fff3cd; padding: 10px; margin: 10px; border-radius: 5px;">';
+    echo 'Debug: SQL Query = ' . $sql . '<br>';
+    echo 'Debug: Property Data = <pre>' . print_r($property, true) . '</pre>';
+    echo '</div>';
 
     // Fotoğrafları getir
     $images_stmt = $conn->prepare("SELECT * FROM property_images WHERE property_id = ? ORDER BY id ASC");
@@ -1091,6 +1071,11 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-droplet"></i>
                                 <span>Banyo Sayısı:</span>
+                                <?php
+                                echo '<span style="background-color: #fff3cd; padding: 2px 5px; margin-left: 5px; border-radius: 3px;">';
+                                echo 'Debug: bathroom_count = ' . var_export($property['bathroom_count'], true);
+                                echo '</span><br>';
+                                ?>
                                 <strong><?php echo htmlspecialchars($property['bathroom_count']); ?></strong>
                             </div>
                         </div>

@@ -59,7 +59,7 @@ try {
     // Yeni sütunları ekle
     $alter_queries = [
         "ALTER TABLE properties ADD COLUMN IF NOT EXISTS beds INT DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS bathrooms INT DEFAULT 0",
+        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS bathroom_count INT DEFAULT 0",
         "ALTER TABLE properties ADD COLUMN IF NOT EXISTS living_room INT DEFAULT 0",
         "ALTER TABLE properties ADD COLUMN IF NOT EXISTS net_area DECIMAL(10,2) DEFAULT 0",
         "ALTER TABLE properties ADD COLUMN IF NOT EXISTS gross_area DECIMAL(10,2) DEFAULT 0",
