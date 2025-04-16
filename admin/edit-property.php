@@ -402,8 +402,8 @@ $required_fields = [
                                         <input type="number" class="form-control" id="beds" name="beds" value="<?php echo htmlspecialchars($property['beds']); ?>">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="bathrooms" class="form-label">Banyo Sayısı</label>
-                                        <input type="number" class="form-control" id="bathrooms" name="bathrooms" value="<?php echo htmlspecialchars($property['bathrooms']); ?>">
+                                        <label for="bathroom_count" class="form-label">Banyo Sayısı</label>
+                                        <input type="number" class="form-control" id="bathroom_count" name="bathroom_count" value="<?php echo htmlspecialchars($property['bathroom_count']); ?>">
                                     </div>
                                 </div>
 
@@ -685,7 +685,7 @@ $required_fields = [
                 // Konut alanlarının required özelliğini kaldır
                 document.getElementById('beds').required = false;
                 document.getElementById('living_room').required = false;
-                document.getElementById('bathrooms').required = false;
+                document.getElementById('bathroom_count').required = false;
             } else {
                 landFields.style.display = 'none';
                 residentialFields.style.display = 'block';
@@ -694,7 +694,7 @@ $required_fields = [
                 // Konut için zorunlu alanları etkinleştir
                 document.getElementById('beds').required = true;
                 document.getElementById('living_room').required = true;
-                document.getElementById('bathrooms').required = true;
+                document.getElementById('bathroom_count').required = true;
             }
         }
 

@@ -1,0 +1,4 @@
+[17-Apr-2025 00:45:58 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method mysqli_result::fetch() in C:\Users\firat\OneDrive\Desktop\gayrimenkul\check_foreign_keys.php:16
+Stack trace:
+#0 {main}
+  thrown in C:\Users\firat\OneDrive\Desktop\gayrimenkul\check_foreign_keys.php on line 16
