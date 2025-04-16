@@ -34,43 +34,48 @@ if (!$table_exists) {
     $conn->query($create_properties_query);
 }
 
-// Foreign key'i kaldır ve agents tablosunu yeniden oluştur
-$conn->query("SET FOREIGN_KEY_CHECKS=0");
-
-// Önce mevcut foreign key'i kaldır
-try {
-    $conn->query("ALTER TABLE properties DROP FOREIGN KEY properties_ibfk_1");
-} catch (Exception $e) {
-    // Foreign key zaten yoksa hata vermesini engelle
+// Agents tablosunu kontrol et ve yoksa oluştur
+$check_agents_query = "SHOW TABLES LIKE 'agents'";
+$result = $conn->query($check_agents_query);
+if ($result->num_rows == 0) {
+    // Agents tablosu yoksa oluştur
+    $create_table_query = "CREATE TABLE agents (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        agent_name VARCHAR(255) NOT NULL,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        about TEXT,
+        image VARCHAR(255),
+        sahibinden_link VARCHAR(255),
+        emlakjet_link VARCHAR(255),
+        facebook_link VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    
+    if (!$conn->query($create_table_query)) {
+        error_log("Agents table creation error: " . $conn->error);
+        die("Danışman tablosu oluşturma hatası: " . $conn->error);
+    }
 }
 
-$conn->query("DROP TABLE IF EXISTS agents");
-$create_table_query = "CREATE TABLE agents (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    agent_name VARCHAR(255) NOT NULL,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(50) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    about TEXT,
-    image VARCHAR(255),
-    sahibinden_link VARCHAR(255),
-    emlakjet_link VARCHAR(255),
-    facebook_link VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-$conn->query($create_table_query);
+// Properties tablosundaki foreign key'i kontrol et ve yoksa ekle
+$check_fk_query = "SELECT * FROM information_schema.TABLE_CONSTRAINTS 
+                   WHERE CONSTRAINT_SCHEMA = DATABASE() 
+                   AND CONSTRAINT_NAME = 'properties_ibfk_1'";
+$result = $conn->query($check_fk_query);
 
-// Properties tablosundaki foreign key'i yeniden ekle
-try {
-    $add_foreign_key = "ALTER TABLE properties ADD CONSTRAINT properties_ibfk_1 FOREIGN KEY (agent_id) REFERENCES agents(id)";
-    $conn->query($add_foreign_key);
-} catch (Exception $e) {
-    // Foreign key eklenirken hata olursa işleme devam et
+if ($result->num_rows == 0) {
+    try {
+        $add_foreign_key = "ALTER TABLE properties ADD CONSTRAINT properties_ibfk_1 FOREIGN KEY (agent_id) REFERENCES agents(id)";
+        $conn->query($add_foreign_key);
+    } catch (Exception $e) {
+        // Foreign key eklenirken hata olursa işleme devam et
+        error_log("Foreign key addition error: " . $e->getMessage());
+    }
 }
-
-$conn->query("SET FOREIGN_KEY_CHECKS=1");
 
 // Form işlemleri
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
