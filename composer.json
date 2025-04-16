@@ -1,6 +1,7 @@
 {
     "require": {
         "php": "^8.0",
+        "ext-gd": "*",
         "phpmailer/phpmailer": "^6.9",
         "ext-mysqli": "*",
         "ext-json": "*"
