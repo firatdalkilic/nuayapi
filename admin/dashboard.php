@@ -280,15 +280,113 @@ while ($row = $result->fetch_assoc()) {
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="POST" action="update-profile.php" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="edit">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Profili Düzenle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit_name" class="form-label">İsim Soyisim</label>
+                                    <input type="text" class="form-control" id="edit_name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_username" class="form-label">Kullanıcı Adı</label>
+                                    <input type="text" class="form-control" id="edit_username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_phone" class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" id="edit_phone" name="phone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_email" class="form-label">E-posta</label>
+                                    <input type="email" class="form-control" id="edit_email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit_about" class="form-label">Hakkımda</label>
+                                    <textarea class="form-control" id="edit_about" name="about" rows="4"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_image" class="form-label">Profil Resmi</label>
+                                    <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
+                                    <div id="current_image" class="mt-2"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_sahibinden_link" class="form-label">Sahibinden Linki</label>
+                                    <input type="url" class="form-control" id="edit_sahibinden_link" name="sahibinden_link">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_emlakjet_link" class="form-label">Emlakjet Linki</label>
+                                    <input type="url" class="form-control" id="edit_emlakjet_link" name="emlakjet_link">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit_facebook_link" class="form-label">Facebook Linki</label>
+                                    <input type="url" class="form-control" id="edit_facebook_link" name="facebook_link">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         // Delete modal için veri aktarımı
-        document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+        document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#deleteModal"]').forEach(button => {
             button.addEventListener('click', function() {
                 document.getElementById('delete_id').value = this.dataset.id;
                 document.getElementById('delete_title').textContent = this.dataset.title;
             });
         });
+
+        // Profil düzenleme modalı için veri yükleme
+        <?php if (isAgent()): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            // AJAX ile danışman bilgilerini getir
+            fetch('get-agent-info.php')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('edit_name').value = data.agent_name;
+                    document.getElementById('edit_username').value = data.username;
+                    document.getElementById('edit_phone').value = data.phone;
+                    document.getElementById('edit_email').value = data.email;
+                    document.getElementById('edit_about').value = data.about;
+                    document.getElementById('edit_sahibinden_link').value = data.sahibinden_link;
+                    document.getElementById('edit_emlakjet_link').value = data.emlakjet_link;
+                    document.getElementById('edit_facebook_link').value = data.facebook_link;
+                    
+                    // Mevcut profil resmini göster
+                    const currentImage = document.getElementById('current_image');
+                    if (data.image) {
+                        currentImage.innerHTML = `<img src="../${data.image}" alt="Mevcut Profil Resmi" style="max-width: 100px; max-height: 100px;">`;
+                    } else {
+                        currentImage.innerHTML = 'Profil resmi yok';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        // Profil düzenleme linkini modalı açacak şekilde ayarla
+        document.querySelector('a[href="edit-profile.php"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            new bootstrap.Modal(document.getElementById('editProfileModal')).show();
+        });
+        <?php endif; ?>
     </script>
 </body>
 </html> 
