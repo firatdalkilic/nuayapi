@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("Raw password length: " . strlen($password));
     
     // Önce agents tablosunda kontrol et
-    $sql = "SELECT * FROM agents WHERE username = ?";
+    $sql = "SELECT * FROM agents WHERE username_panel = ?";
     error_log("SQL Query: " . $sql);
     
     $stmt = $conn->prepare($sql);
