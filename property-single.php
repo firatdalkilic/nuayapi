@@ -42,12 +42,6 @@ try {
         exit;
     }
 
-    // Debug bilgisi
-    echo '<div style="background-color: #fff3cd; padding: 10px; margin: 10px; border-radius: 5px;">';
-    echo 'Debug: SQL Query = ' . $sql . '<br>';
-    echo 'Debug: Property Data = <pre>' . print_r($property, true) . '</pre>';
-    echo '</div>';
-
     // Sayfalama için değişkenleri tanımla
     $imagesPerPage = 10;
     $totalPages = ceil(count($images) / $imagesPerPage);
@@ -1060,11 +1054,6 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-droplet"></i>
                                 <span>Banyo Sayısı:</span>
-                                <?php
-                                echo '<span style="background-color: #fff3cd; padding: 2px 5px; margin-left: 5px; border-radius: 3px;">';
-                                echo 'Debug: bathroom_count = ' . var_export($property['bathroom_count'], true);
-                                echo '</span><br>';
-                                ?>
                                 <strong><?php echo htmlspecialchars($property['bathroom_count']); ?></strong>
                             </div>
                         </div>
