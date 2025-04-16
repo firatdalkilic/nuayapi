@@ -433,30 +433,29 @@ if ($result->num_rows > 0) {
                                 <tbody>
                                     <?php foreach($agents as $agent): ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($agent['agent_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($agent['phone']); ?></td>
-                                        <td><?php echo htmlspecialchars($agent['email']); ?></td>
+                                        <td><?php echo htmlspecialchars($agent['agent_name'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($agent['phone'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($agent['email'] ?? ''); ?></td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-primary edit-agent" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#editAgentModal"
                                                     data-id="<?php echo $agent['id']; ?>"
-                                                    data-name="<?php echo htmlspecialchars($agent['agent_name']); ?>"
-                                                    data-username="<?php echo htmlspecialchars($agent['username']); ?>"
-                                                    data-phone="<?php echo htmlspecialchars($agent['phone']); ?>"
-                                                    data-email="<?php echo htmlspecialchars($agent['email']); ?>"
-                                                    data-about="<?php echo htmlspecialchars($agent['about']); ?>"
-                                                    data-image="<?php echo htmlspecialchars($agent['image']); ?>"
-                                                    data-sahibinden_link="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>"
-                                                    data-emlakjet_link="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>"
-                                                    data-facebook_link="<?php echo htmlspecialchars($agent['facebook_link']); ?>">
+                                                    data-name="<?php echo htmlspecialchars($agent['agent_name'] ?? ''); ?>"
+                                                    data-phone="<?php echo htmlspecialchars($agent['phone'] ?? ''); ?>"
+                                                    data-email="<?php echo htmlspecialchars($agent['email'] ?? ''); ?>"
+                                                    data-about="<?php echo htmlspecialchars($agent['about'] ?? ''); ?>"
+                                                    data-image="<?php echo htmlspecialchars($agent['image'] ?? ''); ?>"
+                                                    data-sahibinden_link="<?php echo htmlspecialchars($agent['sahibinden_link'] ?? ''); ?>"
+                                                    data-emlakjet_link="<?php echo htmlspecialchars($agent['emlakjet_link'] ?? ''); ?>"
+                                                    data-facebook_link="<?php echo htmlspecialchars($agent['facebook_link'] ?? ''); ?>">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-danger delete-agent"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteAgentModal"
                                                     data-id="<?php echo $agent['id']; ?>"
-                                                    data-name="<?php echo htmlspecialchars($agent['agent_name']); ?>">
+                                                    data-name="<?php echo htmlspecialchars($agent['agent_name'] ?? ''); ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
