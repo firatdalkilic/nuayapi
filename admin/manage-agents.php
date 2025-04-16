@@ -175,8 +175,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $name = $_POST['name'];
                 $email = $_POST['email'];
                 $phone = $_POST['phone'];
-                $title = $_POST['title'];
-                $status = $_POST['status'];
                 
                 // Fotoğraf işlemleri
                 $image_path = '';
@@ -264,8 +262,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 
                 // Veritabanını güncelle
-                $stmt = $conn->prepare("UPDATE agents SET name=?, email=?, phone=?, title=?, status=?, image=? WHERE id=?");
-                $stmt->bind_param("ssssssi", $name, $email, $phone, $title, $status, $image_path, $id);
+                $stmt = $conn->prepare("UPDATE agents SET agent_name=?, email=?, phone=?, image=? WHERE id=?");
+                $stmt->bind_param("ssssi", $name, $email, $phone, $image_path, $id);
                 
                 if ($stmt->execute()) {
                     $_SESSION['success'] = "Danışman başarıyla güncellendi.";
