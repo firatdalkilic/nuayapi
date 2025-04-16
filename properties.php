@@ -802,8 +802,8 @@ if (!file_exists('uploads')) {
                                 <i class="bi bi-door-open"></i>
                                 <span><?php 
                                     echo htmlspecialchars($ilan['room_count']); 
-                                    if (!empty($ilan['living_room_count'])) {
-                                        echo '+' . htmlspecialchars($ilan['living_room_count']);
+                                    if (!empty($ilan['living_room'])) {
+                                        echo '+' . htmlspecialchars($ilan['living_room']);
                                     }
                                 ?></span>
                             </div>

@@ -205,6 +205,7 @@ while ($row = $result->fetch_assoc()) {
                                     <th>Durum</th>
                                     <th>Konum</th>
                                     <th>Mahalle</th>
+                                    <th>Oda</th>
                                     <?php if (isAdmin()): ?>
                                     <th>Danışman</th>
                                     <?php endif; ?>
@@ -233,6 +234,18 @@ while ($row = $result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars($property['status']); ?></td>
                                     <td><?php echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim'; ?></td>
                                     <td><?php echo htmlspecialchars($property['neighborhood']); ?></td>
+                                    <td>
+                                        <?php if (!empty($property['room_count'])): ?>
+                                            <?php 
+                                                echo htmlspecialchars($property['room_count']); 
+                                                if (!empty($property['living_room'])) {
+                                                    echo '+' . htmlspecialchars($property['living_room']);
+                                                }
+                                            ?>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
                                     <?php if (isAdmin()): ?>
                                     <td><?php echo htmlspecialchars($property['agent_name'] ?? 'Admin'); ?></td>
                                     <?php endif; ?>

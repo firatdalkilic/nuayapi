@@ -964,12 +964,12 @@ try {
                             </div>
                         </div>
                         <?php endif; ?>
-                        <?php if (!empty($property['living_room_count'])): ?>
+                        <?php if (!empty($property['living_room'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-tv"></i>
                                 <span>Salon Sayısı:</span>
-                                <strong><?php echo htmlspecialchars($property['living_room_count']); ?></strong>
+                                <strong><?php echo htmlspecialchars($property['living_room']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
