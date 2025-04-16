@@ -515,7 +515,7 @@ if (!file_exists('uploads')) {
           <li><a href="about.html">Hakkımızda</a></li>
           <li><a href="services.html">Hizmetlerimiz</a></li>
           <li><a href="properties.php" class="active">İlanlar</a></li>
-          <li><a href="agents.html">Danışmanlarımız</a></li>
+          <li><a href="agents.php">Danışmanlarımız</a></li>
           <!-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="#">Dropdown 1</a></li>
