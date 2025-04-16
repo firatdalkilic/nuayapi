@@ -88,11 +88,11 @@
           require_once 'admin/config.php';
 
           try {
-              $stmt = $db->query("SELECT * FROM agents ORDER BY agent_name ASC");
-              $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+              $query = "SELECT * FROM agents ORDER BY agent_name ASC";
+              $result = $conn->query($query);
 
-              if (count($agents) > 0) {
-                  foreach ($agents as $agent) {
+              if ($result && $result->num_rows > 0) {
+                  while($agent = $result->fetch_assoc()) {
                       $agent_photo = !empty($agent['agent_photo']) ? $agent['agent_photo'] : 'assets/img/team/team-1.jpg';
                       $agent_name = !empty($agent['agent_name']) ? $agent['agent_name'] : 'NUA YAPI';
                       $agent_title = !empty($agent['agent_title']) ? $agent['agent_title'] : 'Gayrimenkul Danışmanı';
@@ -127,7 +127,8 @@
               } else {
                   echo '<div class="text-center"><p>Henüz danışman eklenmemiş.</p></div>';
               }
-          } catch(PDOException $e) {
+          } catch(Exception $e) {
+              error_log("Error in agents.php: " . $e->getMessage());
               echo '<div class="text-center"><p>Danışman bilgileri yüklenirken bir hata oluştu.</p></div>';
           }
           ?>

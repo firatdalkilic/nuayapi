@@ -113,6 +113,31 @@ if ($result->num_rows == 0) {
     }
 }
 
+// Agents tablosunu kontrol et ve oluştur
+$test_query = "SHOW TABLES LIKE 'agents'";
+$result = $conn->query($test_query);
+if ($result->num_rows == 0) {
+    $create_agents_table = "CREATE TABLE IF NOT EXISTS agents (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        agent_name VARCHAR(255) NOT NULL,
+        agent_title VARCHAR(255),
+        agent_photo VARCHAR(255),
+        agent_phone VARCHAR(20),
+        agent_email VARCHAR(255),
+        twitter_url VARCHAR(255),
+        facebook_url VARCHAR(255),
+        instagram_url VARCHAR(255),
+        linkedin_url VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    
+    if (!$conn->query($create_agents_table)) {
+        error_log("Agents table creation error: " . $conn->error);
+        die("Danışman tablosu oluşturma hatası: " . $conn->error);
+    }
+}
+
 // Mevcut sütunları kontrol et ve eksik olanları ekle
 $required_columns = [
     'status' => 'VARCHAR(50)',
