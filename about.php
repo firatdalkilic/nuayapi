@@ -41,10 +41,10 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Anasayfa</a></li>
-          <li><a href="about.html" class="active">Hakkımızda</a></li>
+          <li><a href="about.php" class="active">Hakkımızda</a></li>
           <li><a href="services.html">Hizmetlerimiz</a></li>
           <li><a href="properties.php">İlanlar</a></li>
-          <li><a href="agents.php">Danışmanlarımız</a></li>
+          <li><a href="agents.html">Danışmanlarımız</a></li>
           <li><a href="contact.html">İletişim</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -98,21 +98,46 @@
           </div>
 
           <div class="col-lg-6 about-images" data-aos="fade-up" data-aos-delay="200">
-            <div class="row gy-4">
-              <div class="col-lg-6">
-                <img src="assets/img/about/about-1.jpg" class="img-fluid" alt="Profesyonel Ekibimiz">
-              </div>
-              <div class="col-lg-6">
-                <div class="row gy-4">
-                  <div class="col-lg-12">
-                    <img src="assets/img/about/about-2.jpg" class="img-fluid" alt="Ekip Toplantımız">
-                  </div>
-                  <div class="col-lg-12">
-                    <img src="assets/img/about/about-3.jpg" class="img-fluid" alt="Müşteri Görüşmemiz">
-                  </div>
-                </div>
-              </div>
-            </div>
+            <?php
+            require_once 'admin/config.php';
+
+            try {
+                $stmt = $db->query("SELECT * FROM agents ORDER BY agent_name ASC");
+                $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if (count($agents) > 0) {
+                    echo '<div class="row gy-4">';
+                    $count = 0;
+                    foreach ($agents as $agent) {
+                        $agent_photo = !empty($agent['agent_photo']) ? $agent['agent_photo'] : 'assets/img/nua_logo.jpg';
+                        $agent_name = !empty($agent['agent_name']) ? $agent['agent_name'] : 'NUA YAPI';
+                        
+                        if ($count === 0) {
+                            // İlk resim - büyük kart
+                            echo '<div class="col-lg-6">';
+                            echo '<img src="' . htmlspecialchars($agent_photo) . '" class="img-fluid" alt="' . htmlspecialchars($agent_name) . '">';
+                            echo '</div>';
+                        } else if ($count <= 2) {
+                            // Diğer resimler - küçük kartlar
+                            if ($count === 1) {
+                                echo '<div class="col-lg-6"><div class="row gy-4">';
+                            }
+                            echo '<div class="col-lg-12">';
+                            echo '<img src="' . htmlspecialchars($agent_photo) . '" class="img-fluid" alt="' . htmlspecialchars($agent_name) . '">';
+                            echo '</div>';
+                            if ($count === 2) {
+                                echo '</div></div>';
+                            }
+                        }
+                        $count++;
+                        if ($count >= 3) break; // Sadece ilk 3 danışmanı göster
+                    }
+                    echo '</div>';
+                }
+            } catch(PDOException $e) {
+                echo '<div class="text-center"><p>Danışman bilgileri yüklenirken bir hata oluştu.</p></div>';
+            }
+            ?>
           </div>
 
         </div>
