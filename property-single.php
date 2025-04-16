@@ -494,19 +494,25 @@ try {
       color: white;
       border: none;
       padding: 0.75rem 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       font-weight: 500;
-      font-size: 0.875rem;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      transition: background-color 0.2s ease;
+      transition: all 0.3s ease;
+      text-decoration: none;
     }
 
     .btn-whatsapp:hover {
       background-color: #128c7e;
       color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-whatsapp i {
+      font-size: 1.1rem;
     }
 
     .back-button {
@@ -680,17 +686,17 @@ try {
         font-size: 1.5rem;
         font-weight: 600;
         color: #2c3e50;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .agent-contact-info {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .contact-item {
         display: flex;
         align-items: center;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         padding: 0.5rem;
         transition: all 0.3s ease;
     }
@@ -701,17 +707,17 @@ try {
     }
 
     .contact-item i {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: #2563eb;
-        margin-right: 1rem;
-        width: 24px;
+        margin-right: 0.75rem;
+        width: 20px;
         text-align: center;
     }
 
     .contact-link {
         color: #4b5563;
         text-decoration: none;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 500;
         transition: color 0.3s ease;
     }
@@ -724,14 +730,14 @@ try {
         background-color: #25d366;
         color: white;
         border: none;
-        padding: 0.875rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.95rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.75rem;
+        gap: 0.5rem;
         transition: all 0.3s ease;
         text-decoration: none;
     }
@@ -743,7 +749,7 @@ try {
     }
 
     .btn-whatsapp i {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
   </style>
 </head>
