@@ -1169,13 +1169,18 @@ try {
                             agent_photo: " . ($property['agent_photo'] ?? 'null') . "
                             debug_image: " . ($property['debug_image'] ?? 'null') . "
                             agent_name: " . ($property['agent_name'] ?? 'null') . "
+                            photo_path: admin/uploads/agents/" . ($property['agent_photo'] ?? 'null') . "
                             -->";
                             
-                            if (!empty($property['agent_photo'])): ?>
-                                <img src="admin/uploads/agents/<?php echo htmlspecialchars($property['agent_photo']); ?>" 
+                            if (!empty($property['agent_photo'])): 
+                                $photo_path = "admin/uploads/agents/" . htmlspecialchars($property['agent_photo']);
+                                echo "<!-- Fotoğraf yolu: " . $photo_path . " -->";
+                            ?>
+                                <img src="<?php echo $photo_path; ?>" 
                                      alt="<?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'Nua Yapı'; ?>" 
                                      class="agent-image rounded-circle mb-2" 
-                                     style="width: 150px; height: 150px; object-fit: cover;">
+                                     style="width: 150px; height: 150px; object-fit: cover;"
+                                     onerror="this.onerror=null; this.src='assets/img/nua_logo.jpg'; console.log('Fotoğraf yüklenemedi: <?php echo $photo_path; ?>');">
                             <?php else: ?>
                                 <img src="assets/img/nua_logo.jpg" 
                                      alt="Nua Yapı" 
