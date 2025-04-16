@@ -40,7 +40,8 @@ if (isAgent()) {
             WHERE p.agent_id = ? 
             ORDER BY p.created_at DESC";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", getAgentId());
+    $agent_id = getAgentId();
+    $stmt->bind_param("i", $agent_id);
 } else {
     // Admin tüm ilanları görür
     $sql = "SELECT p.*, a.agent_name FROM properties p 
