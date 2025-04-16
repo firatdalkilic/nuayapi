@@ -2,6 +2,57 @@
 require_once 'config.php';
 
 try {
+    // Properties tablosunu yeniden oluştur
+    $sql = "DROP TABLE IF EXISTS property_images";
+    $conn->query($sql);
+    
+    $sql = "DROP TABLE IF EXISTS properties";
+    $conn->query($sql);
+
+    $sql = "CREATE TABLE properties (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        price DECIMAL(15,2),
+        location VARCHAR(255),
+        neighborhood VARCHAR(255),
+        status VARCHAR(50),
+        property_type VARCHAR(50),
+        beds INT DEFAULT 0,
+        bathrooms INT DEFAULT 0,
+        living_room INT DEFAULT 0,
+        net_area DECIMAL(10,2) DEFAULT 0,
+        gross_area DECIMAL(10,2) DEFAULT 0,
+        building_age VARCHAR(50),
+        floor_location VARCHAR(50),
+        total_floors INT DEFAULT 0,
+        heating VARCHAR(50),
+        balcony VARCHAR(10),
+        furnished VARCHAR(10),
+        site_status VARCHAR(10),
+        eligible_for_credit VARCHAR(10),
+        usage_status VARCHAR(50),
+        video_call_available VARCHAR(10),
+        zoning_status VARCHAR(100),
+        block_no VARCHAR(50),
+        parcel_no VARCHAR(50),
+        sheet_no VARCHAR(50),
+        floor_area_ratio VARCHAR(50),
+        height_limit VARCHAR(50),
+        deed_status VARCHAR(50),
+        video_file VARCHAR(255),
+        price_per_sqm DECIMAL(10,2) DEFAULT 0,
+        agent_id INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    
+    if ($conn->query($sql)) {
+        echo "Properties tablosu başarıyla oluşturuldu.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
+
     // Agents tablosunu yeniden oluştur
     $sql = "DROP TABLE IF EXISTS agents";
     $conn->query($sql);
@@ -23,53 +74,13 @@ try {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
     
     if ($conn->query($sql)) {
-        echo "Agents tablosu başarıyla yeniden oluşturuldu.<br>";
+        echo "Agents tablosu başarıyla oluşturuldu.<br>";
     } else {
         throw new Exception($conn->error);
     }
 
-    // Properties tablosunu düzelt
-    $alter_queries = [
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS beds INT DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS bathrooms INT DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS living_room INT DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS net_area DECIMAL(10,2) DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS gross_area DECIMAL(10,2) DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS building_age VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS floor_location VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS total_floors INT DEFAULT 0",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS heating VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS balcony VARCHAR(10)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS furnished VARCHAR(10)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS site_status VARCHAR(10)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS eligible_for_credit VARCHAR(10)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS usage_status VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_call_available VARCHAR(10)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS zoning_status VARCHAR(100)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS block_no VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS parcel_no VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS sheet_no VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS floor_area_ratio VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS height_limit VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS deed_status VARCHAR(50)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_file VARCHAR(255)",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS price_per_sqm DECIMAL(10,2) DEFAULT 0"
-    ];
-
-    foreach ($alter_queries as $query) {
-        try {
-            if ($conn->query($query)) {
-                echo "Başarılı: " . $query . "<br>";
-            } else {
-                echo "Hata: " . $query . " - " . $conn->error . "<br>";
-            }
-        } catch (Exception $e) {
-            echo "Hata: " . $query . " - " . $e->getMessage() . "<br>";
-        }
-    }
-
     // Property_images tablosunu oluştur
-    $sql = "CREATE TABLE IF NOT EXISTS property_images (
+    $sql = "CREATE TABLE property_images (
         id INT AUTO_INCREMENT PRIMARY KEY,
         property_id INT NOT NULL,
         image_name VARCHAR(255) NOT NULL,
@@ -79,7 +90,15 @@ try {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
     
     if ($conn->query($sql)) {
-        echo "Property_images tablosu başarıyla oluşturuldu/güncellendi.<br>";
+        echo "Property_images tablosu başarıyla oluşturuldu.<br>";
+    } else {
+        throw new Exception($conn->error);
+    }
+
+    // Properties tablosuna foreign key ekle
+    $sql = "ALTER TABLE properties ADD FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE SET NULL";
+    if ($conn->query($sql)) {
+        echo "Properties tablosuna foreign key eklendi.<br>";
     } else {
         throw new Exception($conn->error);
     }
