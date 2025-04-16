@@ -24,7 +24,7 @@ try {
 
     // İlan bilgilerini getir
     $stmt = $conn->prepare("
-        SELECT p.*, a.photo as agent_photo, a.name as agent_name, a.phone as agent_phone, a.email as agent_email
+        SELECT p.*, a.image as agent_photo, a.agent_name, a.phone as agent_phone, a.email as agent_email
         FROM properties p
         LEFT JOIN agents a ON p.agent_id = a.id
         WHERE p.id = ?
