@@ -145,20 +145,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $emlakjet_link = trim($_POST['emlakjet_link']);
                 $facebook_link = trim($_POST['facebook_link']);
                 
-                // Şifre kontrolü
-                $password_sql = "";
-                $types = "sssssssssi"; // Başlangıç parametre tipleri
+                // Temel SQL sorgusu ve parametreleri
+                $sql = "UPDATE agents SET agent_name=?, username=?, phone=?, email=?, about=?, sahibinden_link=?, emlakjet_link=?, facebook_link=?";
+                $types = "ssssssss";
                 $params = array($name, $username, $phone, $email, $about, $sahibinden_link, $emlakjet_link, $facebook_link);
                 
+                // Şifre kontrolü
                 if (!empty($_POST['password'])) {
-                    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
-                    $password_sql = ", password=?";
-                    $types = "ssssssssssi"; // Şifre için ekstra 's' eklendi
+                    $password = password_hash(trim($_POST['password']), PASSWORD_BCRYPT, ['cost' => 10]);
+                    $sql .= ", password=?";
+                    $types .= "s";
                     $params[] = $password;
                 }
                 
                 // Resim yükleme işlemi
-                $image_sql = "";
                 if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                     $target_dir = "../uploads/agents/";
                     if (!file_exists($target_dir)) {
@@ -170,20 +170,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
                         $image = "uploads/agents/" . $image;
-                        $image_sql = ", image=?";
+                        $sql .= ", image=?";
                         $types .= "s";
                         $params[] = $image;
                     }
                 }
                 
-                $params[] = $id; // ID en sona eklenir
+                // WHERE koşulu ekle
+                $sql .= " WHERE id=?";
+                $types .= "i";
+                $params[] = $id;
                 
-                $sql = "UPDATE agents SET agent_name=?, username=?, phone=?, email=?, about=?, sahibinden_link=?, emlakjet_link=?, facebook_link=?" . $password_sql . $image_sql . " WHERE id=?";
+                // SQL sorgusunu hazırla ve çalıştır
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param($types, ...$params);
                 
                 if ($stmt->execute()) {
                     $_SESSION['success'] = "Danışman bilgileri güncellendi.";
+                    if (!empty($_POST['password'])) {
+                        $_SESSION['success'] .= " Yeni şifre başarıyla kaydedildi.";
+                    }
                 } else {
                     $_SESSION['error'] = "Güncelleme sırasında bir hata oluştu.";
                 }
