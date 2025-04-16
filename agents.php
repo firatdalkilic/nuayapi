@@ -88,8 +88,14 @@
           require_once 'admin/config.php';
 
           try {
-              $query = "SELECT * FROM agents WHERE agent_photo IS NOT NULL AND agent_photo != '' ORDER BY agent_name ASC";
+              // Tüm danışmanları getir
+              $query = "SELECT * FROM agents ORDER BY agent_name ASC";
               $result = $conn->query($query);
+              
+              if (!$result) {
+                  error_log("Query error in agents.php: " . $conn->error);
+                  throw new Exception("Veritabanı sorgusu başarısız oldu");
+              }
 
               if ($result && $result->num_rows > 0) {
                   while($agent = $result->fetch_assoc()) {
@@ -133,11 +139,11 @@
                       <?php
                   }
               } else {
-                  echo '<div class="text-center"><p>Henüz danışman eklenmemiş.</p></div>';
+                  echo '<div class="col-12 text-center"><p class="alert alert-info">Henüz danışman eklenmemiş.</p></div>';
               }
           } catch(Exception $e) {
               error_log("Error in agents.php: " . $e->getMessage());
-              echo '<div class="text-center"><p>Danışman bilgileri yüklenirken bir hata oluştu.</p></div>';
+              echo '<div class="col-12 text-center"><p class="alert alert-danger">Danışman bilgileri yüklenirken bir hata oluştu: ' . htmlspecialchars($e->getMessage()) . '</p></div>';
           }
           ?>
 
