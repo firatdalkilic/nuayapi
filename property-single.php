@@ -24,9 +24,8 @@ try {
 
     // İlan bilgilerini getir
     $stmt = $conn->prepare("
-        SELECT p.*, a.name as agent_name, a.phone, a.email, a.image as agent_image
+        SELECT p.*
         FROM properties p
-        LEFT JOIN agents a ON p.agent_id = a.id
         WHERE p.id = ?
     ");
     
@@ -1059,39 +1058,25 @@ try {
             <div class="agent-card mb-4">
                 <div class="card">
                     <div class="card-body text-center">
-                        <?php if (!empty($property['agent_image'])): ?>
-                            <img src="<?php echo htmlspecialchars($property['agent_image']); ?>" alt="<?php echo htmlspecialchars($property['agent_name']); ?>" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                        <?php else: ?>
-                            <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                        <?php endif; ?>
+                        <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                         
-                        <h4 class="mb-2"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
+                        <h4 class="mb-2">NUA YAPI</h4>
                         
-                        <?php if (!empty($property['phone'])): ?>
-                            <p class="mb-2">
-                                <i class="bi bi-telephone me-2"></i>
-                                <a href="tel:<?php echo htmlspecialchars($property['phone']); ?>" class="text-dark">
-                                    <?php echo htmlspecialchars($property['phone']); ?>
-                                </a>
-                            </p>
-                        <?php endif; ?>
+                        <p class="mb-2">
+                            <i class="bi bi-telephone me-2"></i>
+                            <a href="tel:905304416873" class="text-dark">
+                                0530 441 68 73
+                            </a>
+                        </p>
                         
-                        <?php if (!empty($property['email'])): ?>
-                            <p class="mb-3">
-                                <i class="bi bi-envelope me-2"></i>
-                                <a href="mailto:<?php echo htmlspecialchars($property['email']); ?>" class="text-dark">
-                                    <?php echo htmlspecialchars($property['email']); ?>
-                                </a>
-                            </p>
-                        <?php endif; ?>
+                        <p class="mb-3">
+                            <i class="bi bi-envelope me-2"></i>
+                            <a href="mailto:info@nuayapi.com" class="text-dark">
+                                info@nuayapi.com
+                            </a>
+                        </p>
                         
-                        <a href="https://wa.me/<?php 
-                            $phone = !empty($property['phone']) ? preg_replace('/[^0-9]/', '', $property['phone']) : '905304416873';
-                            if (substr($phone, 0, 1) !== '9') {
-                                $phone = '9' . $phone;
-                            }
-                            echo $phone;
-                        ?>" class="btn btn-success w-100" target="_blank">
+                        <a href="https://wa.me/905304416873" class="btn btn-success w-100" target="_blank">
                             <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Mesaj Gönder
                         </a>
                     </div>
