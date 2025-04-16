@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>Danışmanlarımız - Nua Yapı</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
@@ -28,61 +27,6 @@
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
-  <style>
-    .agent-card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      margin-bottom: 30px;
-      transition: transform 0.3s ease;
-    }
-
-    .agent-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .agent-image {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-    }
-
-    .agent-info {
-      padding: 20px;
-      text-align: center;
-    }
-
-    .agent-name {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #2e3339;
-      margin: 10px 0;
-    }
-
-    .agent-title {
-      color: #838893;
-      font-size: 1rem;
-      margin-bottom: 15px;
-    }
-
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .social-links a {
-      color: #838893;
-      font-size: 1.2rem;
-      transition: color 0.3s ease;
-    }
-
-    .social-links a:hover {
-      color: #feb900;
-    }
-  </style>
 </head>
 
 <body class="agents-page">
@@ -97,10 +41,10 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Anasayfa</a></li>
-          <li><a href="about.php">Hakkımızda</a></li>
+          <li><a href="about.html">Hakkımızda</a></li>
           <li><a href="services.html">Hizmetlerimiz</a></li>
           <li><a href="properties.php">İlanlar</a></li>
-          <li><a href="agents.php" class="active">Danışmanlarımız</a></li>
+          <li><a href="agents.html" class="active">Danışmanlarımız</a></li>
           <li><a href="contact.html">İletişim</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -118,7 +62,7 @@
           <div class="row d-flex justify-content-center text-center">
             <div class="col-lg-8">
               <h1>Danışmanlarımız</h1>
-              <p class="mb-0">Profesyonel ve deneyimli danışman kadromuzla size en iyi hizmeti sunmak için buradayız.</p>
+              <p class="mb-0">Uzman ve deneyimli danışman kadromuz, gayrimenkul sektöründeki derin bilgi birikimleri ve profesyonel yaklaşımlarıyla size en iyi hizmeti sunmak için çalışmaktadır. Her bir danışmanımız, müşterilerimizin ihtiyaçlarını en iyi şekilde anlayıp, onlara en uygun çözümleri sunmak için özenle seçilmiştir.</p>
             </div>
           </div>
         </div>
@@ -135,68 +79,69 @@
 
     <!-- Agents Section -->
     <section id="agents" class="agents section">
+
       <div class="container">
 
-        <?php
-        require_once 'admin/config.php';
+        <div class="row gy-5">
 
-        try {
-            $stmt = $db->query("SELECT * FROM agents ORDER BY agent_name ASC");
-            $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          <?php
+          require_once 'admin/config.php';
 
-            if (count($agents) > 0) {
-                echo '<div class="row gy-4">';
-                
-                foreach ($agents as $agent) {
-                    $agent_photo = !empty($agent['agent_photo']) ? $agent['agent_photo'] : 'assets/img/nua_logo.jpg';
-                    $agent_name = !empty($agent['agent_name']) ? $agent['agent_name'] : 'NUA YAPI';
-                    $agent_title = !empty($agent['agent_title']) ? $agent['agent_title'] : 'Gayrimenkul Danışmanı';
-                    ?>
-                    
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                        <div class="agent-card">
-                            <div class="agent-img">
-                                <img src="<?php echo htmlspecialchars($agent_photo); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($agent_name); ?>">
+          try {
+              $stmt = $db->query("SELECT * FROM agents ORDER BY agent_name ASC");
+              $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+              if (count($agents) > 0) {
+                  foreach ($agents as $agent) {
+                      $agent_photo = !empty($agent['agent_photo']) ? $agent['agent_photo'] : 'assets/img/team/team-1.jpg';
+                      $agent_name = !empty($agent['agent_name']) ? $agent['agent_name'] : 'NUA YAPI';
+                      $agent_title = !empty($agent['agent_title']) ? $agent['agent_title'] : 'Gayrimenkul Danışmanı';
+                      ?>
+                      
+                      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="member">
+                          <div class="pic"><img src="<?php echo htmlspecialchars($agent_photo); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($agent_name); ?>"></div>
+                          <div class="member-info">
+                            <h4><?php echo htmlspecialchars($agent_name); ?></h4>
+                            <span><?php echo htmlspecialchars($agent_title); ?></span>
+                            <div class="social">
+                              <?php if (!empty($agent['twitter_url'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['twitter_url']); ?>"><i class="bi bi-twitter-x"></i></a>
+                              <?php endif; ?>
+                              <?php if (!empty($agent['facebook_url'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['facebook_url']); ?>"><i class="bi bi-facebook"></i></a>
+                              <?php endif; ?>
+                              <?php if (!empty($agent['instagram_url'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['instagram_url']); ?>"><i class="bi bi-instagram"></i></a>
+                              <?php endif; ?>
+                              <?php if (!empty($agent['linkedin_url'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['linkedin_url']); ?>"><i class="bi bi-linkedin"></i></a>
+                              <?php endif; ?>
                             </div>
-                            <div class="agent-info">
-                                <h4><?php echo htmlspecialchars($agent_name); ?></h4>
-                                <span><?php echo htmlspecialchars($agent_title); ?></span>
-                                <div class="social-links mt-3">
-                                    <?php if (!empty($agent['twitter_url'])): ?>
-                                        <a href="<?php echo htmlspecialchars($agent['twitter_url']); ?>" class="twitter"><i class="bi bi-twitter"></i></a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($agent['facebook_url'])): ?>
-                                        <a href="<?php echo htmlspecialchars($agent['facebook_url']); ?>" class="facebook"><i class="bi bi-facebook"></i></a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($agent['instagram_url'])): ?>
-                                        <a href="<?php echo htmlspecialchars($agent['instagram_url']); ?>" class="instagram"><i class="bi bi-instagram"></i></a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($agent['linkedin_url'])): ?>
-                                        <a href="<?php echo htmlspecialchars($agent['linkedin_url']); ?>" class="linkedin"><i class="bi bi-linkedin"></i></a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+                          </div>
                         </div>
-                    </div>
+                      </div><!-- End Team Member -->
 
-                    <?php
-                }
-                
-                echo '</div>';
-            } else {
-                echo '<div class="text-center"><p>Henüz danışman eklenmemiş.</p></div>';
-            }
-        } catch(PDOException $e) {
-            echo '<div class="text-center"><p>Danışman bilgileri yüklenirken bir hata oluştu.</p></div>';
-        }
-        ?>
+                      <?php
+                  }
+              } else {
+                  echo '<div class="text-center"><p>Henüz danışman eklenmemiş.</p></div>';
+              }
+          } catch(PDOException $e) {
+              echo '<div class="text-center"><p>Danışman bilgileri yüklenirken bir hata oluştu.</p></div>';
+          }
+          ?>
+
+        </div>
 
       </div>
+
     </section><!-- End Agents Section -->
 
   </main>
 
   <footer id="footer" class="footer light-background">
+
     <div class="container">
       <div class="row gy-3">
         <div class="col-lg-3 col-md-6 d-flex">
@@ -205,7 +150,9 @@
             <h4>Adres</h4>
             <p>Efeler, Kavala Cd. Aydın Apartmanı No:24/A, 09270</p>
             <p>Didim/Aydın</p>
+            <p></p>
           </div>
+
         </div>
 
         <div class="col-lg-3 col-md-6 d-flex">
@@ -260,6 +207,7 @@
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
@@ -269,4 +217,4 @@
 
 </body>
 
-</html> 
+</html>
