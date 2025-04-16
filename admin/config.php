@@ -127,7 +127,11 @@ $required_columns = [
     'video_call_available' => 'VARCHAR(50)',
     'video_file' => 'VARCHAR(255)',
     'site_name' => 'VARCHAR(255)',
-    'living_room' => 'INT'
+    'living_room' => 'INT',
+    'agent_id' => 'INT',
+    'agent_name' => 'VARCHAR(255)',
+    'agent_phone' => 'VARCHAR(20)',
+    'agent_email' => 'VARCHAR(255)'
 ];
 
 $check_columns_query = "SHOW COLUMNS FROM properties";
