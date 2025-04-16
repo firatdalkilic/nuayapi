@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $property_type = isset($_POST['property_type']) ? trim($_POST['property_type']) : '';
     $status = isset($_POST['status']) ? trim($_POST['status']) : '';
     $beds = isset($_POST['beds']) ? (int)trim($_POST['beds']) : 0;
-    $bathrooms = isset($_POST['bathrooms']) ? (int)trim($_POST['bathrooms']) : 0;
+    $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
     $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
     $features = isset($_POST['features']) ? implode(',', $_POST['features']) : '';
     
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 property_type=?, 
                 status=?, 
                 beds=?, 
-                bathrooms=?, 
+                bathroom_count=?, 
                 net_area=?, 
                 features=? 
                 WHERE id=? AND agent_id=?";
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $property_type, 
             $status, 
             $beds, 
-            $bathrooms, 
+            $bathroom_count, 
             $net_area, 
             $features, 
             $id, 
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 property_type=?, 
                 status=?, 
                 beds=?, 
-                bathrooms=?, 
+                bathroom_count=?, 
                 net_area=?, 
                 features=? 
                 WHERE id=?";
@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $property_type, 
             $status, 
             $beds, 
-            $bathrooms, 
+            $bathroom_count, 
             $net_area, 
             $features, 
             $id
