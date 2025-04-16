@@ -1172,7 +1172,7 @@ try {
                             -->";
                             
                             if (!empty($property['agent_photo'])): 
-                                $photo_path = "admin/" . htmlspecialchars($property['agent_photo']);
+                                $photo_path = htmlspecialchars($property['agent_photo']);
                                 echo "<!-- Fotoğraf yolu: " . $photo_path . " -->";
                             ?>
                                 <img src="<?php echo $photo_path; ?>" 
