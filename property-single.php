@@ -661,6 +661,90 @@ try {
     .modal-video.loaded {
       opacity: 1;
     }
+
+    .agent-card {
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .agent-card .card {
+        border: none;
+    }
+
+    .agent-card .card-body {
+        padding: 2rem;
+    }
+
+    .agent-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+
+    .agent-contact-info {
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .contact-item i {
+        font-size: 1.2rem;
+        color: #2563eb;
+        margin-right: 1rem;
+        width: 24px;
+        text-align: center;
+    }
+
+    .contact-link {
+        color: #4b5563;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .contact-link:hover {
+        color: #2563eb;
+    }
+
+    .btn-whatsapp {
+        background-color: #25d366;
+        color: white;
+        border: none;
+        padding: 0.875rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-whatsapp:hover {
+        background-color: #128c7e;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-whatsapp i {
+        font-size: 1.25rem;
+    }
   </style>
 </head>
 
@@ -1057,58 +1141,63 @@ try {
             <!-- Danışman Bilgileri Kartı -->
             <div class="agent-card mb-4">
                 <div class="card">
-                    <div class="card-body text-center">
-                        <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <img src="assets/img/nua_logo.jpg" alt="Nua Yapı" class="agent-image rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            <h4 class="agent-name"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
+                        </div>
                         
-                        <h4 class="mb-2"><?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?></h4>
+                        <div class="agent-contact-info">
+                            <?php if (!empty($property['agent_phone'])): ?>
+                            <div class="contact-item">
+                                <i class="bi bi-telephone"></i>
+                                <a href="tel:<?php echo htmlspecialchars($property['agent_phone']); ?>" class="contact-link">
+                                    <?php echo htmlspecialchars($property['agent_phone']); ?>
+                                </a>
+                            </div>
+                            <?php else: ?>
+                            <div class="contact-item">
+                                <i class="bi bi-telephone"></i>
+                                <a href="tel:905304416873" class="contact-link">
+                                    0530 441 68 73
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($property['agent_email'])): ?>
+                            <div class="contact-item">
+                                <i class="bi bi-envelope"></i>
+                                <a href="mailto:<?php echo htmlspecialchars($property['agent_email']); ?>" class="contact-link">
+                                    <?php echo htmlspecialchars($property['agent_email']); ?>
+                                </a>
+                            </div>
+                            <?php else: ?>
+                            <div class="contact-item">
+                                <i class="bi bi-envelope"></i>
+                                <a href="mailto:info@nuayapi.com" class="contact-link">
+                                    info@nuayapi.com
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
                         
-                        <?php if (!empty($property['agent_phone'])): ?>
-                        <p class="mb-2">
-                            <i class="bi bi-telephone me-2"></i>
-                            <a href="tel:<?php echo htmlspecialchars($property['agent_phone']); ?>" class="text-dark">
-                                <?php echo htmlspecialchars($property['agent_phone']); ?>
+                        <div class="mt-4">
+                            <a href="https://wa.me/<?php 
+                                $phone = !empty($property['agent_phone']) ? preg_replace('/[^0-9]/', '', $property['agent_phone']) : '905304416873';
+                                if (substr($phone, 0, 1) !== '9') {
+                                    $phone = '9' . $phone;
+                                }
+                                echo $phone;
+                            ?>?text=<?php 
+                                $message = "Merhaba, " . (!empty($property['agent_name']) ? $property['agent_name'] : 'NUA YAPI') . ", ";
+                                $message .= "ilan no " . str_pad($property['id'], 10, '0', STR_PAD_LEFT) . " olan ";
+                                $message .= $property['title'] . " ilanınız hakkında bilgi almak istiyorum.\n\n";
+                                $message .= "İlan linki: " . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                                echo urlencode($message);
+                            ?>" class="btn-whatsapp" target="_blank">
+                                <i class="bi bi-whatsapp"></i>WhatsApp'tan Mesaj Gönder
                             </a>
-                        </p>
-                        <?php else: ?>
-                        <p class="mb-2">
-                            <i class="bi bi-telephone me-2"></i>
-                            <a href="tel:905304416873" class="text-dark">
-                                0530 441 68 73
-                            </a>
-                        </p>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($property['agent_email'])): ?>
-                        <p class="mb-3">
-                            <i class="bi bi-envelope me-2"></i>
-                            <a href="mailto:<?php echo htmlspecialchars($property['agent_email']); ?>" class="text-dark">
-                                <?php echo htmlspecialchars($property['agent_email']); ?>
-                            </a>
-                        </p>
-                        <?php else: ?>
-                        <p class="mb-3">
-                            <i class="bi bi-envelope me-2"></i>
-                            <a href="mailto:info@nuayapi.com" class="text-dark">
-                                info@nuayapi.com
-                            </a>
-                        </p>
-                        <?php endif; ?>
-                        
-                        <a href="https://wa.me/<?php 
-                            $phone = !empty($property['agent_phone']) ? preg_replace('/[^0-9]/', '', $property['agent_phone']) : '905304416873';
-                            if (substr($phone, 0, 1) !== '9') {
-                                $phone = '9' . $phone;
-                            }
-                            echo $phone;
-                        ?>?text=<?php 
-                            $message = "Merhaba, " . (!empty($property['agent_name']) ? $property['agent_name'] : 'NUA YAPI') . ", ";
-                            $message .= "ilan no " . str_pad($property['id'], 10, '0', STR_PAD_LEFT) . " olan ";
-                            $message .= $property['title'] . " ilanınız hakkında bilgi almak istiyorum.\n\n";
-                            $message .= "İlan linki: " . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-                            echo urlencode($message);
-                        ?>" class="btn btn-success w-100" target="_blank">
-                            <i class="bi bi-whatsapp me-2"></i>WhatsApp'tan Mesaj Gönder
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
