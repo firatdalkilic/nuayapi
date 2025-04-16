@@ -120,7 +120,7 @@ if ($result->num_rows == 0) {
     $create_agents_table = "CREATE TABLE IF NOT EXISTS agents (
         id INT AUTO_INCREMENT PRIMARY KEY,
         agent_name VARCHAR(255) NOT NULL,
-        agent_title VARCHAR(255),
+        agent_title VARCHAR(255) DEFAULT 'Gayrimenkul Danışmanı',
         agent_photo VARCHAR(255),
         agent_phone VARCHAR(20),
         agent_email VARCHAR(255),
@@ -135,6 +135,40 @@ if ($result->num_rows == 0) {
     if (!$conn->query($create_agents_table)) {
         error_log("Agents table creation error: " . $conn->error);
         die("Danışman tablosu oluşturma hatası: " . $conn->error);
+    }
+
+    // Örnek danışman ekle
+    $insert_agent = "INSERT INTO agents (agent_name, agent_title, agent_phone, agent_email) 
+                    VALUES ('Ahmet Yılmaz', 'Kıdemli Gayrimenkul Danışmanı', '0530 441 68 73', 'bilgi@didim.com')";
+    $conn->query($insert_agent);
+}
+
+// Agents tablosundaki eksik sütunları kontrol et ve ekle
+$required_agent_columns = [
+    'agent_title' => "VARCHAR(255) DEFAULT 'Gayrimenkul Danışmanı'",
+    'agent_photo' => 'VARCHAR(255)',
+    'agent_phone' => 'VARCHAR(20)',
+    'agent_email' => 'VARCHAR(255)',
+    'twitter_url' => 'VARCHAR(255)',
+    'facebook_url' => 'VARCHAR(255)',
+    'instagram_url' => 'VARCHAR(255)',
+    'linkedin_url' => 'VARCHAR(255)'
+];
+
+$check_agent_columns_query = "SHOW COLUMNS FROM agents";
+$result = $conn->query($check_agent_columns_query);
+$existing_agent_columns = [];
+while($row = $result->fetch_assoc()) {
+    $existing_agent_columns[] = $row['Field'];
+}
+
+foreach ($required_agent_columns as $column => $type) {
+    if (!in_array($column, $existing_agent_columns)) {
+        $alter_query = "ALTER TABLE agents ADD COLUMN $column $type";
+        if (!$conn->query($alter_query)) {
+            error_log("Alter agents table error for column $column: " . $conn->error);
+            die("Danışman tablosu güncelleme hatası: " . $conn->error);
+        }
     }
 }
 
