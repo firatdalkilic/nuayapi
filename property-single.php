@@ -1169,11 +1169,10 @@ try {
                             agent_photo: " . ($property['agent_photo'] ?? 'null') . "
                             debug_image: " . ($property['debug_image'] ?? 'null') . "
                             agent_name: " . ($property['agent_name'] ?? 'null') . "
-                            photo_path: admin/uploads/agents/" . ($property['agent_photo'] ?? 'null') . "
                             -->";
                             
                             if (!empty($property['agent_photo'])): 
-                                $photo_path = "admin/uploads/agents/" . htmlspecialchars($property['agent_photo']);
+                                $photo_path = "admin/" . htmlspecialchars($property['agent_photo']);
                                 echo "<!-- Fotoğraf yolu: " . $photo_path . " -->";
                             ?>
                                 <img src="<?php echo $photo_path; ?>" 
