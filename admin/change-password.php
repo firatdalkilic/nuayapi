@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 session_start();
 
 // Oturum kontrolü
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+if (!isset($_SESSION['admin_logged_in']) && !isset($_SESSION['agent_logged_in'])) {
     header("Location: login.php");
     exit;
 }
@@ -25,11 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Tüm alanları doldurun.");
         }
 
-        // Mevcut şifreyi kontrol et
-        if (!password_verify($current_password, ADMIN_PASSWORD_HASH)) {
-            throw new Exception("Mevcut şifre yanlış.");
-        }
-
         if ($new_password !== $confirm_password) {
             throw new Exception("Yeni şifre ve şifre tekrarı eşleşmiyor.");
         }
@@ -41,31 +36,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Yeni şifreyi hash'le
         $new_password_hash = password_hash($new_password, PASSWORD_BCRYPT, ['cost' => 10]);
 
-        // Heroku config vars'ı güncellemek için API çağrısı yap
-        $app_name = 'nuayapi';
-        $api_key = getenv('HEROKU_API_KEY');
-        
-        if (!$api_key) {
-            throw new Exception("Heroku API anahtarı bulunamadı. Lütfen sistem yöneticisi ile iletişime geçin.");
-        }
+        if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+            // Admin şifresini güncelle
+            if (!password_verify($current_password, ADMIN_PASSWORD_HASH)) {
+                throw new Exception("Mevcut şifre yanlış.");
+            }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.heroku.com/apps/{$app_name}/config-vars");
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['ADMIN_PASSWORD_HASH' => $new_password_hash]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Accept: application/vnd.heroku+json; version=3',
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $api_key
-        ]);
+            // Heroku config vars'ı güncellemek için API çağrısı yap
+            $app_name = 'nuayapi';
+            $api_key = getenv('HEROKU_API_KEY');
+            
+            if (!$api_key) {
+                throw new Exception("Heroku API anahtarı bulunamadı. Lütfen sistem yöneticisi ile iletişime geçin.");
+            }
 
-        $result = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://api.heroku.com/apps/{$app_name}/config-vars");
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['ADMIN_PASSWORD_HASH' => $new_password_hash]));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/vnd.heroku+json; version=3',
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $api_key
+            ]);
 
-        if ($http_code !== 200) {
-            throw new Exception("Şifre güncellenirken bir hata oluştu. HTTP Kodu: " . $http_code);
+            $result = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($http_code !== 200) {
+                throw new Exception("Şifre güncellenirken bir hata oluştu. HTTP Kodu: " . $http_code);
+            }
+        } else {
+            // Danışman şifresini güncelle
+            $agent_id = $_SESSION['agent_id'];
+            
+            // Mevcut şifreyi kontrol et
+            $check_sql = "SELECT password FROM agents WHERE id = ?";
+            $check_stmt = $conn->prepare($check_sql);
+            $check_stmt->bind_param("i", $agent_id);
+            $check_stmt->execute();
+            $result = $check_stmt->get_result();
+            $agent = $result->fetch_assoc();
+            
+            if (!password_verify($current_password, $agent['password'])) {
+                throw new Exception("Mevcut şifre yanlış.");
+            }
+            
+            // Şifreyi güncelle
+            $update_sql = "UPDATE agents SET password = ? WHERE id = ?";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bind_param("si", $new_password_hash, $agent_id);
+            
+            if (!$update_stmt->execute()) {
+                throw new Exception("Şifre güncellenirken bir hata oluştu: " . $conn->error);
+            }
         }
 
         $_SESSION['success_message'] = "Şifreniz başarıyla güncellendi. Lütfen yeni şifrenizle tekrar giriş yapın.";
