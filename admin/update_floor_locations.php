@@ -7,24 +7,24 @@ ini_set('display_errors', 1);
 
 // Doğru kat formatları
 $floor_options = [
-    'Bodrum KAT',
-    'Yarı Bodrum KAT',
-    'Zemin KAT',
-    'Bahçe KAT',
+    'Bodrum Kat',
+    'Yarı Bodrum Kat',
+    'Zemin Kat',
+    'Bahçe Kat',
     'Yüksek Giriş',
-    '1. KAT',
-    '2. KAT',
-    '3. KAT',
-    '4. KAT',
-    '5. KAT',
-    '6. KAT',
-    '7. KAT',
-    '8. KAT',
-    '9. KAT',
-    '10. KAT',
-    '11. KAT',
-    '12. KAT ve üzeri',
-    'Çatı KAT'
+    '1. Kat',
+    '2. Kat',
+    '3. Kat',
+    '4. Kat',
+    '5. Kat',
+    '6. Kat',
+    '7. Kat',
+    '8. Kat',
+    '9. Kat',
+    '10. Kat',
+    '11. Kat',
+    '12. Kat ve üzeri',
+    'Çatı Kat'
 ];
 
 // Tüm floor_location değerlerini al
@@ -41,11 +41,11 @@ if ($result) {
         
         // Sadece sayı olan değerleri düzelt
         if (is_numeric($current_floor)) {
-            $new_floor = $current_floor . '. KAT';
+            $new_floor = $current_floor . '. Kat';
             
             // 12 ve üzeri için özel durum
             if ((int)$current_floor >= 12) {
-                $new_floor = '12. KAT ve üzeri';
+                $new_floor = '12. Kat ve üzeri';
             }
             
             // Güncelleme yap
@@ -60,6 +60,24 @@ if ($result) {
             }
             
             $stmt->close();
+        } else {
+            // KAT kelimesini Kat olarak değiştir
+            if (strpos($current_floor, 'KAT') !== false) {
+                $new_floor = str_replace('KAT', 'Kat', $current_floor);
+                
+                // Güncelleme yap
+                $update_sql = "UPDATE properties SET floor_location = ? WHERE id = ?";
+                $stmt = $conn->prepare($update_sql);
+                $stmt->bind_param("si", $new_floor, $id);
+                
+                if ($stmt->execute()) {
+                    echo "Güncellendi: $current_floor -> $new_floor<br>";
+                } else {
+                    echo "Hata: " . $stmt->error . "<br>";
+                }
+                
+                $stmt->close();
+            }
         }
     }
     echo "İşlem tamamlandı.";
