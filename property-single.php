@@ -37,6 +37,9 @@ try {
             echo 'floor_location tipi: ' . gettype($property['floor_location']) . '<br>';
             echo 'floor_location uzunluğu: ' . strlen($property['floor_location']) . '<br>';
             echo 'floor_location binary: ' . bin2hex($property['floor_location']) . '<br>';
+            echo 'floor_location trim sonrası: [' . trim($property['floor_location']) . ']<br>';
+            echo 'floor_location options listesi: ' . print_r($floor_options, true) . '<br>';
+            echo 'floor_location listede var mı: ' . (in_array(trim($property['floor_location']), $floor_options) ? 'Evet' : 'Hayır') . '<br>';
             echo '</pre>';
             echo '</div>';
             
