@@ -449,7 +449,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                                 $image_data = $image_result->fetch_assoc();
                                                 $image_path = $image_data ? $image_data['image_name'] : 'assets/img/property-default.jpg';
                                                 ?>
-                                                <div class="col-md-6 col-lg-4">
+                                                <div class="col-md-6">
                                                     <a href="property-single.php?id=<?php echo $property['id']; ?>" class="property-card">
                                                         <?php if ($property['status'] == 'sale'): ?>
                                                             <div class="property-status status-sale">Satılık</div>
