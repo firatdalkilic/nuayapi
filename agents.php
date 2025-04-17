@@ -50,6 +50,42 @@
       padding: 15px;
       box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
+
+    .member .social {
+      margin-top: 15px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .member .social a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #f8f9fa;
+      border-radius: 50%;
+      color: #002e5c;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .member .social a:hover {
+      background: #002e5c;
+      color: #fff;
+    }
+
+    .member .social a img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .member .social a i {
+      font-size: 18px;
+    }
   </style>
 
 </head>
@@ -147,16 +183,18 @@
                             <div class="social">
                               <?php if (!empty($agent['sahibinden_store'])): ?>
                                 <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
-                                    <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com" style="width: 24px; height: 24px;">
+                                    <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com">
                                 </a>
                               <?php endif; ?>
                               <?php if (!empty($agent['emlakjet_profile'])): ?>
                                 <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile']); ?>" target="_blank" title="Emlakjet Profili">
-                                    <img src="assets/img/emlakjet-icon.png" alt="Emlakjet" style="width: 24px; height: 24px;">
+                                    <img src="assets/img/emlakjet-icon.png" alt="Emlakjet">
                                 </a>
                               <?php endif; ?>
                               <?php if (!empty($agent['facebook_username'])): ?>
-                                <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank"><i class="bi bi-facebook"></i></a>
+                                <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank" title="Facebook">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
                               <?php endif; ?>
                             </div>
                           </div>

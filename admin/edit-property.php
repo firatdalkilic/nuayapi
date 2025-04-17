@@ -52,6 +52,7 @@ error_log(" - gross_area: " . (isset($property['gross_area']) ? $property['gross
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("POST request received");
     error_log("POST data: " . print_r($_POST, true));
+    error_log("FILES data: " . print_r($_FILES, true));
 
     // Form verilerini al ve varsayılan değerler ata
     $title = isset($_POST['title']) ? trim($_POST['title']) : '';
@@ -237,6 +238,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if ($stmt->execute()) {
             error_log("[DEBUG] SQL executed successfully");
+            error_log("[DEBUG] Affected rows: " . $stmt->affected_rows);
+            error_log("[DEBUG] SQL error (if any): " . $stmt->error);
             error_log("[DEBUG] Last floor_location value before save: " . $floor_location);
             error_log("[DEBUG] Last floor_location type before save: " . gettype($floor_location));
             error_log("[DEBUG] Last floor_location length before save: " . strlen($floor_location));
@@ -280,9 +283,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: dashboard.php");
             exit;
         } else {
-            throw new Exception("İlan güncellenirken bir hata oluştu.");
+            error_log("[ERROR] SQL execution failed");
+            error_log("[ERROR] SQL error: " . $stmt->error);
+            error_log("[ERROR] SQL errno: " . $stmt->errno);
+            throw new Exception("İlan güncellenirken bir hata oluştu: " . $stmt->error);
         }
     } catch (Exception $e) {
+        error_log("[ERROR] Exception caught: " . $e->getMessage());
+        error_log("[ERROR] Exception trace: " . $e->getTraceAsString());
         $_SESSION['error'] = $e->getMessage();
     }
 }
@@ -790,17 +798,28 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Fiyat formatı için yardımcı fonksiyon
+        function formatPrice(price) {
+            return new Intl.NumberFormat('tr-TR').format(price);
+        }
+
+        // String formatındaki fiyatı sayıya çevirme
+        function parseFormattedPrice(formattedPrice) {
+            return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
+        }
+
         // Form submit olayını dinle
         document.querySelector('form').addEventListener('submit', function(e) {
-            // Form submit olayını durdurma
             e.preventDefault();
             
             console.log('Form submit event triggered');
             
             let priceInput = document.getElementById('price');
-            // Fiyat değerini temizle
             let cleanPrice = priceInput.value.replace(/\./g, '');
+            console.log('Original price:', priceInput.value);
             console.log('Cleaned price:', cleanPrice);
+            
+            // Fiyat değerini temizle ve sayıya çevir
             priceInput.value = cleanPrice;
             
             // Form verilerini kontrol et
@@ -820,7 +839,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             
             // Sayıyı formatla
             if (value !== '') {
-                value = parseInt(value).toLocaleString('tr-TR');
+                value = formatPrice(parseInt(value));
             }
             
             // Input değerini güncelle
@@ -888,10 +907,6 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             
             // Property type değiştiğinde alanları güncelle
             document.getElementById('property_type').addEventListener('change', togglePropertyFields);
-            
-            // Debug için mevcut property_type değerini kontrol et
-            const propertyType = document.getElementById('property_type').value;
-            console.log('Initial property type:', propertyType);
         });
     </script>
 </body>
