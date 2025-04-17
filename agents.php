@@ -179,7 +179,8 @@
                           <div class="pic"><img src="<?php echo htmlspecialchars($agent_photo); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($agent_name); ?>"></div>
                           <div class="member-info">
                             <h4><?php echo htmlspecialchars($agent_name); ?></h4>
-                            <span><?php echo htmlspecialchars($agent_title); ?></span>
+                            <span class="mb-3 d-block"><?php echo htmlspecialchars($agent_title); ?></span>
+                          </a>
                             <div class="social">
                               <?php if (!empty($agent['phone'])): ?>
                                 <a href="tel:<?php echo htmlspecialchars($agent['phone']); ?>" target="_blank" title="Telefon">
@@ -213,7 +214,6 @@
                               <?php endif; ?>
                             </div>
                           </div>
-                          </a>
                         </div>
                       </div><!-- End Team Member -->
 
