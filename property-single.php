@@ -1040,7 +1040,7 @@ try {
                                 <span>Oda Sayısı:</span>
                                 <strong><?php 
                                     echo htmlspecialchars($property['room_count']); 
-                                    if (!empty($property['living_room'])) {
+                                    if (!empty($property['living_room']) && $property['living_room'] > 0) {
                                         echo '+' . htmlspecialchars($property['living_room']);
                                     }
                                 ?></strong>
@@ -1056,7 +1056,7 @@ try {
                             </div>
                         </div>
                         <?php endif; ?>
-                        <?php if (!empty($property['bathroom_count'])): ?>
+                        <?php if (isset($property['bathroom_count']) && $property['bathroom_count'] > 0): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-droplet"></i>
@@ -1070,7 +1070,7 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-door-closed"></i>
                                 <span>Balkon:</span>
-                                <strong><?php echo htmlspecialchars($property['balcony']); ?></strong>
+                                <strong><?php echo $property['balcony'] == 'Var' ? 'Var' : 'Yok'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -1088,7 +1088,7 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-box"></i>
                                 <span>Eşyalı:</span>
-                                <strong><?php echo htmlspecialchars($property['furnished']); ?></strong>
+                                <strong><?php echo $property['furnished'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -1106,7 +1106,7 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-buildings"></i>
                                 <span>Site İçerisinde:</span>
-                                <strong><?php echo htmlspecialchars($property['site_status']); ?></strong>
+                                <strong><?php echo $property['site_status'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
