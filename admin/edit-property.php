@@ -290,6 +290,23 @@ $required_fields = [
     'description' => 'Açıklama',
     'neighborhood' => 'Mahalle'
 ];
+
+$floor_options = [
+    'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
+    '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT', '8. KAT',
+    '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
+];
+
+// Form verilerini al
+$floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : '';
+
+// Sadece geçerli floor_options değerlerini kabul et
+if (!empty($floor_location) && !in_array($floor_location, $floor_options, true)) {
+    $floor_location = ''; // Geçersiz değeri temizle
+}
+
+error_log('Floor Location (Kaydetmeden önce): ' . $floor_location);
+error_log('Floor Location Tipi: ' . gettype($floor_location));
 ?>
 
 <!DOCTYPE html>
@@ -554,14 +571,6 @@ $required_fields = [
                                         <select class="form-select" id="floor_location" name="floor_location" onchange="console.log('Selected floor:', this.value);">
                                             <option value="">Seçiniz</option>
                                             <?php
-                                            $floor_options = [
-                                                'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
-                                                '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT',
-                                                '8. KAT', '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
-                                            ];
-                                            
-                                            error_log("[DEBUG] Current floor_location in DB: " . print_r($property['floor_location'], true));
-                                            
                                             foreach ($floor_options as $option) {
                                                 $selected = trim($property['floor_location']) === trim($option) ? 'selected' : '';
                                                 echo "<option value=\"$option\" $selected>$option</option>";
