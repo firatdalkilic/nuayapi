@@ -71,12 +71,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 room_count=?, 
                 bathroom_count=?, 
                 net_area=?, 
-                features=?, 
                 living_room=? 
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
-        $stmt->bind_param("ssdssssiisisi", 
+        $stmt->bind_param("sssssiiii", 
             $title, 
             $description, 
             $price, 
@@ -87,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $room_count, 
             $bathroom_count, 
             $net_area, 
-            $features, 
             $living_room,
             $id, 
             $agent_id
@@ -104,11 +102,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 room_count=?, 
                 bathroom_count=?, 
                 net_area=?, 
-                features=?, 
                 living_room=? 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssiissi", 
+        $stmt->bind_param("sssssiiii", 
             $title, 
             $description, 
             $price, 
@@ -119,7 +116,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $room_count, 
             $bathroom_count, 
             $net_area, 
-            $features, 
             $living_room,
             $id
         );
