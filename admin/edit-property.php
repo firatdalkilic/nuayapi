@@ -69,6 +69,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
 
+    // Arsa özellikleri
+    $zoning_status = isset($_POST['zoning_status']) ? trim($_POST['zoning_status']) : '';
+    $block_no = isset($_POST['block_no']) ? trim($_POST['block_no']) : '';
+    $parcel_no = isset($_POST['parcel_no']) ? trim($_POST['parcel_no']) : '';
+    $sheet_no = isset($_POST['sheet_no']) ? trim($_POST['sheet_no']) : '';
+    $floor_area_ratio = isset($_POST['floor_area_ratio']) ? trim($_POST['floor_area_ratio']) : '';
+    $height_limit = isset($_POST['height_limit']) ? trim($_POST['height_limit']) : '';
+    $deed_status = isset($_POST['deed_status']) ? trim($_POST['deed_status']) : '';
+
     // floor_location için özel işlem
     $floor_location = isset($_POST['floor_location']) && trim($_POST['floor_location']) !== '' ? trim($_POST['floor_location']) : null;
     if ($floor_location !== null) {
@@ -87,195 +96,219 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log(" - total_floors: " . ($total_floors ?? 'null'));
     error_log(" - gross_area: " . ($gross_area ?? 'null'));
 
-    // İlanı güncelle
-    if (isAgent()) {
-        $sql = "UPDATE properties SET 
-                title=?,             /* 1 */
-                description=?,       /* 2 */
-                price=?,            /* 3 */
-                location=?,         /* 4 */
-                neighborhood=?,     /* 5 */
-                property_type=?,    /* 6 */
-                status=?,          /* 7 */
-                room_count=?,      /* 8 */
-                bathroom_count=?,   /* 9 */
-                net_area=?,        /* 10 */
-                gross_area=?,      /* 11 */
-                living_room=?,     /* 12 */
-                building_age=?,    /* 13 */
-                eligible_for_credit=?, /* 14 */
-                floor_location=?,  /* 15 */
-                total_floors=?,    /* 16 */
-                heating=?,         /* 17 */
-                updated_at=NOW() 
-                WHERE id=? AND agent_id=?"; /* 18, 19 */
-        
-        $stmt = $conn->prepare($sql);
-        $agent_id = getAgentId();
-        
-        // Debug için parametre değerlerini kontrol et
-        $params = [
-            $title,              /* 1 - s */
-            $description,        /* 2 - s */
-            $price,             /* 3 - s */
-            $location,          /* 4 - s */
-            $neighborhood,      /* 5 - s */
-            $property_type,     /* 6 - s */
-            $status,           /* 7 - s */
-            $room_count,       /* 8 - i */
-            $bathroom_count,   /* 9 - i */
-            $net_area,        /* 10 - i */
-            $gross_area,      /* 11 - d */
-            $living_room,     /* 12 - s */
-            $building_age,    /* 13 - s */
-            $eligible_for_credit, /* 14 - s */
-            $floor_location,  /* 15 - s */
-            $total_floors,    /* 16 - i */
-            $heating,         /* 17 - s */
-            $id,             /* 18 - i */
-            $agent_id        /* 19 - i */
-        ];
-        error_log("Agent SQL - Number of parameters: " . count($params));
-        error_log("Agent SQL - Parameters: " . print_r($params, true));
-        
-        $stmt->bind_param("sssssssiiidssssissii", 
-            $title, 
-            $description, 
-            $price, 
-            $location, 
-            $neighborhood, 
-            $property_type, 
-            $status, 
-            $room_count, 
-            $bathroom_count, 
-            $net_area, 
-            $gross_area,
-            $living_room,
-            $building_age,
-            $eligible_for_credit,
-            $floor_location,
-            $total_floors,
-            $heating,
-            $id, 
-            $agent_id
-        );
-    } else {
-        $sql = "UPDATE properties SET 
-                title=?,             /* 1 */
-                description=?,       /* 2 */
-                price=?,            /* 3 */
-                location=?,         /* 4 */
-                neighborhood=?,     /* 5 */
-                property_type=?,    /* 6 */
-                status=?,          /* 7 */
-                room_count=?,      /* 8 */
-                bathroom_count=?,   /* 9 */
-                net_area=?,        /* 10 */
-                gross_area=?,      /* 11 */
-                living_room=?,     /* 12 */
-                building_age=?,    /* 13 */
-                eligible_for_credit=?, /* 14 */
-                floor_location=?,  /* 15 */
-                total_floors=?,    /* 16 */
-                heating=?,         /* 17 */
-                updated_at=NOW() 
-                WHERE id=?";       /* 18 */
-        
-        $stmt = $conn->prepare($sql);
-        
-        // Debug için parametre değerlerini kontrol et
-        $params = [
-            $title,              /* 1 - s */
-            $description,        /* 2 - s */
-            $price,             /* 3 - s */
-            $location,          /* 4 - s */
-            $neighborhood,      /* 5 - s */
-            $property_type,     /* 6 - s */
-            $status,           /* 7 - s */
-            $room_count,       /* 8 - i */
-            $bathroom_count,   /* 9 - i */
-            $net_area,        /* 10 - i */
-            $gross_area,      /* 11 - d */
-            $living_room,     /* 12 - s */
-            $building_age,    /* 13 - s */
-            $eligible_for_credit, /* 14 - s */
-            $floor_location,  /* 15 - s */
-            $total_floors,    /* 16 - i */
-            $heating,         /* 17 - s */
-            $id              /* 18 - i */
-        ];
-        error_log("Non-agent SQL - Number of parameters: " . count($params));
-        error_log("Non-agent SQL - Parameters: " . print_r($params, true));
-        
-        $stmt->bind_param("sssssssiidssssissi", 
-            $title, 
-            $description, 
-            $price, 
-            $location, 
-            $neighborhood, 
-            $property_type, 
-            $status, 
-            $room_count, 
-            $bathroom_count, 
-            $net_area, 
-            $gross_area,
-            $living_room,
-            $building_age,
-            $eligible_for_credit,
-            $floor_location,
-            $total_floors,
-            $heating,
-            $id
-        );
-    }
-    
-    if ($stmt->execute()) {
-        error_log("[DEBUG] SQL executed successfully");
-        error_log("[DEBUG] Last floor_location value before save: " . $floor_location);
-        error_log("[DEBUG] Last floor_location type before save: " . gettype($floor_location));
-        error_log("[DEBUG] Last floor_location length before save: " . strlen($floor_location));
-        error_log("[DEBUG] Last floor_location binary before save: " . bin2hex($floor_location));
-        // Önce tüm resimlerin vitrin durumunu false yap
-        $reset_featured = $conn->prepare("UPDATE property_images SET is_featured = 0 WHERE property_id = ?");
-        $reset_featured->bind_param("i", $id);
-        $reset_featured->execute();
-
-        // Seçilen resmin vitrin durumunu true yap
-        if (isset($_POST['featured_image'])) {
-            $featured_id = $_POST['featured_image'];
-            $update_featured = $conn->prepare("UPDATE property_images SET is_featured = 1 WHERE id = ? AND property_id = ?");
-            $update_featured->bind_param("ii", $featured_id, $id);
-            $update_featured->execute();
-        }
-        
-        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-            if ($_FILES['images']['error'][$key] == 0) {
-                $fileName = time() . '_' . $_FILES['images']['name'][$key];
-                $targetFile = $uploadDir . $fileName;
+    try {
+        if ($property_type === 'Arsa') {
+            // Arsa ilanı güncelleme sorgusu
+            $sql = "UPDATE properties SET 
+                title = ?, description = ?, price = ?, location = ?, 
+                neighborhood = ?, status = ?, net_area = ?, 
+                zoning_status = ?, block_no = ?, parcel_no = ?, 
+                sheet_no = ?, floor_area_ratio = ?, height_limit = ?, 
+                eligible_for_credit = ?, deed_status = ?
+                WHERE id = ?";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param(
+                "ssdsssdssssssssi",
+                $title, $description, $price, $location,
+                $neighborhood, $status, $net_area,
+                $zoning_status, $block_no, $parcel_no,
+                $sheet_no, $floor_area_ratio, $height_limit,
+                $eligible_for_credit, $deed_status, $id
+            );
+        } else {
+            // Diğer ilan tipleri için mevcut güncelleme sorgusu
+            if (isAgent()) {
+                $sql = "UPDATE properties SET 
+                        title=?,             /* 1 */
+                        description=?,       /* 2 */
+                        price=?,            /* 3 */
+                        location=?,         /* 4 */
+                        neighborhood=?,     /* 5 */
+                        property_type=?,    /* 6 */
+                        status=?,          /* 7 */
+                        room_count=?,      /* 8 */
+                        bathroom_count=?,   /* 9 */
+                        net_area=?,        /* 10 */
+                        gross_area=?,      /* 11 */
+                        living_room=?,     /* 12 */
+                        building_age=?,    /* 13 */
+                        eligible_for_credit=?, /* 14 */
+                        floor_location=?,  /* 15 */
+                        total_floors=?,    /* 16 */
+                        heating=?,         /* 17 */
+                        updated_at=NOW() 
+                        WHERE id=? AND agent_id=?"; /* 18, 19 */
                 
-                if (move_uploaded_file($tmp_name, $targetFile)) {
-                    // Eğer hiç vitrin fotoğrafı yoksa ilk yüklenen fotoğrafı vitrin yap
-                    $check_featured = $conn->prepare("SELECT COUNT(*) as count FROM property_images WHERE property_id = ? AND is_featured = 1");
-                    $check_featured->bind_param("i", $id);
-                    $check_featured->execute();
-                    $result = $check_featured->get_result();
-                    $row = $result->fetch_assoc();
-                    $is_featured = ($row['count'] == 0) ? 1 : 0;
-                    
-                    $sql = "INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("isi", $id, $fileName, $is_featured);
-                    $stmt->execute();
-                }
+                $stmt = $conn->prepare($sql);
+                $agent_id = getAgentId();
+                
+                // Debug için parametre değerlerini kontrol et
+                $params = [
+                    $title,              /* 1 - s */
+                    $description,        /* 2 - s */
+                    $price,             /* 3 - s */
+                    $location,          /* 4 - s */
+                    $neighborhood,      /* 5 - s */
+                    $property_type,     /* 6 - s */
+                    $status,           /* 7 - s */
+                    $room_count,       /* 8 - i */
+                    $bathroom_count,   /* 9 - i */
+                    $net_area,        /* 10 - i */
+                    $gross_area,      /* 11 - d */
+                    $living_room,     /* 12 - s */
+                    $building_age,    /* 13 - s */
+                    $eligible_for_credit, /* 14 - s */
+                    $floor_location,  /* 15 - s */
+                    $total_floors,    /* 16 - i */
+                    $heating,         /* 17 - s */
+                    $id,             /* 18 - i */
+                    $agent_id        /* 19 - i */
+                ];
+                error_log("Agent SQL - Number of parameters: " . count($params));
+                error_log("Agent SQL - Parameters: " . print_r($params, true));
+                
+                $stmt->bind_param("sssssssiiidssssissii", 
+                    $title, 
+                    $description, 
+                    $price, 
+                    $location, 
+                    $neighborhood, 
+                    $property_type, 
+                    $status, 
+                    $room_count, 
+                    $bathroom_count, 
+                    $net_area, 
+                    $gross_area,
+                    $living_room,
+                    $building_age,
+                    $eligible_for_credit,
+                    $floor_location,
+                    $total_floors,
+                    $heating,
+                    $id, 
+                    $agent_id
+                );
+            } else {
+                $sql = "UPDATE properties SET 
+                        title=?,             /* 1 */
+                        description=?,       /* 2 */
+                        price=?,            /* 3 */
+                        location=?,         /* 4 */
+                        neighborhood=?,     /* 5 */
+                        property_type=?,    /* 6 */
+                        status=?,          /* 7 */
+                        room_count=?,      /* 8 */
+                        bathroom_count=?,   /* 9 */
+                        net_area=?,        /* 10 */
+                        gross_area=?,      /* 11 */
+                        living_room=?,     /* 12 */
+                        building_age=?,    /* 13 */
+                        eligible_for_credit=?, /* 14 */
+                        floor_location=?,  /* 15 */
+                        total_floors=?,    /* 16 */
+                        heating=?,         /* 17 */
+                        updated_at=NOW() 
+                        WHERE id=?";       /* 18 */
+                
+                $stmt = $conn->prepare($sql);
+                
+                // Debug için parametre değerlerini kontrol et
+                $params = [
+                    $title,              /* 1 - s */
+                    $description,        /* 2 - s */
+                    $price,             /* 3 - s */
+                    $location,          /* 4 - s */
+                    $neighborhood,      /* 5 - s */
+                    $property_type,     /* 6 - s */
+                    $status,           /* 7 - s */
+                    $room_count,       /* 8 - i */
+                    $bathroom_count,   /* 9 - i */
+                    $net_area,        /* 10 - i */
+                    $gross_area,      /* 11 - d */
+                    $living_room,     /* 12 - s */
+                    $building_age,    /* 13 - s */
+                    $eligible_for_credit, /* 14 - s */
+                    $floor_location,  /* 15 - s */
+                    $total_floors,    /* 16 - i */
+                    $heating,         /* 17 - s */
+                    $id              /* 18 - i */
+                ];
+                error_log("Non-agent SQL - Number of parameters: " . count($params));
+                error_log("Non-agent SQL - Parameters: " . print_r($params, true));
+                
+                $stmt->bind_param("sssssssiidssssissi", 
+                    $title, 
+                    $description, 
+                    $price, 
+                    $location, 
+                    $neighborhood, 
+                    $property_type, 
+                    $status, 
+                    $room_count, 
+                    $bathroom_count, 
+                    $net_area, 
+                    $gross_area,
+                    $living_room,
+                    $building_age,
+                    $eligible_for_credit,
+                    $floor_location,
+                    $total_floors,
+                    $heating,
+                    $id
+                );
             }
         }
         
-        $_SESSION['success'] = "İlan başarıyla güncellendi.";
-        header("Location: dashboard.php");
-        exit;
-    } else {
-        error_log("[DEBUG] SQL execution failed: " . $stmt->error);
-        $_SESSION['error'] = "İlan güncellenirken bir hata oluştu.";
+        if ($stmt->execute()) {
+            error_log("[DEBUG] SQL executed successfully");
+            error_log("[DEBUG] Last floor_location value before save: " . $floor_location);
+            error_log("[DEBUG] Last floor_location type before save: " . gettype($floor_location));
+            error_log("[DEBUG] Last floor_location length before save: " . strlen($floor_location));
+            error_log("[DEBUG] Last floor_location binary before save: " . bin2hex($floor_location));
+            // Önce tüm resimlerin vitrin durumunu false yap
+            $reset_featured = $conn->prepare("UPDATE property_images SET is_featured = 0 WHERE property_id = ?");
+            $reset_featured->bind_param("i", $id);
+            $reset_featured->execute();
+
+            // Seçilen resmin vitrin durumunu true yap
+            if (isset($_POST['featured_image'])) {
+                $featured_id = $_POST['featured_image'];
+                $update_featured = $conn->prepare("UPDATE property_images SET is_featured = 1 WHERE id = ? AND property_id = ?");
+                $update_featured->bind_param("ii", $featured_id, $id);
+                $update_featured->execute();
+            }
+            
+            foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['images']['error'][$key] == 0) {
+                    $fileName = time() . '_' . $_FILES['images']['name'][$key];
+                    $targetFile = $uploadDir . $fileName;
+                    
+                    if (move_uploaded_file($tmp_name, $targetFile)) {
+                        // Eğer hiç vitrin fotoğrafı yoksa ilk yüklenen fotoğrafı vitrin yap
+                        $check_featured = $conn->prepare("SELECT COUNT(*) as count FROM property_images WHERE property_id = ? AND is_featured = 1");
+                        $check_featured->bind_param("i", $id);
+                        $check_featured->execute();
+                        $result = $check_featured->get_result();
+                        $row = $result->fetch_assoc();
+                        $is_featured = ($row['count'] == 0) ? 1 : 0;
+                        
+                        $sql = "INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("isi", $id, $fileName, $is_featured);
+                        $stmt->execute();
+                    }
+                }
+            }
+            
+            $_SESSION['success'] = "İlan başarıyla güncellendi.";
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            throw new Exception("İlan güncellenirken bir hata oluştu.");
+        }
+    } catch (Exception $e) {
+        $_SESSION['error'] = $e->getMessage();
     }
 }
 
