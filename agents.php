@@ -54,12 +54,12 @@
     .member .social {
       margin-top: 15px;
       display: flex;
-      gap: 15px;
+      gap: 10px;
       justify-content: center;
       align-items: center;
     }
 
-    .member .social a {
+    .member .social-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -70,21 +70,25 @@
       color: #002e5c;
       text-decoration: none;
       transition: all 0.3s;
+      padding: 6px;
     }
 
-    .member .social a:hover {
+    .member .social-icon:hover {
       background: #002e5c;
-      color: #fff;
     }
 
-    .member .social a img {
-      width: 20px;
-      height: 20px;
+    .member .social-icon img {
+      width: 100%;
+      height: 100%;
       object-fit: contain;
     }
 
-    .member .social a i {
+    .member .social-icon i {
       font-size: 18px;
+    }
+
+    .member .social-icon:hover i {
+      color: #fff;
     }
   </style>
 
@@ -183,33 +187,27 @@
                           <div class="member-info">
                             <h4><?php echo htmlspecialchars($agent_name); ?></h4>
                             <span><?php echo htmlspecialchars($agent_title); ?></span>
-                            <div class="social">
-                              <?php
-                              // Debug bilgisi
-                              error_log("Sahibinden Link: " . (isset($agent['sahibinden_link']) ? $agent['sahibinden_link'] : 'boş'));
-                              error_log("Emlakjet Link: " . (isset($agent['emlakjet_link']) ? $agent['emlakjet_link'] : 'boş'));
-                              ?>
-                              
-                              <?php if (!empty($agent['sahibinden_link'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası">
-                                    <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com" style="width: 24px; height: 24px;">
-                                </a>
-                              <?php endif; ?>
-                              
-                              <?php if (!empty($agent['emlakjet_link'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>" target="_blank" title="Emlakjet Profili">
-                                    <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet" style="width: 24px; height: 24px;">
-                                </a>
-                              <?php endif; ?>
-                              
-                              <?php if (!empty($agent['facebook_link'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook">
-                                    <i class="bi bi-facebook"></i>
-                                </a>
-                              <?php endif; ?>
-                            </div>
                           </div>
                           </a>
+                          <div class="social mt-3">
+                            <?php if (!empty($agent['sahibinden_link'])): ?>
+                              <a href="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası" class="social-icon">
+                                  <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
+                              </a>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($agent['emlakjet_link'])): ?>
+                              <a href="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>" target="_blank" title="Emlakjet Profili" class="social-icon">
+                                  <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet">
+                              </a>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($agent['facebook_link'])): ?>
+                              <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook" class="social-icon">
+                                  <i class="bi bi-facebook"></i>
+                              </a>
+                            <?php endif; ?>
+                          </div>
                         </div>
                       </div><!-- End Team Member -->
 
