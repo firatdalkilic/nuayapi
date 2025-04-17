@@ -100,21 +100,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($property_type === 'Arsa') {
             // Arsa ilanı güncelleme sorgusu
             $sql = "UPDATE properties SET 
-                title = ?, description = ?, price = ?, location = ?, 
-                neighborhood = ?, status = ?, net_area = ?, 
-                zoning_status = ?, block_no = ?, parcel_no = ?, 
-                sheet_no = ?, floor_area_ratio = ?, height_limit = ?, 
-                eligible_for_credit = ?, deed_status = ?
+                title = ?, 
+                description = ?, 
+                price = ?, 
+                location = ?, 
+                neighborhood = ?, 
+                property_type = ?,
+                status = ?, 
+                net_area = ?, 
+                zoning_status = ?, 
+                block_no = ?, 
+                parcel_no = ?, 
+                sheet_no = ?, 
+                floor_area_ratio = ?, 
+                height_limit = ?, 
+                eligible_for_credit = ?, 
+                deed_status = ?,
+                updated_at = NOW()
                 WHERE id = ?";
             
             $stmt = $conn->prepare($sql);
             $stmt->bind_param(
-                "ssdsssdssssssssi",
-                $title, $description, $price, $location,
-                $neighborhood, $status, $net_area,
-                $zoning_status, $block_no, $parcel_no,
-                $sheet_no, $floor_area_ratio, $height_limit,
-                $eligible_for_credit, $deed_status, $id
+                "ssdssssdssssssssi",
+                $title, 
+                $description, 
+                $price, 
+                $location,
+                $neighborhood, 
+                $property_type,
+                $status, 
+                $net_area,
+                $zoning_status, 
+                $block_no, 
+                $parcel_no,
+                $sheet_no, 
+                $floor_area_ratio, 
+                $height_limit,
+                $eligible_for_credit, 
+                $deed_status, 
+                $id
             );
         } else {
             // Diğer ilan tipleri için mevcut güncelleme sorgusu
