@@ -6,6 +6,13 @@ require_once 'check_login.php';
 checkLogin();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Debug bilgisi - tüm POST verilerini logla
+    error_log("=== FORM VERİLERİ BAŞLANGIÇ ===");
+    foreach ($_POST as $key => $value) {
+        error_log("$key: " . print_r($value, true));
+    }
+    error_log("=== FORM VERİLERİ BİTİŞ ===");
+
     // Form verilerini kontrol et
     $required_fields = [
         'title' => 'İlan Başlığı',
@@ -60,6 +67,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $total_floors = isset($_POST['total_floors']) && trim($_POST['total_floors']) !== '' ? (int)trim($_POST['total_floors']) : null;
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
+
+    // Isıtma alanı için detaylı debug
+    error_log("=== ISITMA ALANI DETAYLARI ===");
+    error_log("POST'ta heating var mı: " . (isset($_POST['heating']) ? 'Evet' : 'Hayır'));
+    error_log("POST['heating'] değeri: " . (isset($_POST['heating']) ? $_POST['heating'] : 'Yok'));
+    error_log("Trimlenmiş heating değeri: " . $heating);
+    error_log("heating değişken tipi: " . gettype($heating));
+    error_log("=== ISITMA ALANI BİTİŞ ===");
 
     // Debug bilgisi ekle
     error_log("[DEBUG] POST data processed in add-property:");
