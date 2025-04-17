@@ -553,7 +553,6 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
         <div class="container mt-4">
             <div class="stats-box row">
                 <div class="col-12">
-                    <h3><?php echo count($properties); ?></h3>
                     <p><?php echo count($properties); ?> adet aktif ilan listelenmiştir</p>
                 </div>
             </div>
