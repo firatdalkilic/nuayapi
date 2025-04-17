@@ -85,15 +85,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 heating=?,
                 updated_at=NOW() 
                 WHERE id=? AND agent_id=?";
+        
+        // Debug için soru işareti sayısını say
+        $question_marks = substr_count($sql, '?');
+        error_log("Agent SQL - Number of question marks: " . $question_marks);
+        
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
-        error_log("Agent SQL parameters: " . print_r([
+        
+        // Debug için parametre değerlerini kontrol et
+        $params = [
             $title, $description, $price, $location, $neighborhood, 
             $property_type, $status, $room_count, $bathroom_count, 
             $net_area, $gross_area, $living_room, $building_age,
             $eligible_for_credit, $floor_location, $total_floors,
             $heating, $id, $agent_id
-        ], true));
+        ];
+        error_log("Agent SQL - Number of parameters: " . count($params));
+        error_log("Agent SQL - Parameters: " . print_r($params, true));
+        
         $stmt->bind_param("sssssssiiiddsssissii", 
             $title, 
             $description, 
@@ -136,14 +146,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 heating=?,
                 updated_at=NOW() 
                 WHERE id=?";
+        
+        // Debug için soru işareti sayısını say
+        $question_marks = substr_count($sql, '?');
+        error_log("Non-agent SQL - Number of question marks: " . $question_marks);
+        
         $stmt = $conn->prepare($sql);
-        error_log("Non-agent SQL parameters: " . print_r([
+        
+        // Debug için parametre değerlerini kontrol et
+        $params = [
             $title, $description, $price, $location, $neighborhood, 
             $property_type, $status, $room_count, $bathroom_count, 
             $net_area, $gross_area, $living_room, $building_age,
             $eligible_for_credit, $floor_location, $total_floors,
             $heating, $id
-        ], true));
+        ];
+        error_log("Non-agent SQL - Number of parameters: " . count($params));
+        error_log("Non-agent SQL - Parameters: " . print_r($params, true));
+        
         $stmt->bind_param("sssssssiiiddsssissi", 
             $title, 
             $description, 
