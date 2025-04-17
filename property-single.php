@@ -1139,9 +1139,9 @@ try {
                     <div class="card-body">
                         <div class="text-center">
                             <?php
-                            $agent_photo = 'assets/img/nua_logo.jpg';
+                            $agent_photo = 'assets/img/default-agent.jpg'; // Varsayılan fotoğraf
                             if (!empty($property['agent_image']) && file_exists($property['agent_image'])) {
-                                $agent_photo = $property['agent_image'];
+                                $agent_photo = $property['agent_image']; // Veritabanından gelen fotoğraf yolu
                             }
                             ?>
                             <img src="<?php echo htmlspecialchars($agent_photo); ?>" alt="<?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?>" class="agent-photo">
