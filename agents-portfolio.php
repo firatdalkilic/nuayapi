@@ -552,17 +552,9 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
 
         <div class="container mt-4">
             <div class="stats-box row">
-                <div class="col-4">
+                <div class="col-12">
                     <h3><?php echo count($properties); ?></h3>
-                    <p>Aktif İlan</p>
-                </div>
-                <div class="col-4">
-                    <h3><?php echo $sales; ?></h3>
-                    <p>Satış/Kiralama</p>
-                </div>
-                <div class="col-4">
-                    <h3><?php echo date('Y') - (!empty($agent['start_year']) ? $agent['start_year'] : date('Y')); ?>+</h3>
-                    <p>Yıl Deneyim</p>
+                    <p><?php echo count($properties); ?> adet aktif ilan listelenmiştir</p>
                 </div>
             </div>
         </div>
