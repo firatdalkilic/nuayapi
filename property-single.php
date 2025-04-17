@@ -1080,12 +1080,21 @@ try {
                             </div>
                         </div>
                         <?php endif; ?>
-                        <?php if (!empty($property['heating'])): ?>
+                        <?php if (isset($property['heating'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-thermometer-half"></i>
                                 <span>Isıtma:</span>
                                 <strong><?php echo htmlspecialchars($property['heating']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (isset($property['eligible_for_credit'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-credit-card"></i>
+                                <span>Krediye Uygun:</span>
+                                <strong><?php echo $property['eligible_for_credit'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
