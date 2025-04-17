@@ -29,6 +29,25 @@ try {
         if ($result->num_rows > 0) {
             $property = $result->fetch_assoc();
             
+            // Tüm resimleri al
+            $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
+            $images_stmt = $conn->prepare($images_sql);
+            $images_stmt->bind_param("i", $property_id);
+            $images_stmt->execute();
+            $images_result = $images_stmt->get_result();
+            
+            $images = [];
+            while ($image = $images_result->fetch_assoc()) {
+                $images[] = $image;
+            }
+
+            // Tüm resimleri aldıktan sonra, floor_options tanımlanıyor
+            $floor_options = [
+                'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
+                '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT', '8. KAT',
+                '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
+            ];
+            
             // Debug bilgileri
             echo '<div style="background: #f8f9fa; padding: 15px; margin: 15px; border-radius: 5px;">';
             echo '<h5>Debug Bilgileri:</h5>';
@@ -43,17 +62,20 @@ try {
             echo '</pre>';
             echo '</div>';
             
-            // Tüm resimleri al
-            $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
-            $images_stmt = $conn->prepare($images_sql);
-            $images_stmt->bind_param("i", $property_id);
-            $images_stmt->execute();
-            $images_result = $images_stmt->get_result();
+            // Debug: floor_location değerini ve kontrollerini detaylı göster
+            error_log('Floor Location Value: ' . print_r($property['floor_location'], true));
+            error_log('Floor Location Type: ' . gettype($property['floor_location']));
+            error_log('Floor Options: ' . print_r($floor_options, true));
+            error_log('In Array Check: ' . (in_array($property['floor_location'], $floor_options) ? 'true' : 'false'));
             
-            $images = [];
-            while ($image = $images_result->fetch_assoc()) {
-                $images[] = $image;
-            }
+            // Trim kullanarak boşlukları temizle
+            $floor_location = isset($property['floor_location']) ? trim($property['floor_location']) : '';
+            $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
+                ? $floor_location 
+                : '-';
+            
+            // Debug: Son değeri göster
+            error_log('Final Floor Value: ' . $floor);
         } else {
             header("Location: index.html");
             exit;
@@ -1034,6 +1056,20 @@ try {
                                     '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT', '8. KAT',
                                     '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
                                 ];
+                                
+                                // Debug bilgileri
+                                echo '<div style="background: #f8f9fa; padding: 15px; margin: 15px; border-radius: 5px;">';
+                                echo '<h5>Debug Bilgileri:</h5>';
+                                echo '<pre>';
+                                echo 'floor_location değeri: [' . $property['floor_location'] . ']<br>';
+                                echo 'floor_location tipi: ' . gettype($property['floor_location']) . '<br>';
+                                echo 'floor_location uzunluğu: ' . strlen($property['floor_location']) . '<br>';
+                                echo 'floor_location binary: ' . bin2hex($property['floor_location']) . '<br>';
+                                echo 'floor_location trim sonrası: [' . trim($property['floor_location']) . ']<br>';
+                                echo 'floor_location options listesi: ' . print_r($floor_options, true) . '<br>';
+                                echo 'floor_location listede var mı: ' . (in_array(trim($property['floor_location']), $floor_options) ? 'Evet' : 'Hayır') . '<br>';
+                                echo '</pre>';
+                                echo '</div>';
                                 
                                 // Debug: floor_location değerini ve kontrollerini detaylı göster
                                 error_log('Floor Location Value: ' . print_r($property['floor_location'], true));
