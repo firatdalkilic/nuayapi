@@ -81,7 +81,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
-        $stmt->bind_param("sssssssiiiissii", 
+        error_log("Agent SQL parameters: " . print_r([
+            $title, $description, $price, $location, $neighborhood, 
+            $property_type, $status, $room_count, $bathroom_count, 
+            $net_area, $gross_area, $living_room, $building_age,
+            $eligible_for_credit, $id, $agent_id
+        ], true));
+        $stmt->bind_param("sssssssiiiisssii", 
             $title, 
             $description, 
             $price, 
@@ -118,7 +124,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 updated_at=NOW() 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssiiiisss", 
+        error_log("Non-agent SQL parameters: " . print_r([
+            $title, $description, $price, $location, $neighborhood, 
+            $property_type, $status, $room_count, $bathroom_count, 
+            $net_area, $gross_area, $living_room, $building_age,
+            $eligible_for_credit, $id
+        ], true));
+        $stmt->bind_param("sssssssiiiisssi", 
             $title, 
             $description, 
             $price, 
