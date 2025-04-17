@@ -183,7 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         error_log("Non-agent SQL - Number of parameters: " . count($params));
         error_log("Non-agent SQL - Parameters: " . print_r($params, true));
         
-        $stmt->bind_param("sssssssiiidssssissi", 
+        $stmt->bind_param("sssssssiidssssissi", 
             $title, 
             $description, 
             $price, 
