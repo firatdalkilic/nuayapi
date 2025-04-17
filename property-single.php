@@ -990,16 +990,10 @@ try {
                                 <strong><?php 
                                 $building_age = $property['building_age'];
                                 if ($building_age !== null && $building_age !== '') {
-                                    if ($building_age === '0' || $building_age === 0) {
-                                        echo '0 (Yeni)';
-                                    } elseif ($building_age == '11' || ($building_age >= 11 && $building_age <= 15)) {
-                                        echo '11-15';
-                                    } elseif ($building_age == '16' || ($building_age >= 16 && $building_age <= 20)) {
-                                        echo '16-20';
-                                    } elseif ($building_age == '21' || ($building_age >= 21 && $building_age <= 25)) {
-                                        echo '21-25';
-                                    } elseif ($building_age == '26' || $building_age >= 26) {
-                                        echo '26+';
+                                    if ($building_age === '0' || $building_age === 0 || $building_age === '0-1') {
+                                        echo 'Yeni';
+                                    } elseif (is_numeric($building_age)) {
+                                        echo htmlspecialchars($building_age) . ' Yaşında';
                                     } else {
                                         echo htmlspecialchars($building_age);
                                     }
