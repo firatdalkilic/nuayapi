@@ -1021,13 +1021,20 @@ try {
                                     '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
                                 ];
                                 
-                                // Debug: floor_location değerini kontrol et
-                                echo '<!-- Debug: floor_location = ' . (isset($property['floor_location']) ? $property['floor_location'] : 'not set') . ' -->';
-                                echo '<!-- Debug: floor_location type = ' . (isset($property['floor_location']) ? gettype($property['floor_location']) : 'N/A') . ' -->';
+                                // Debug: floor_location değerini ve kontrollerini detaylı göster
+                                error_log('Floor Location Value: ' . print_r($property['floor_location'], true));
+                                error_log('Floor Location Type: ' . gettype($property['floor_location']));
+                                error_log('Floor Options: ' . print_r($floor_options, true));
+                                error_log('In Array Check: ' . (in_array($property['floor_location'], $floor_options) ? 'true' : 'false'));
                                 
-                                $floor = isset($property['floor_location']) && in_array($property['floor_location'], $floor_options) 
-                                    ? $property['floor_location'] 
+                                // Trim kullanarak boşlukları temizle
+                                $floor_location = isset($property['floor_location']) ? trim($property['floor_location']) : '';
+                                $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
+                                    ? $floor_location 
                                     : '-';
+                                
+                                // Debug: Son değeri göster
+                                error_log('Final Floor Value: ' . $floor);
                                 ?>
                                 <strong><?php echo htmlspecialchars($floor); ?></strong>
                             </div>
