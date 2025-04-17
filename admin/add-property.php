@@ -11,11 +11,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'title' => 'İlan Başlığı',
         'price' => 'Fiyat',
         'status' => 'Durum',
-        'room_count' => 'Oda Sayısı',
         'neighborhood' => 'Mahalle',
         'description' => 'Açıklama',
-        'property_type' => 'Emlak Tipi',
-        'living_room' => 'Salon Sayısı'
+        'property_type' => 'Emlak Tipi'
     ];
 
     $errors = [];
@@ -45,11 +43,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $balcony = isset($_POST['balcony']) ? trim($_POST['balcony']) : 'Yok';
     $site_status = isset($_POST['site_status']) ? trim($_POST['site_status']) : 'Hayır';
     $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
-    $living_room = (int)$_POST['living_room'];
-    $parking = trim($_POST['parking']);
-    $usage_status = trim($_POST['usage_status']);
-    $video_call_available = trim($_POST['video_call_available']);
+    $room_count = isset($_POST['room_count']) ? (int)$_POST['room_count'] : 0;
+    $living_room = isset($_POST['living_room']) ? (int)$_POST['living_room'] : 0;
+    $parking = isset($_POST['parking']) ? trim($_POST['parking']) : '';
+    $usage_status = isset($_POST['usage_status']) ? trim($_POST['usage_status']) : '';
+    $video_call_available = isset($_POST['video_call_available']) ? trim($_POST['video_call_available']) : 'Hayır';
     $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
+    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
 
     // floor_location için özel işlem
     if ($floor_location !== null) {
@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = (float)$price;
     
     // Status değerini düzelt
-    $status = trim($_POST['status']) === 'Kiralık' ? 'rent' : 'sale';
+    $status = isset($_POST['status']) ? ($_POST['status'] === 'Kiralık' ? 'rent' : 'sale') : 'sale';
     
     $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
 
@@ -377,8 +377,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
-                                        <option value="Kiralık">Kiralık</option>
-                                        <option value="Satılık">Satılık</option>
+                                        <option value="sale">Satılık</option>
+                                        <option value="rent">Kiralık</option>
                                     </select>
                                 </div>
                             </div>
@@ -395,12 +395,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="room_count">Oda Sayısı</label>
-                                        <input type="number" class="form-control" id="room_count" name="room_count" required>
+                                        <input type="number" class="form-control" id="room_count" name="room_count" min="0">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="living_room" class="form-label">Salon Sayısı</label>
-                                    <input type="number" class="form-control" id="living_room" name="living_room" min="0" required>
+                                    <input type="number" class="form-control" id="living_room" name="living_room" min="0">
                                 </div>
                             </div>
 
@@ -551,7 +551,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                                 <div class="col-md-4">
                                     <label for="eligible_for_credit" class="form-label">Krediye Uygun</label>
-                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit">
+                                    <select class="form-select" id="eligible_for_credit" name="eligible_for_credit" required>
+                                        <option value="">Seçiniz</option>
                                         <option value="Evet">Evet</option>
                                         <option value="Hayır">Hayır</option>
                                     </select>
@@ -644,21 +645,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Emlak tipine göre form alanlarını göster/gizle
         function togglePropertyFields() {
             const propertyType = document.getElementById('property_type').value;
-            const pricePerSqmContainer = document.getElementById('pricePerSqmContainer');
-
-            // m² birim fiyatı alanını sadece arsa seçildiğinde göster
-            pricePerSqmContainer.style.display = propertyType === 'Arsa' ? 'block' : 'none';
-
-            // Arsa seçildiğinde hesaplamayı yap
-            if (propertyType === 'Arsa') {
-                calculatePricePerSqm();
-            }
+            const residentialFields = document.querySelectorAll('#room_count, #living_room, #bathroom_count, #floor_location, #total_floors, #heating, #balcony, #furnished');
+            
+            residentialFields.forEach(field => {
+                const fieldContainer = field.closest('.col-md-4, .col-md-6');
+                if (propertyType === 'Arsa') {
+                    if (fieldContainer) {
+                        fieldContainer.style.display = 'none';
+                    }
+                    field.removeAttribute('required');
+                } else {
+                    if (fieldContainer) {
+                        fieldContainer.style.display = 'block';
+                    }
+                    if (['room_count', 'living_room'].includes(field.id)) {
+                        field.setAttribute('required', 'required');
+                    }
+                }
+            });
         }
 
         // Sayfa yüklendiğinde ve emlak tipi değiştiğinde form alanlarını düzenle
         document.addEventListener('DOMContentLoaded', function() {
-            togglePropertyFields();
             document.getElementById('property_type').addEventListener('change', togglePropertyFields);
+            togglePropertyFields();
 
             // Fiyat ve alan değiştiğinde m² birim fiyatını güncelle
             document.getElementById('price').addEventListener('input', calculatePricePerSqm);
