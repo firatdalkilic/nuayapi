@@ -1645,6 +1645,20 @@ try {
     document.getElementById('propertyVideo').addEventListener('playing', function() {
       document.getElementById('videoLoader').style.display = 'none';
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementlerin varlığını kontrol et
+        function goToPage(url) {
+            if (url) {
+                window.location.href = url;
+            }
+        }
+
+        // PureCounter'ı koşullu olarak başlat
+        if (typeof PureCounter !== 'undefined') {
+            new PureCounter();
+        }
+    });
   </script>
 
 </body>

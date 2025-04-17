@@ -250,9 +250,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Favicons -->
     <link href="../assets/img/nua_logo.jpg" rel="icon">
     <link href="../assets/img/nua_logo.jpg" rel="apple-touch-icon">
+    
+    <!-- Vendor CSS Files -->
     <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Template Main CSS File -->
     <link href="../assets/css/main.css" rel="stylesheet">
+
+    <!-- Vendor JS Files -->
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
     <style>
         .back-button {
             position: fixed;
@@ -611,7 +619,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         // Form submit öncesi fiyat alanını temizle
         document.querySelector('form').addEventListener('submit', function(e) {
