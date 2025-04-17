@@ -68,6 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("[DEBUG] POST floor_location value: " . (isset($_POST['floor_location']) ? $_POST['floor_location'] : 'not set'));
     error_log("[DEBUG] floor_location after trim: " . $floor_location);
     error_log("[DEBUG] floor_location type: " . gettype($floor_location));
+    error_log("[DEBUG] floor_location length: " . strlen($floor_location));
+    error_log("[DEBUG] floor_location binary: " . bin2hex($floor_location));
     $total_floors = isset($_POST['total_floors']) ? (int)trim($_POST['total_floors']) : 0;
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
     
@@ -216,6 +218,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         error_log("[DEBUG] SQL executed successfully");
         error_log("[DEBUG] Last floor_location value before save: " . $floor_location);
+        error_log("[DEBUG] Last floor_location type before save: " . gettype($floor_location));
+        error_log("[DEBUG] Last floor_location length before save: " . strlen($floor_location));
+        error_log("[DEBUG] Last floor_location binary before save: " . bin2hex($floor_location));
         // Önce tüm resimlerin vitrin durumunu false yap
         $reset_featured = $conn->prepare("UPDATE property_images SET is_featured = 0 WHERE property_id = ?");
         $reset_featured->bind_param("i", $id);

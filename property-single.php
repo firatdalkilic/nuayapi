@@ -29,6 +29,17 @@ try {
         if ($result->num_rows > 0) {
             $property = $result->fetch_assoc();
             
+            // Debug bilgileri
+            echo '<div style="background: #f8f9fa; padding: 15px; margin: 15px; border-radius: 5px;">';
+            echo '<h5>Debug Bilgileri:</h5>';
+            echo '<pre>';
+            echo 'floor_location değeri: [' . $property['floor_location'] . ']<br>';
+            echo 'floor_location tipi: ' . gettype($property['floor_location']) . '<br>';
+            echo 'floor_location uzunluğu: ' . strlen($property['floor_location']) . '<br>';
+            echo 'floor_location binary: ' . bin2hex($property['floor_location']) . '<br>';
+            echo '</pre>';
+            echo '</div>';
+            
             // Tüm resimleri al
             $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
             $images_stmt = $conn->prepare($images_sql);
