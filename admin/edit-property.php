@@ -66,45 +66,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // İlanı güncelle
     if (isAgent()) {
         $sql = "UPDATE properties SET 
-                title=?, 
-                description=?, 
-                price=?, 
-                location=?, 
-                neighborhood=?, 
-                property_type=?, 
-                status=?, 
-                room_count=?, 
-                bathroom_count=?, 
-                net_area=?, 
-                gross_area=?,
-                living_room=?,
-                building_age=?,
-                eligible_for_credit=?,
-                floor_location=?,
-                total_floors=?,
-                heating=?,
+                title=?,             /* 1 */
+                description=?,       /* 2 */
+                price=?,            /* 3 */
+                location=?,         /* 4 */
+                neighborhood=?,     /* 5 */
+                property_type=?,    /* 6 */
+                status=?,          /* 7 */
+                room_count=?,      /* 8 */
+                bathroom_count=?,   /* 9 */
+                net_area=?,        /* 10 */
+                gross_area=?,      /* 11 */
+                living_room=?,     /* 12 */
+                building_age=?,    /* 13 */
+                eligible_for_credit=?, /* 14 */
+                floor_location=?,  /* 15 */
+                total_floors=?,    /* 16 */
+                heating=?,         /* 17 */
                 updated_at=NOW() 
-                WHERE id=? AND agent_id=?";
-        
-        // Debug için soru işareti sayısını say
-        $question_marks = substr_count($sql, '?');
-        error_log("Agent SQL - Number of question marks: " . $question_marks);
+                WHERE id=? AND agent_id=?"; /* 18, 19 */
         
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
         
         // Debug için parametre değerlerini kontrol et
         $params = [
-            $title, $description, $price, $location, $neighborhood, 
-            $property_type, $status, $room_count, $bathroom_count, 
-            $net_area, $gross_area, $living_room, $building_age,
-            $eligible_for_credit, $floor_location, $total_floors,
-            $heating, $id, $agent_id
+            $title,              /* 1 - s */
+            $description,        /* 2 - s */
+            $price,             /* 3 - s */
+            $location,          /* 4 - s */
+            $neighborhood,      /* 5 - s */
+            $property_type,     /* 6 - s */
+            $status,           /* 7 - s */
+            $room_count,       /* 8 - i */
+            $bathroom_count,   /* 9 - i */
+            $net_area,        /* 10 - i */
+            $gross_area,      /* 11 - d */
+            $living_room,     /* 12 - s */
+            $building_age,    /* 13 - s */
+            $eligible_for_credit, /* 14 - s */
+            $floor_location,  /* 15 - s */
+            $total_floors,    /* 16 - i */
+            $heating,         /* 17 - s */
+            $id,             /* 18 - i */
+            $agent_id        /* 19 - i */
         ];
         error_log("Agent SQL - Number of parameters: " . count($params));
         error_log("Agent SQL - Parameters: " . print_r($params, true));
         
-        $stmt->bind_param("sssssssiiiddsssissii", 
+        $stmt->bind_param("sssssssiiidssssissii", 
             $title, 
             $description, 
             $price, 
@@ -127,44 +137,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
     } else {
         $sql = "UPDATE properties SET 
-                title=?, 
-                description=?, 
-                price=?, 
-                location=?, 
-                neighborhood=?, 
-                property_type=?, 
-                status=?, 
-                room_count=?, 
-                bathroom_count=?, 
-                net_area=?, 
-                gross_area=?,
-                living_room=?,
-                building_age=?,
-                eligible_for_credit=?,
-                floor_location=?,
-                total_floors=?,
-                heating=?,
+                title=?,             /* 1 */
+                description=?,       /* 2 */
+                price=?,            /* 3 */
+                location=?,         /* 4 */
+                neighborhood=?,     /* 5 */
+                property_type=?,    /* 6 */
+                status=?,          /* 7 */
+                room_count=?,      /* 8 */
+                bathroom_count=?,   /* 9 */
+                net_area=?,        /* 10 */
+                gross_area=?,      /* 11 */
+                living_room=?,     /* 12 */
+                building_age=?,    /* 13 */
+                eligible_for_credit=?, /* 14 */
+                floor_location=?,  /* 15 */
+                total_floors=?,    /* 16 */
+                heating=?,         /* 17 */
                 updated_at=NOW() 
-                WHERE id=?";
-        
-        // Debug için soru işareti sayısını say
-        $question_marks = substr_count($sql, '?');
-        error_log("Non-agent SQL - Number of question marks: " . $question_marks);
+                WHERE id=?";       /* 18 */
         
         $stmt = $conn->prepare($sql);
         
         // Debug için parametre değerlerini kontrol et
         $params = [
-            $title, $description, $price, $location, $neighborhood, 
-            $property_type, $status, $room_count, $bathroom_count, 
-            $net_area, $gross_area, $living_room, $building_age,
-            $eligible_for_credit, $floor_location, $total_floors,
-            $heating, $id
+            $title,              /* 1 - s */
+            $description,        /* 2 - s */
+            $price,             /* 3 - s */
+            $location,          /* 4 - s */
+            $neighborhood,      /* 5 - s */
+            $property_type,     /* 6 - s */
+            $status,           /* 7 - s */
+            $room_count,       /* 8 - i */
+            $bathroom_count,   /* 9 - i */
+            $net_area,        /* 10 - i */
+            $gross_area,      /* 11 - d */
+            $living_room,     /* 12 - s */
+            $building_age,    /* 13 - s */
+            $eligible_for_credit, /* 14 - s */
+            $floor_location,  /* 15 - s */
+            $total_floors,    /* 16 - i */
+            $heating,         /* 17 - s */
+            $id              /* 18 - i */
         ];
         error_log("Non-agent SQL - Number of parameters: " . count($params));
         error_log("Non-agent SQL - Parameters: " . print_r($params, true));
         
-        $stmt->bind_param("sssssssiiiddsssissi", 
+        $stmt->bind_param("sssssssiiidssssissi", 
             $title, 
             $description, 
             $price, 
