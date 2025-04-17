@@ -174,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         error_log(print_r($params, true));
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssiidsisssdssiissssss", 
+        $stmt->bind_param("ssdssssiidsisssdssisssssss", 
             $title, 
             $description, 
             $price, 
