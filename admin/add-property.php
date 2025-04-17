@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = (float)$price;
     
     // Status değerini düzelt
-    $status = isset($_POST['status']) ? ($_POST['status'] === 'Kiralık' ? 'rent' : 'sale') : 'sale';
+    $status = isset($_POST['status']) ? ($_POST['status'] === 'rent' ? 'Kiralık' : 'Satılık') : 'Satılık';
     
     $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
 
