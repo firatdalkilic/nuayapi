@@ -67,6 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log(" - building_age: " . ($building_age ?? 'null'));
     error_log(" - total_floors: " . ($total_floors ?? 'null'));
     error_log(" - gross_area: " . ($gross_area ?? 'null'));
+    error_log(" - heating: " . ($heating ?? 'null') . " (raw value)");
+    error_log(" - heating type: " . gettype($heating));
 
     if (!is_numeric($price) || $price <= 0) {
         $_SESSION['error'] = "Geçerli bir fiyat girmelisiniz.";
@@ -668,11 +670,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Sayfa yüklendiğinde ve emlak tipi değiştiğinde form alanlarını düzenle
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('property_type').addEventListener('change', togglePropertyFields);
-            togglePropertyFields();
-
-            // Fiyat ve alan değiştiğinde m² birim fiyatını güncelle
             document.getElementById('price').addEventListener('input', calculatePricePerSqm);
             document.getElementById('net_area').addEventListener('input', calculatePricePerSqm);
+            
+            // Isıtma değeri değiştiğinde log
+            document.getElementById('heating').addEventListener('change', function() {
+                console.log('Selected heating value:', this.value);
+            });
+            
+            togglePropertyFields();
         });
     </script>
 </body>
