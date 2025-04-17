@@ -371,7 +371,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
             <div class="container-fluid">
                 <div class="row">
                     <!-- Sol Kolon - Danışman Bilgileri -->
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <div class="agent-info-card text-center">
                             <?php
                             $agent_photo = 'assets/img/nua_logo.jpg';
@@ -413,7 +413,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                     </div>
 
                     <!-- Sağ Kolon - Sekmeler -->
-                    <div class="col-lg-8">
+                    <div class="col-lg-9">
                         <div class="content-tabs">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
