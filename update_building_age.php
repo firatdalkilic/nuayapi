@@ -29,13 +29,40 @@ if ($property_id > 0) {
     echo "Geçerli bir ilan ID'si belirtilmedi.";
 }
 
-// floor_location değerini güncelle
-$sql = "UPDATE properties SET floor_location = '3. Kat' WHERE floor_location = '3'";
-$stmt = $conn->prepare($sql);
+// Tüm kat numaralarını güncelle
+$floor_updates = [
+    "UPDATE properties SET floor_location = 'Bodrum Kat' WHERE floor_location = '-1'",
+    "UPDATE properties SET floor_location = 'Zemin Kat' WHERE floor_location = '0'",
+    "UPDATE properties SET floor_location = '1. Kat' WHERE floor_location = '1'",
+    "UPDATE properties SET floor_location = '2. Kat' WHERE floor_location = '2'",
+    "UPDATE properties SET floor_location = '3. Kat' WHERE floor_location = '3'",
+    "UPDATE properties SET floor_location = '4. Kat' WHERE floor_location = '4'",
+    "UPDATE properties SET floor_location = '5. Kat' WHERE floor_location = '5'",
+    "UPDATE properties SET floor_location = '6. Kat' WHERE floor_location = '6'",
+    "UPDATE properties SET floor_location = '7. Kat' WHERE floor_location = '7'",
+    "UPDATE properties SET floor_location = '8. Kat' WHERE floor_location = '8'",
+    "UPDATE properties SET floor_location = '9. Kat' WHERE floor_location = '9'",
+    "UPDATE properties SET floor_location = '10. Kat' WHERE floor_location = '10'"
+];
 
-if ($stmt->execute()) {
-    echo "floor_location değeri başarıyla güncellendi.";
-} else {
-    echo "Güncelleme sırasında bir hata oluştu: " . $stmt->error;
+foreach ($floor_updates as $sql) {
+    $stmt = $conn->prepare($sql);
+    if ($stmt->execute()) {
+        echo "Kat bilgisi güncellendi: " . $sql . "<br>";
+    } else {
+        echo "Güncelleme sırasında bir hata oluştu: " . $stmt->error . "<br>";
+    }
+}
+
+// Debug: Mevcut floor_location değerlerini kontrol et
+$debug_sql = "SELECT id, title, floor_location FROM properties WHERE floor_location IS NOT NULL";
+$debug_result = $conn->query($debug_sql);
+if ($debug_result) {
+    echo "<h3>Mevcut floor_location değerleri:</h3>";
+    echo "<pre>";
+    while ($row = $debug_result->fetch_assoc()) {
+        print_r($row);
+    }
+    echo "</pre>";
 }
 ?> 
