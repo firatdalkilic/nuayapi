@@ -41,8 +41,12 @@ if ($result->num_rows === 0) {
 
 $property = $result->fetch_assoc();
 
-error_log("[DEBUG] Retrieved property floor_location: " . (isset($property['floor_location']) ? $property['floor_location'] : 'not set'));
-error_log("[DEBUG] Retrieved property floor_location type: " . (isset($property['floor_location']) ? gettype($property['floor_location']) : 'undefined'));
+// Debug bilgisi ekle
+error_log("[DEBUG] Retrieved property data:");
+error_log(" - floor_location: " . (isset($property['floor_location']) ? $property['floor_location'] : 'not set'));
+error_log(" - building_age: " . (isset($property['building_age']) ? $property['building_age'] : 'not set'));
+error_log(" - total_floors: " . (isset($property['total_floors']) ? $property['total_floors'] : 'not set'));
+error_log(" - gross_area: " . (isset($property['gross_area']) ? $property['gross_area'] : 'not set'));
 
 // Debug için POST verilerini kontrol et
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -60,19 +64,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $room_count = isset($_POST['room_count']) ? (int)trim($_POST['room_count']) : 0;
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
     $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
-    $gross_area = isset($_POST['gross_area']) ? (float)trim($_POST['gross_area']) : null;
-    $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : '';
+    $gross_area = isset($_POST['gross_area']) && trim($_POST['gross_area']) !== '' ? (float)trim($_POST['gross_area']) : null;
+    $building_age = isset($_POST['building_age']) && trim($_POST['building_age']) !== '' ? trim($_POST['building_age']) : null;
     $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
-    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : '';
-    error_log("[DEBUG] POST floor_location value: " . (isset($_POST['floor_location']) ? $_POST['floor_location'] : 'not set'));
-    error_log("[DEBUG] floor_location after trim: " . $floor_location);
-    error_log("[DEBUG] floor_location type: " . gettype($floor_location));
-    error_log("[DEBUG] floor_location length: " . strlen($floor_location));
-    error_log("[DEBUG] floor_location binary: " . bin2hex($floor_location));
-    $total_floors = isset($_POST['total_floors']) ? (int)trim($_POST['total_floors']) : 0;
+
+    // floor_location için özel işlem
+    $floor_location = isset($_POST['floor_location']) && trim($_POST['floor_location']) !== '' ? trim($_POST['floor_location']) : null;
+    if ($floor_location !== null) {
+        // "KAT" kelimesinin büyük harfle olduğundan emin ol
+        $floor_location = str_replace(' Kat', ' KAT', $floor_location);
+        $floor_location = str_replace(' kat', ' KAT', $floor_location);
+    }
+
+    $total_floors = isset($_POST['total_floors']) && trim($_POST['total_floors']) !== '' ? (int)trim($_POST['total_floors']) : null;
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
-    
+
+    // Debug bilgisi ekle
+    error_log("[DEBUG] POST data processed:");
+    error_log(" - floor_location: " . ($floor_location ?? 'null'));
+    error_log(" - building_age: " . ($building_age ?? 'null'));
+    error_log(" - total_floors: " . ($total_floors ?? 'null'));
+    error_log(" - gross_area: " . ($gross_area ?? 'null'));
+
     // İlanı güncelle
     if (isAgent()) {
         $sql = "UPDATE properties SET 
@@ -563,37 +577,20 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label for="floor_location" class="form-label">Bulunduğu Kat</label>
-                                        <?php
-                                        // Debug: Mevcut floor_location değerini kontrol et
-                                        error_log("Current floor_location value: " . print_r($property['floor_location'], true));
-                                        error_log("Current floor_location type: " . gettype($property['floor_location']));
-                                        ?>
-                                        <select class="form-select" id="floor_location" name="floor_location" onchange="console.log('Selected floor:', this.value);">
+                                        <select class="form-select" id="floor_location" name="floor_location">
                                             <option value="">Seçiniz</option>
                                             <?php
                                             foreach ($floor_options as $option) {
-                                                $selected = trim($property['floor_location']) === trim($option) ? 'selected' : '';
-                                                echo "<option value=\"$option\" $selected>$option</option>";
-                                                error_log("[DEBUG] Comparing: DB value=[" . trim($property['floor_location']) . "] with Option=[" . trim($option) . "] Selected=$selected");
+                                                $selected = isset($property['floor_location']) && trim($property['floor_location']) === $option ? 'selected' : '';
+                                                echo '<option value="' . htmlspecialchars($option) . '" ' . $selected . '>' . htmlspecialchars($option) . '</option>';
                                             }
                                             ?>
                                         </select>
-                                        <?php
-                                        // Debug: Seçili option'ı kontrol et
-                                        error_log("Selected option check:");
-                                        foreach ($property as $key => $value) {
-                                            if ($key == 'floor_location') {
-                                                error_log("Found floor_location in property array:");
-                                                error_log(" - Key: " . $key);
-                                                error_log(" - Value: " . $value);
-                                                error_log(" - Type: " . gettype($value));
-                                            }
-                                        }
-                                        ?>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="total_floors" class="form-label">Kat Sayısı</label>
-                                        <input type="number" class="form-control" id="total_floors" name="total_floors" value="<?php echo $property['total_floors']; ?>">
+                                        <input type="number" class="form-control" id="total_floors" name="total_floors" 
+                                               value="<?php echo isset($property['total_floors']) ? htmlspecialchars($property['total_floors']) : ''; ?>">
                                     </div>
                                     <div class="col-md-4">
                                         <label for="heating" class="form-label">Isıtma</label>

@@ -896,19 +896,19 @@ try {
                                 <?php 
                                 // Debug: Status değerini kontrol et
                                 error_log('Raw status value: [' . $property['status'] . ']');
-                                error_log('Raw property type: [' . $property['property_type'] . ']');
                                 
                                 $status = strtolower(trim($property['status']));
                                 error_log('Status after strtolower and trim: [' . $status . ']');
                                 
                                 if ($status === 'rent') {
-                                    $status = 'Kiralık';
+                                    $status_text = 'Kiralık';
                                 } else if ($status === 'sale') {
-                                    $status = 'Satılık';
+                                    $status_text = 'Satılık';
+                                } else {
+                                    $status_text = $status; // Beklenmeyen bir değer varsa olduğu gibi göster
                                 }
-                                error_log('Final converted status: [' . $status . ']');
                                 
-                                $display_text = $status . ' ' . $property['property_type'];
+                                $display_text = $status_text . ' ' . $property['property_type'];
                                 error_log('Final display text: [' . $display_text . ']');
                                 
                                 echo htmlspecialchars($display_text); 

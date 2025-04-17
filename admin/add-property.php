@@ -31,13 +31,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Form verilerini al ve varsayılan değerler ata
-    $title = trim($_POST['title']);
-    
-    // Fiyat alanını işle
-    $price = trim($_POST['price']);
-    $price = str_replace('.', '', $price); // Noktalı binlik ayraçlarını kaldır
-    $price = str_replace(',', '.', $price); // Virgülü noktaya çevir
+    // Form verilerini al
+    $title = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $price = isset($_POST['price']) ? str_replace('.', '', trim($_POST['price'])) : 0;
+    $location = isset($_POST['location']) ? trim($_POST['location']) : '';
+    $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
+    $property_type = isset($_POST['property_type']) ? trim($_POST['property_type']) : '';
+    $status = isset($_POST['status']) ? trim($_POST['status']) : '';
+    $room_count = isset($_POST['room_count']) ? (int)trim($_POST['room_count']) : 0;
+    $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
+    $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
+    $gross_area = isset($_POST['gross_area']) && trim($_POST['gross_area']) !== '' ? (float)trim($_POST['gross_area']) : null;
+    $building_age = isset($_POST['building_age']) && trim($_POST['building_age']) !== '' ? trim($_POST['building_age']) : null;
+    $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
+    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
+
+    // floor_location için özel işlem
+    $floor_location = isset($_POST['floor_location']) && trim($_POST['floor_location']) !== '' ? trim($_POST['floor_location']) : null;
+    if ($floor_location !== null) {
+        // "KAT" kelimesinin büyük harfle olduğundan emin ol
+        $floor_location = str_replace(' Kat', ' KAT', $floor_location);
+        $floor_location = str_replace(' kat', ' KAT', $floor_location);
+    }
+
+    $total_floors = isset($_POST['total_floors']) && trim($_POST['total_floors']) !== '' ? (int)trim($_POST['total_floors']) : null;
+    $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
+
+    // Debug bilgisi ekle
+    error_log("[DEBUG] POST data processed in add-property:");
+    error_log(" - floor_location: " . ($floor_location ?? 'null'));
+    error_log(" - building_age: " . ($building_age ?? 'null'));
+    error_log(" - total_floors: " . ($total_floors ?? 'null'));
+    error_log(" - gross_area: " . ($gross_area ?? 'null'));
 
     if (!is_numeric($price) || $price <= 0) {
         $_SESSION['error'] = "Geçerli bir fiyat girmelisiniz.";
@@ -46,11 +72,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $price = (float)$price;
     
-    $status = trim($_POST['status']);
-    $room_count = (int)$_POST['room_count'];
+    // Status değerini düzelt
+    $status = trim($_POST['status']) === 'Kiralık' ? 'rent' : 'sale';
+    
     $location = 'Didim'; // Sabit değer
-    $neighborhood = trim($_POST['neighborhood']);
-    $description = trim($_POST['description']);
     $property_type = trim($_POST['property_type']);
     $gross_area = isset($_POST['gross_area']) ? (float)$_POST['gross_area'] : 0;
     $net_area = isset($_POST['net_area']) ? (float)$_POST['net_area'] : 0;
@@ -64,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $parking = trim($_POST['parking']);
     $usage_status = trim($_POST['usage_status']);
     $video_call_available = trim($_POST['video_call_available']);
-    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
     $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
 
@@ -102,8 +126,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO properties (
         title, description, price, location, neighborhood, property_type,
         status, room_count, bathroom_count, net_area, living_room,
-        agent_id, agent_name, agent_phone, agent_email
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        agent_id, agent_name, agent_phone, agent_email,
+        gross_area, building_age, floor_location, total_floors,
+        heating, balcony, site_status, furnished, usage_status,
+        video_call_available, eligible_for_credit
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         // Debug bilgisi ekle
@@ -111,11 +138,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         error_log("Parameters: " . json_encode([
             $title, $description, $price, $location, $neighborhood, $property_type,
             $status, $room_count, $bathroom_count, $net_area, $living_room,
-            $agent_id, $agent_name, $agent_phone, $agent_email
+            $agent_id, $agent_name, $agent_phone, $agent_email,
+            $gross_area, $building_age, $floor_location, $total_floors,
+            $heating, $balcony, $site_status, $furnished, $usage_status,
+            $video_call_available, $eligible_for_credit
         ]));
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssiidsisss", 
+        $stmt->bind_param("ssdssssiidsisssdssiissssss", 
             $title, 
             $description, 
             $price, 
@@ -130,7 +160,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $agent_id,
             $agent_name,
             $agent_phone,
-            $agent_email
+            $agent_email,
+            $gross_area,
+            $building_age,
+            $floor_location,
+            $total_floors,
+            $heating,
+            $balcony,
+            $site_status,
+            $furnished,
+            $usage_status,
+            $video_call_available,
+            $eligible_for_credit
         );
         
         if ($stmt->execute()) {
@@ -459,25 +500,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <label for="floor_location" class="form-label">Bulunduğu Kat</label>
                                     <select class="form-select" id="floor_location" name="floor_location">
                                         <option value="">Seçiniz</option>
-                                        <option value="Bodrum KAT">Bodrum KAT</option>
-                                        <option value="Yarı Bodrum KAT">Yarı Bodrum KAT</option>
-                                        <option value="Zemin KAT">Zemin KAT</option>
-                                        <option value="Bahçe KAT">Bahçe KAT</option>
-                                        <option value="Yüksek Giriş">Yüksek Giriş</option>
-                                        <option value="1. KAT">1. KAT</option>
-                                        <option value="2. KAT">2. KAT</option>
-                                        <option value="3. KAT">3. KAT</option>
-                                        <option value="4. KAT">4. KAT</option>
-                                        <option value="5. KAT">5. KAT</option>
-                                        <option value="6. KAT">6. KAT</option>
-                                        <option value="7. KAT">7. KAT</option>
-                                        <option value="8. KAT">8. KAT</option>
-                                        <option value="9. KAT">9. KAT</option>
-                                        <option value="10. KAT">10. KAT</option>
-                                        <option value="11. KAT">11. KAT</option>
-                                        <option value="12. KAT ve üzeri">12. KAT ve üzeri</option>
-                                        <option value="Çatı KAT">Çatı KAT</option>
+                                        <?php
+                                        $floor_options = [
+                                            'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
+                                            '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT', '8. KAT',
+                                            '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
+                                        ];
+                                        foreach ($floor_options as $option) {
+                                            echo '<option value="' . htmlspecialchars($option) . '">' . htmlspecialchars($option) . '</option>';
+                                        }
+                                        ?>
                                     </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="total_floors" class="form-label">Kat Sayısı</label>
+                                    <input type="number" class="form-control" id="total_floors" name="total_floors">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="heating" class="form-label">Isıtma</label>
@@ -489,10 +526,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <option value="Yerden Isıtma">Yerden Isıtma</option>
                                         <option value="Soba">Soba</option>
                                     </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="total_floors" class="form-label">Kat Sayısı</label>
-                                    <input type="number" class="form-control" id="total_floors" name="total_floors">
                                 </div>
                             </div>
 
