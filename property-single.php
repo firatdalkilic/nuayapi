@@ -897,7 +897,15 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
                                 <span>Durum:</span>
-                                <?php echo htmlspecialchars($property['status'] . ' ' . $property['property_type']); ?>
+                                <?php 
+                                $status = $property['status'];
+                                if ($status == 'rent') {
+                                    $status = 'Kiralık';
+                                } elseif ($status == 'sale') {
+                                    $status = 'Satılık';
+                                }
+                                echo htmlspecialchars($status . ' ' . $property['property_type']); 
+                                ?>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
