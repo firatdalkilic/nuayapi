@@ -82,17 +82,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
         title, description, price, location, neighborhood, property_type,
-        status, net_area, agent_id, agent_name, agent_phone, agent_email,
-        zoning_status, block_no, parcel_no, sheet_no, floor_area_ratio,
-        height_limit, eligible_for_credit, deed_status, video_call_available
+        status, net_area, agent_id, zoning_status, block_no, parcel_no, 
+        sheet_no, floor_area_ratio, height_limit, eligible_for_credit, 
+        deed_status, video_call_available
     ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )";
     
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssdssssdisssssssssssss",
+            "ssdsssssisssssssss",
             $title,
             $description,
             $price,
@@ -102,9 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $status,
             $net_area,
             $agent_id,
-            $agent_name,
-            $agent_phone,
-            $agent_email,
             $zoning_status,
             $block_no,
             $parcel_no,
