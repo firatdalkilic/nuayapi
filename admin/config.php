@@ -22,7 +22,7 @@ if ($jawsdb_url) {
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $dbname = "emlak";
+    $dbname = "nuayapi";
 }
 
 // Veritabanı bağlantısı
