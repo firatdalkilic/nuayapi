@@ -18,7 +18,7 @@ $status = isset($_GET['status']) ? trim($_GET['status']) : '';
 $property_type = isset($_GET['property_type']) ? trim($_GET['property_type']) : '';
 $min_price = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (int)$_GET['min_price'] : '';
 $max_price = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (int)$_GET['max_price'] : '';
-$beds = isset($_GET['beds']) ? trim($_GET['beds']) : '';
+$room_count = isset($_GET['room_count']) ? trim($_GET['room_count']) : '';
 $min_area = isset($_GET['min_area']) && $_GET['min_area'] !== '' ? (int)$_GET['min_area'] : '';
 $max_area = isset($_GET['max_area']) && $_GET['max_area'] !== '' ? (int)$_GET['max_area'] : '';
 $heating = isset($_GET['heating']) ? trim($_GET['heating']) : '';
@@ -41,7 +41,7 @@ $base_query = "SELECT p.*,
 function hasActiveFilters() {
     $filterParams = [
         'search', 'status', 'property_type', 'min_price', 'max_price',
-        'beds', 'min_area', 'max_area', 'heating',
+        'room_count', 'min_area', 'max_area', 'heating',
         'furnished', 'site_status', 'eligible_for_credit', 'building_age'
     ];
     
@@ -86,13 +86,12 @@ if (!empty($max_price)) {
     $param_types .= "i";
 }
 
-if (!empty($beds)) {
-    if ($beds === '5+') {
-        $where_conditions[] = "p.beds >= 5";
+if (!empty($room_count)) {
+    if ($room_count === '5+') {
+        $where_conditions[] = "p.room_count >= 5";
     } else {
-        $where_conditions[] = "p.beds = ?";
-        $params[] = (int)$beds;
-        $param_types .= "i";
+        $where_conditions[] = "p.room_count = ?";
+        $params[] = (int)$room_count;
     }
 }
 
@@ -622,13 +621,13 @@ if (!file_exists('uploads')) {
 
                   <div class="mb-3">
                     <label class="form-label"><i class="bi bi-door-open me-2"></i>Oda Sayısı</label>
-                    <select class="form-select filter-input" name="beds">
-                      <option value="">Tümü</option>
-                      <option value="1" <?php echo $beds == '1' ? 'selected' : ''; ?>>1</option>
-                      <option value="2" <?php echo $beds == '2' ? 'selected' : ''; ?>>2</option>
-                      <option value="3" <?php echo $beds == '3' ? 'selected' : ''; ?>>3</option>
-                      <option value="4" <?php echo $beds == '4' ? 'selected' : ''; ?>>4</option>
-                      <option value="5+" <?php echo $beds == '5+' ? 'selected' : ''; ?>>5+</option>
+                    <select class="form-select filter-input" name="room_count">
+                      <option value="">Oda Sayısı</option>
+                      <option value="1" <?php echo $room_count == '1' ? 'selected' : ''; ?>>1</option>
+                      <option value="2" <?php echo $room_count == '2' ? 'selected' : ''; ?>>2</option>
+                      <option value="3" <?php echo $room_count == '3' ? 'selected' : ''; ?>>3</option>
+                      <option value="4" <?php echo $room_count == '4' ? 'selected' : ''; ?>>4</option>
+                      <option value="5+" <?php echo $room_count == '5+' ? 'selected' : ''; ?>>5+</option>
                     </select>
                   </div>
 

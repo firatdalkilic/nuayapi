@@ -11,7 +11,7 @@ try {
         ["name" => "neighborhood", "type" => "VARCHAR(255)", "default" => "NULL"],
         ["name" => "heating", "type" => "VARCHAR(100)", "default" => "NULL"],
         ["name" => "site_name", "type" => "VARCHAR(255)", "default" => "NULL"],
-        ["name" => "beds", "type" => "INT", "default" => "NULL"],
+        ["name" => "room_count", "type" => "INT", "default" => "NULL"],
         ["name" => "living_room", "type" => "INT", "default" => "NULL"],
         ["name" => "bathroom_count", "type" => "INT", "default" => "NULL"],
         ["name" => "building_age", "type" => "VARCHAR(50)", "default" => "NULL"],

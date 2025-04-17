@@ -53,7 +53,7 @@ if ($result->num_rows == 0) {
         title VARCHAR(255) NOT NULL,
         price DECIMAL(15,2),
         status VARCHAR(50),
-        beds INT,
+        room_count INT,
         location VARCHAR(255),
         neighborhood VARCHAR(255),
         description TEXT,
@@ -83,7 +83,6 @@ if ($result->num_rows == 0) {
         height_limit VARCHAR(50),
         deed_status VARCHAR(100),
         price_per_sqm DECIMAL(12,2),
-        room_count INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";

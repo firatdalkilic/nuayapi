@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'title' => 'İlan Başlığı',
         'price' => 'Fiyat',
         'status' => 'Durum',
-        'beds' => 'Oda Sayısı',
+        'room_count' => 'Oda Sayısı',
         'neighborhood' => 'Mahalle',
         'description' => 'Açıklama',
         'property_type' => 'Emlak Tipi',
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = (float)$price;
     
     $status = trim($_POST['status']);
-    $beds = (int)$_POST['beds'];
+    $room_count = (int)$_POST['room_count'];
     $location = 'Didim'; // Sabit değer
     $neighborhood = trim($_POST['neighborhood']);
     $description = trim($_POST['description']);
@@ -101,20 +101,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
         title, description, price, location, neighborhood, property_type,
-        status, net_area, room_count, bathroom_count, balcony,
-        parking, site, floor_location, total_floors, gross_area, living_room,
-        building_age, eligible_for_credit, heating, furnished, agent_id,
-        agent_name, agent_phone, agent_email
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        status, room_count, bathroom_count, net_area, features, living_room,
+        agent_id, agent_name, agent_phone, agent_email
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssdisssssissssssisss", 
-            $title, $description, $price, $location, $neighborhood, $property_type,
-            $status, $net_area, $beds, $bathroom_count, $balcony,
-            $parking, $site_status, $floor_location, $total_floors, $gross_area, $living_room,
-            $building_age, $eligible_for_credit, $heating, $furnished, $agent_id,
-            $agent_name, $agent_phone, $agent_email
+        $stmt->bind_param("ssdssssiissis", 
+            $title, 
+            $description, 
+            $price, 
+            $location, 
+            $neighborhood, 
+            $property_type, 
+            $status, 
+            $room_count, 
+            $bathroom_count, 
+            $net_area, 
+            $features, 
+            $living_room,
+            $agent_id,
+            $agent_name,
+            $agent_phone,
+            $agent_email
         );
         
         if ($stmt->execute()) {
@@ -339,9 +348,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
 
                             <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="beds" class="form-label">Oda Sayısı</label>
-                                    <input type="number" class="form-control" id="beds" name="beds" min="0" required>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="room_count">Oda Sayısı</label>
+                                        <input type="number" class="form-control" id="room_count" name="room_count" required>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="living_room" class="form-label">Salon Sayısı</label>

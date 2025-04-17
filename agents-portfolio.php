@@ -468,7 +468,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                                             </div>
                                                             <div class="property-details">
                                                                 <span><i class="bi bi-house-door"></i> <?php echo $property['net_area']; ?> m²</span>
-                                                                <span><i class="bi bi-door-open"></i> <?php echo $property['beds']; ?> Oda</span>
+                                                                <span><i class="bi bi-door-open"></i> <?php echo $property['room_count']; ?> Oda</span>
                                                                 <?php if (!empty($property['living_room'])): ?>
                                                                     <span><i class="bi bi-plus-circle"></i> <?php echo $property['living_room']; ?> Salon</span>
                                                                 <?php endif; ?>

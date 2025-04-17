@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
     $property_type = isset($_POST['property_type']) ? trim($_POST['property_type']) : '';
     $status = isset($_POST['status']) ? trim($_POST['status']) : '';
-    $beds = isset($_POST['beds']) ? (int)trim($_POST['beds']) : 0;
+    $room_count = isset($_POST['room_count']) ? (int)trim($_POST['room_count']) : 0;
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
     $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
     $features = isset($_POST['features']) ? implode(',', $_POST['features']) : '';
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 neighborhood=?, 
                 property_type=?, 
                 status=?, 
-                beds=?, 
+                room_count=?, 
                 bathroom_count=?, 
                 net_area=?, 
                 features=?, 
@@ -84,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $neighborhood, 
             $property_type, 
             $status, 
-            $beds, 
+            $room_count, 
             $bathroom_count, 
             $net_area, 
             $features, 
@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 neighborhood=?, 
                 property_type=?, 
                 status=?, 
-                beds=?, 
+                room_count=?, 
                 bathroom_count=?, 
                 net_area=?, 
                 features=?, 
@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $neighborhood, 
             $property_type, 
             $status, 
-            $beds, 
+            $room_count, 
             $bathroom_count, 
             $net_area, 
             $features, 
@@ -403,8 +403,8 @@ $required_fields = [
                             <div id="residentialFields">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label for="beds" class="form-label">Oda Sayısı</label>
-                                        <input type="number" class="form-control" id="beds" name="beds" value="<?php echo htmlspecialchars($property['beds']); ?>">
+                                        <label for="room_count" class="form-label">Oda Sayısı</label>
+                                        <input type="number" class="form-control" id="room_count" name="room_count" value="<?php echo htmlspecialchars($property['room_count']); ?>">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="bathroom_count" class="form-label">Banyo Sayısı</label>
@@ -688,7 +688,7 @@ $required_fields = [
                 // Arsa için zorunlu alanları etkinleştir
                 zoningStatus.required = true;
                 // Konut alanlarının required özelliğini kaldır
-                document.getElementById('beds').required = false;
+                document.getElementById('room_count').required = false;
                 document.getElementById('living_room').required = false;
                 document.getElementById('bathroom_count').required = false;
             } else {
@@ -697,7 +697,7 @@ $required_fields = [
                 // Arsa alanlarının required özelliğini kaldır
                 zoningStatus.required = false;
                 // Konut için zorunlu alanları etkinleştir
-                document.getElementById('beds').required = true;
+                document.getElementById('room_count').required = true;
                 document.getElementById('living_room').required = true;
                 document.getElementById('bathroom_count').required = true;
             }
