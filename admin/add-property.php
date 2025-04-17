@@ -35,20 +35,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = isset($_POST['title']) ? trim($_POST['title']) : '';
     $description = isset($_POST['description']) ? trim($_POST['description']) : '';
     $price = isset($_POST['price']) ? str_replace('.', '', trim($_POST['price'])) : 0;
-    $location = isset($_POST['location']) ? trim($_POST['location']) : '';
-    $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
-    $property_type = isset($_POST['property_type']) ? trim($_POST['property_type']) : '';
-    $status = isset($_POST['status']) ? trim($_POST['status']) : '';
-    $room_count = isset($_POST['room_count']) ? (int)trim($_POST['room_count']) : 0;
-    $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
-    $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
-    $gross_area = isset($_POST['gross_area']) && trim($_POST['gross_area']) !== '' ? (float)trim($_POST['gross_area']) : null;
-    $building_age = isset($_POST['building_age']) && trim($_POST['building_age']) !== '' ? trim($_POST['building_age']) : null;
-    $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
-    $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
+    $location = 'Didim'; // Sabit değer
+    $property_type = trim($_POST['property_type']);
+    $gross_area = isset($_POST['gross_area']) ? (float)$_POST['gross_area'] : 0;
+    $net_area = isset($_POST['net_area']) ? (float)$_POST['net_area'] : 0;
+    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
+    $total_floors = isset($_POST['total_floors']) ? (int)$_POST['total_floors'] : 0;
+    $bathroom_count = isset($_POST['bathroom_count']) ? (int)$_POST['bathroom_count'] : 0;
+    $balcony = isset($_POST['balcony']) ? trim($_POST['balcony']) : 'Yok';
+    $site_status = isset($_POST['site_status']) ? trim($_POST['site_status']) : 'Hayır';
+    $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
+    $living_room = (int)$_POST['living_room'];
+    $parking = trim($_POST['parking']);
+    $usage_status = trim($_POST['usage_status']);
+    $video_call_available = trim($_POST['video_call_available']);
+    $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
 
     // floor_location için özel işlem
-    $floor_location = isset($_POST['floor_location']) && trim($_POST['floor_location']) !== '' ? trim($_POST['floor_location']) : null;
     if ($floor_location !== null) {
         // "KAT" kelimesinin büyük harfle olduğundan emin ol
         $floor_location = str_replace(' Kat', ' KAT', $floor_location);
@@ -75,22 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Status değerini düzelt
     $status = trim($_POST['status']) === 'Kiralık' ? 'rent' : 'sale';
     
-    $location = 'Didim'; // Sabit değer
-    $property_type = trim($_POST['property_type']);
-    $gross_area = isset($_POST['gross_area']) ? (float)$_POST['gross_area'] : 0;
-    $net_area = isset($_POST['net_area']) ? (float)$_POST['net_area'] : 0;
-    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : NULL;
-    $total_floors = isset($_POST['total_floors']) ? (int)$_POST['total_floors'] : 0;
-    $bathroom_count = isset($_POST['bathroom_count']) ? (int)$_POST['bathroom_count'] : 0;
-    $balcony = isset($_POST['balcony']) ? trim($_POST['balcony']) : 'Yok';
-    $site_status = isset($_POST['site_status']) ? trim($_POST['site_status']) : 'Hayır';
-    $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : NULL;
-    $living_room = (int)$_POST['living_room'];
-    $parking = trim($_POST['parking']);
-    $usage_status = trim($_POST['usage_status']);
-    $video_call_available = trim($_POST['video_call_available']);
-    $heating = isset($_POST['heating']) ? trim($_POST['heating']) : NULL;
-    $furnished = isset($_POST['furnished']) ? trim($_POST['furnished']) : 'Hayır';
+    $neighborhood = isset($_POST['neighborhood']) ? trim($_POST['neighborhood']) : '';
 
     // Resim kontrolü
     if (!isset($_FILES["images"]) || empty($_FILES["images"]["name"][0])) {
