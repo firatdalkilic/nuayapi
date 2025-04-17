@@ -9,9 +9,10 @@ try {
         $property_id = (int)$_GET['id'];
         
         // İlan detaylarını ve öne çıkan resmi al
-        $sql = "SELECT p.*, pi.image_name 
+        $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, a.image as agent_image 
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
+                LEFT JOIN agents a ON p.agent_id = a.id
                 WHERE p.id = ?";
         
         $stmt = $conn->prepare($sql);
@@ -1133,13 +1134,10 @@ try {
                 <div class="card">
                     <div class="card-body">
                         <div class="text-center">
-                            <?php 
-                            // Danışman fotoğrafı kontrolü
-                            $agent_photo = 'assets/img/nua_logo.jpg'; // Varsayılan fotoğraf olarak Nua Yapı logosu
-                            if (!empty($property['agent_photo'])) {
-                                if (file_exists($property['agent_photo'])) {
-                                    $agent_photo = $property['agent_photo'];
-                                }
+                            <?php
+                            $agent_photo = 'assets/img/nua_logo.jpg';
+                            if (!empty($property['agent_image']) && file_exists($property['agent_image'])) {
+                                $agent_photo = $property['agent_image'];
                             }
                             ?>
                             <img src="<?php echo htmlspecialchars($agent_photo); ?>" alt="<?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?>" class="agent-photo">
