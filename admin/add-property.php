@@ -347,6 +347,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
 
+                            <!-- m² birim fiyatı alanı (sadece arsa için) -->
+                            <div class="row mb-3" id="pricePerSqmContainer" style="display: none;">
+                                <div class="col-md-6">
+                                    <label for="price_per_sqm" class="form-label">m² Birim Fiyatı (₺)</label>
+                                    <input type="text" class="form-control" id="price_per_sqm" name="price_per_sqm" readonly>
+                                </div>
+                            </div>
+
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -579,6 +587,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             let priceInput = document.getElementById('price');
             // Sadece sayısal değer kalacak
             priceInput.value = parseFloat(priceInput.value) || 0;
+        });
+
+        // Fiyat formatı için yardımcı fonksiyon
+        function formatPrice(price) {
+            return new Intl.NumberFormat('tr-TR').format(price);
+        }
+
+        // String formatındaki fiyatı sayıya çevirme
+        function parseFormattedPrice(formattedPrice) {
+            return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
+        }
+
+        // Metrekare başına fiyatı hesapla
+        function calculatePricePerSqm() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const area = parseFloat(document.getElementById('net_area').value) || 0;
+            const pricePerSqmInput = document.getElementById('price_per_sqm');
+            
+            if (price > 0 && area > 0) {
+                const pricePerSqm = price / area;
+                pricePerSqmInput.value = formatPrice(pricePerSqm.toFixed(2));
+            } else {
+                pricePerSqmInput.value = '';
+            }
+        }
+
+        // Emlak tipine göre form alanlarını göster/gizle
+        function togglePropertyFields() {
+            const propertyType = document.getElementById('property_type').value;
+            const pricePerSqmContainer = document.getElementById('pricePerSqmContainer');
+
+            // m² birim fiyatı alanını sadece arsa seçildiğinde göster
+            pricePerSqmContainer.style.display = propertyType === 'Arsa' ? 'block' : 'none';
+
+            // Arsa seçildiğinde hesaplamayı yap
+            if (propertyType === 'Arsa') {
+                calculatePricePerSqm();
+            }
+        }
+
+        // Sayfa yüklendiğinde ve emlak tipi değiştiğinde form alanlarını düzenle
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePropertyFields();
+            document.getElementById('property_type').addEventListener('change', togglePropertyFields);
+
+            // Fiyat ve alan değiştiğinde m² birim fiyatını güncelle
+            document.getElementById('price').addEventListener('input', calculatePricePerSqm);
+            document.getElementById('net_area').addEventListener('input', calculatePricePerSqm);
         });
     </script>
 </body>
