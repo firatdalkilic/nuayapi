@@ -70,6 +70,15 @@ try {
             
             // Trim kullanarak boşlukları temizle
             $floor_location = isset($property['floor_location']) ? trim($property['floor_location']) : '';
+            
+            // Eğer sayısal bir değerse, formata çevir
+            if (is_numeric($floor_location)) {
+                $floor_location = $floor_location . '. KAT';
+            }
+            
+            // Debug: Format sonrası değeri göster
+            error_log('Formatted floor_location: ' . $floor_location);
+            
             $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
                 ? $floor_location 
                 : '-';
@@ -1079,6 +1088,15 @@ try {
                                 
                                 // Trim kullanarak boşlukları temizle
                                 $floor_location = isset($property['floor_location']) ? trim($property['floor_location']) : '';
+                                
+                                // Eğer sayısal bir değerse, formata çevir
+                                if (is_numeric($floor_location)) {
+                                    $floor_location = $floor_location . '. KAT';
+                                }
+                                
+                                // Debug: Format sonrası değeri göster
+                                error_log('Formatted floor_location: ' . $floor_location);
+                                
                                 $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
                                     ? $floor_location 
                                     : '-';
