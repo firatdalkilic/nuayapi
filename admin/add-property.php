@@ -459,24 +459,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <label for="floor_location" class="form-label">Bulunduğu Kat</label>
                                     <select class="form-select" id="floor_location" name="floor_location">
                                         <option value="">Seçiniz</option>
-                                        <option value="Bodrum Kat">Bodrum Kat</option>
-                                        <option value="Yarı Bodrum Kat">Yarı Bodrum Kat</option>
-                                        <option value="Zemin Kat">Zemin Kat</option>
-                                        <option value="Bahçe Katı">Bahçe Katı</option>
+                                        <option value="Bodrum KAT">Bodrum KAT</option>
+                                        <option value="Yarı Bodrum KAT">Yarı Bodrum KAT</option>
+                                        <option value="Zemin KAT">Zemin KAT</option>
+                                        <option value="Bahçe KAT">Bahçe KAT</option>
                                         <option value="Yüksek Giriş">Yüksek Giriş</option>
-                                        <option value="1. Kat">1. Kat</option>
-                                        <option value="2. Kat">2. Kat</option>
-                                        <option value="3. Kat">3. Kat</option>
-                                        <option value="4. Kat">4. Kat</option>
-                                        <option value="5. Kat">5. Kat</option>
-                                        <option value="6. Kat">6. Kat</option>
-                                        <option value="7. Kat">7. Kat</option>
-                                        <option value="8. Kat">8. Kat</option>
-                                        <option value="9. Kat">9. Kat</option>
-                                        <option value="10. Kat">10. Kat</option>
-                                        <option value="11. Kat">11. Kat</option>
-                                        <option value="12. Kat ve üzeri">12. Kat ve üzeri</option>
-                                        <option value="Çatı Katı">Çatı Katı</option>
+                                        <option value="1. KAT">1. KAT</option>
+                                        <option value="2. KAT">2. KAT</option>
+                                        <option value="3. KAT">3. KAT</option>
+                                        <option value="4. KAT">4. KAT</option>
+                                        <option value="5. KAT">5. KAT</option>
+                                        <option value="6. KAT">6. KAT</option>
+                                        <option value="7. KAT">7. KAT</option>
+                                        <option value="8. KAT">8. KAT</option>
+                                        <option value="9. KAT">9. KAT</option>
+                                        <option value="10. KAT">10. KAT</option>
+                                        <option value="11. KAT">11. KAT</option>
+                                        <option value="12. KAT ve üzeri">12. KAT ve üzeri</option>
+                                        <option value="Çatı KAT">Çatı KAT</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
