@@ -1020,6 +1020,11 @@ try {
                                     '1. Kat', '2. Kat', '3. Kat', '4. Kat', '5. Kat', '6. Kat', '7. Kat', '8. Kat',
                                     '9. Kat', '10. Kat', '11. Kat', '12. Kat ve üzeri', 'Çatı Katı'
                                 ];
+                                
+                                // Debug: floor_location değerini kontrol et
+                                echo '<!-- Debug: floor_location = ' . (isset($property['floor_location']) ? $property['floor_location'] : 'not set') . ' -->';
+                                echo '<!-- Debug: floor_location type = ' . (isset($property['floor_location']) ? gettype($property['floor_location']) : 'N/A') . ' -->';
+                                
                                 $floor = isset($property['floor_location']) && in_array($property['floor_location'], $floor_options) 
                                     ? $property['floor_location'] 
                                     : '-';
