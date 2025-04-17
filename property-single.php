@@ -15,7 +15,8 @@ try {
                 p.created_at, p.updated_at, p.agent_id, p.neighborhood, p.usage_status, p.dues,
                 p.block_no, p.parcel_no, p.sheet_no, p.zoning_status, p.floor_area_ratio,
                 p.height_limit, p.deed_status, p.site_name, p.video_call_available, p.living_room,
-                pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, a.image as agent_image 
+                pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
+                a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link 
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id
@@ -757,6 +758,24 @@ try {
       margin-bottom: 15px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
+
+    .platform-icons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      margin: 0 5px;
+    }
+
+    .facebook {
+      width: 30px;
+      height: 30px;
+      margin: 0 5px;
+    }
   </style>
 </head>
 
@@ -1225,6 +1244,26 @@ try {
                                     info@nuayapi.com
                                 </a>
                             </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="platform-icons mt-3">
+                            <?php if (!empty($property['sahibinden_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($property['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası" class="social-icon">
+                                    <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
+                                </a>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($property['emlakjet_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($property['emlakjet_link']); ?>" target="_blank" title="Emlakjet Profili" class="social-icon">
+                                    <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet">
+                                </a>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($property['facebook_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($property['facebook_link']); ?>" target="_blank" title="Facebook" class="social-icon facebook">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
                             <?php endif; ?>
                         </div>
                         
