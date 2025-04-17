@@ -490,7 +490,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                 </div>
 
                                 <!-- İlanlar Tab -->
-                                <div id="properties" class="tab-pane fade">
+                                <div id="properties" class="tab-pane fade active">
                                     <?php if (!empty($properties)): ?>
                                         <div class="row">
                                             <?php foreach ($properties as $property): ?>
