@@ -181,6 +181,16 @@
                             <h4><?php echo htmlspecialchars($agent_name); ?></h4>
                             <span><?php echo htmlspecialchars($agent_title); ?></span>
                             <div class="social">
+                              <?php if (!empty($agent['phone'])): ?>
+                                <a href="tel:<?php echo htmlspecialchars($agent['phone']); ?>" target="_blank" title="Telefon">
+                                    <i class="bi bi-telephone"></i>
+                                </a>
+                              <?php endif; ?>
+                              <?php if (!empty($agent['whatsapp'])): ?>
+                                <a href="https://wa.me/<?php echo htmlspecialchars(preg_replace('/[^0-9]/', '', $agent['whatsapp'])); ?>" target="_blank" title="WhatsApp">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                              <?php endif; ?>
                               <?php if (!empty($agent['sahibinden_store'])): ?>
                                 <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
                                     <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com">
@@ -194,6 +204,11 @@
                               <?php if (!empty($agent['facebook_username'])): ?>
                                 <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank" title="Facebook">
                                     <i class="bi bi-facebook"></i>
+                                </a>
+                              <?php endif; ?>
+                              <?php if (!empty($agent['instagram_username'])): ?>
+                                <a href="https://www.instagram.com/<?php echo htmlspecialchars($agent['instagram_username']); ?>" target="_blank" title="Instagram">
+                                    <i class="bi bi-instagram"></i>
                                 </a>
                               <?php endif; ?>
                             </div>
