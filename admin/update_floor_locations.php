@@ -1,14 +1,12 @@
 <?php
 require_once 'config.php';
 
-// Debug modunu aç
+// Hata raporlamayı aktif et
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-ini_set('log_errors', 1);
-ini_set('error_log', 'php://stderr');
 
-// Doğru format listesi
-$correct_floor_options = [
+// Doğru kat formatları
+$floor_options = [
     'Bodrum KAT',
     'Yarı Bodrum KAT',
     'Zemin KAT',
@@ -29,56 +27,45 @@ $correct_floor_options = [
     'Çatı KAT'
 ];
 
-try {
-    // Tüm floor_location değerlerini al
-    $sql = "SELECT id, floor_location FROM properties WHERE floor_location IS NOT NULL";
-    $result = $conn->query($sql);
+// Tüm floor_location değerlerini al
+$sql = "SELECT id, floor_location FROM properties WHERE floor_location IS NOT NULL";
+$result = $conn->query($sql);
 
-    if ($result) {
-        echo "Toplam kayıt sayısı: " . $result->num_rows . "<br>";
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $id = $row['id'];
+        $current_floor = $row['floor_location'];
         
-        while ($row = $result->fetch_assoc()) {
-            $id = $row['id'];
-            $current_floor = trim($row['floor_location']);
+        // Debug bilgisi
+        echo "İlan ID: $id, Mevcut değer: [$current_floor]<br>";
+        
+        // Sadece sayı olan değerleri düzelt
+        if (is_numeric($current_floor)) {
+            $new_floor = $current_floor . '. KAT';
             
-            echo "ID: $id, Mevcut değer: '$current_floor'<br>";
-            
-            // Değer zaten doğru formatta mı kontrol et
-            if (!in_array($current_floor, $correct_floor_options)) {
-                // Düzeltilmiş değeri bul
-                $corrected_value = null;
-                
-                // Özel düzeltmeler
-                $current_floor_upper = mb_strtoupper($current_floor, 'UTF-8');
-                
-                foreach ($correct_floor_options as $option) {
-                    if (mb_strtoupper($option, 'UTF-8') === $current_floor_upper) {
-                        $corrected_value = $option;
-                        break;
-                    }
-                }
-                
-                if ($corrected_value) {
-                    // Değeri güncelle
-                    $update_sql = "UPDATE properties SET floor_location = ? WHERE id = ?";
-                    $stmt = $conn->prepare($update_sql);
-                    $stmt->bind_param("si", $corrected_value, $id);
-                    
-                    if ($stmt->execute()) {
-                        echo "ID: $id - '$current_floor' değeri '$corrected_value' olarak güncellendi<br>";
-                    } else {
-                        echo "HATA: ID: $id güncellenemedi - " . $stmt->error . "<br>";
-                    }
-                } else {
-                    echo "UYARI: ID: $id - '$current_floor' için eşleşme bulunamadı<br>";
-                }
+            // 12 ve üzeri için özel durum
+            if ((int)$current_floor >= 12) {
+                $new_floor = '12. KAT ve üzeri';
             }
+            
+            // Güncelleme yap
+            $update_sql = "UPDATE properties SET floor_location = ? WHERE id = ?";
+            $stmt = $conn->prepare($update_sql);
+            $stmt->bind_param("si", $new_floor, $id);
+            
+            if ($stmt->execute()) {
+                echo "Güncellendi: $current_floor -> $new_floor<br>";
+            } else {
+                echo "Hata: " . $stmt->error . "<br>";
+            }
+            
+            $stmt->close();
         }
-        echo "İşlem tamamlandı.<br>";
-    } else {
-        throw new Exception("Sorgu çalıştırılamadı: " . $conn->error);
     }
-    
-} catch (Exception $e) {
-    echo "Hata oluştu: " . $e->getMessage();
-} 
+    echo "İşlem tamamlandı.";
+} else {
+    echo "Sorgu hatası: " . $conn->error;
+}
+
+$conn->close();
+?> 
