@@ -186,24 +186,24 @@
                             <div class="social">
                               <?php
                               // Debug bilgisi
-                              error_log("Sahibinden Store: " . (isset($agent['sahibinden_store']) ? $agent['sahibinden_store'] : 'boş'));
-                              error_log("Emlakjet Profile: " . (isset($agent['emlakjet_profile']) ? $agent['emlakjet_profile'] : 'boş'));
+                              error_log("Sahibinden Link: " . (isset($agent['sahibinden_link']) ? $agent['sahibinden_link'] : 'boş'));
+                              error_log("Emlakjet Link: " . (isset($agent['emlakjet_link']) ? $agent['emlakjet_link'] : 'boş'));
                               ?>
                               
-                              <?php if (!empty($agent['sahibinden_store'])): ?>
-                                <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
+                              <?php if (!empty($agent['sahibinden_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası">
                                     <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com" style="width: 24px; height: 24px;">
                                 </a>
                               <?php endif; ?>
                               
-                              <?php if (!empty($agent['emlakjet_profile'])): ?>
-                                <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile']); ?>" target="_blank" title="Emlakjet Profili">
+                              <?php if (!empty($agent['emlakjet_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>" target="_blank" title="Emlakjet Profili">
                                     <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet" style="width: 24px; height: 24px;">
                                 </a>
                               <?php endif; ?>
                               
-                              <?php if (!empty($agent['facebook_username'])): ?>
-                                <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank" title="Facebook">
+                              <?php if (!empty($agent['facebook_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook">
                                     <i class="bi bi-facebook"></i>
                                 </a>
                               <?php endif; ?>
