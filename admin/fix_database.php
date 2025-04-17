@@ -78,6 +78,14 @@ try {
         throw new Exception($conn->error);
     }
 
+    // site_status sütununu ekle
+    $sql = "ALTER TABLE properties ADD COLUMN IF NOT EXISTS site_status VARCHAR(50) DEFAULT NULL AFTER status";
+    if ($conn->query($sql) === TRUE) {
+        echo "site_status sütunu başarıyla eklendi.<br>";
+    } else {
+        echo "Hata: site_status sütunu eklenirken bir hata oluştu: " . $conn->error . "<br>";
+    }
+
     // Property_images tablosunu oluştur
     $sql = "CREATE TABLE property_images (
         id INT AUTO_INCREMENT PRIMARY KEY,

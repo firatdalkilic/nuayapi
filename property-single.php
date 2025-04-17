@@ -11,7 +11,7 @@ try {
         // İlan detaylarını ve öne çıkan resmi al
         $sql = "SELECT p.id, p.title, p.description, p.price, p.location, p.property_type, p.room_count, 
                 p.bathroom_count, p.net_area, p.gross_area, p.heating, p.building_age, p.floor_location, 
-                p.total_floors, p.furnished, p.status, p.balcony, p.eligible_for_credit, 
+                p.total_floors, p.furnished, p.status, p.balcony, p.eligible_for_credit, p.site_status,
                 p.created_at, p.updated_at, p.agent_id, p.neighborhood, p.using_status, p.dues,
                 pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, a.image as agent_image 
                 FROM properties p 
@@ -1096,6 +1096,15 @@ try {
                                 <i class="bi bi-house-gear"></i>
                                 <span>Kullanım Durumu:</span>
                                 <strong><?php echo htmlspecialchars($property['usage_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($property['site_status'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-buildings"></i>
+                                <span>Site İçerisinde:</span>
+                                <strong><?php echo htmlspecialchars($property['site_status']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
