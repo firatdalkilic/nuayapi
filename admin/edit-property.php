@@ -59,6 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : '';
     $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
+    $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : '';
+    $total_floors = isset($_POST['total_floors']) ? (int)trim($_POST['total_floors']) : 0;
     
     // İlanı güncelle
     if (isAgent()) {
@@ -77,6 +79,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 living_room=?,
                 building_age=?,
                 eligible_for_credit=?,
+                floor_location=?,
+                total_floors=?,
                 updated_at=NOW() 
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
@@ -85,9 +89,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $title, $description, $price, $location, $neighborhood, 
             $property_type, $status, $room_count, $bathroom_count, 
             $net_area, $gross_area, $living_room, $building_age,
-            $eligible_for_credit, $id, $agent_id
+            $eligible_for_credit, $floor_location, $total_floors,
+            $id, $agent_id
         ], true));
-        $stmt->bind_param("sssssssiiiisssii", 
+        $stmt->bind_param("sssssssiiiissssiii", 
             $title, 
             $description, 
             $price, 
@@ -102,6 +107,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $living_room,
             $building_age,
             $eligible_for_credit,
+            $floor_location,
+            $total_floors,
             $id, 
             $agent_id
         );
@@ -121,6 +128,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 living_room=?,
                 building_age=?,
                 eligible_for_credit=?,
+                floor_location=?,
+                total_floors=?,
                 updated_at=NOW() 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
@@ -128,9 +137,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $title, $description, $price, $location, $neighborhood, 
             $property_type, $status, $room_count, $bathroom_count, 
             $net_area, $gross_area, $living_room, $building_age,
-            $eligible_for_credit, $id
+            $eligible_for_credit, $floor_location, $total_floors,
+            $id
         ], true));
-        $stmt->bind_param("sssssssiiiisssi", 
+        $stmt->bind_param("sssssssiiiissssii", 
             $title, 
             $description, 
             $price, 
@@ -145,6 +155,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $living_room,
             $building_age,
             $eligible_for_credit,
+            $floor_location,
+            $total_floors,
             $id
         );
     }
