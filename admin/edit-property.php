@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $eligible_for_credit, $floor_location, $total_floors,
             $heating, $id, $agent_id
         ], true));
-        $stmt->bind_param("sssssssiiiissssissii", 
+        $stmt->bind_param("sssssssiiiddsssissii", 
             $title, 
             $description, 
             $price, 
@@ -144,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $eligible_for_credit, $floor_location, $total_floors,
             $heating, $id
         ], true));
-        $stmt->bind_param("sssssssiiiissssissi", 
+        $stmt->bind_param("sssssssiiiddsssissi", 
             $title, 
             $description, 
             $price, 
