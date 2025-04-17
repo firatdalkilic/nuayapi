@@ -121,10 +121,11 @@ try {
     $admin_password = password_hash("admin123", PASSWORD_BCRYPT);
     $admin_name = "Admin";
     $admin_email = "admin@example.com";
+    $admin_image = "assets/img/nua_logo.jpg";
     
-    $sql = "INSERT INTO agents (agent_name, username_panel, password, email) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO agents (agent_name, username_panel, password, email, image) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $admin_name, $admin_username, $admin_password, $admin_email);
+    $stmt->bind_param("sssss", $admin_name, $admin_username, $admin_password, $admin_email, $admin_image);
     
     if ($stmt->execute()) {
         echo "Örnek admin kullanıcısı oluşturuldu.<br>";

@@ -1141,7 +1141,7 @@ try {
                     <div class="card-body">
                         <div class="text-center">
                             <?php
-                            $agent_photo = 'assets/img/default-agent.jpg'; // Varsayılan fotoğraf
+                            $agent_photo = 'assets/img/nua_logo.jpg'; // Varsayılan fotoğraf olarak Nua Yapı logosu
                             if (!empty($property['agent_image']) && file_exists($property['agent_image'])) {
                                 $agent_photo = $property['agent_image']; // Veritabanından gelen fotoğraf yolu
                             }
