@@ -535,27 +535,44 @@ $required_fields = [
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label for="floor_location" class="form-label">Bulunduğu Kat</label>
-                                        <select class="form-select" id="floor_location" name="floor_location">
+                                        <?php
+                                        // Debug: Mevcut floor_location değerini kontrol et
+                                        error_log("Current floor_location value: " . print_r($property['floor_location'], true));
+                                        error_log("Current floor_location type: " . gettype($property['floor_location']));
+                                        ?>
+                                        <select class="form-select" id="floor_location" name="floor_location" onchange="console.log('Selected floor:', this.value);">
                                             <option value="">Seçiniz</option>
-                                            <option value="Bodrum Kat" <?php echo $property['floor_location'] == 'Bodrum Kat' ? 'selected' : ''; ?>>Bodrum Kat</option>
-                                            <option value="Yarı Bodrum Kat" <?php echo $property['floor_location'] == 'Yarı Bodrum Kat' ? 'selected' : ''; ?>>Yarı Bodrum Kat</option>
-                                            <option value="Zemin Kat" <?php echo $property['floor_location'] == 'Zemin Kat' ? 'selected' : ''; ?>>Zemin Kat</option>
-                                            <option value="Bahçe Katı" <?php echo $property['floor_location'] == 'Bahçe Katı' ? 'selected' : ''; ?>>Bahçe Katı</option>
+                                            <option value="Bodrum KAT" <?php echo $property['floor_location'] == 'Bodrum KAT' ? 'selected' : ''; ?>>Bodrum KAT</option>
+                                            <option value="Yarı Bodrum KAT" <?php echo $property['floor_location'] == 'Yarı Bodrum KAT' ? 'selected' : ''; ?>>Yarı Bodrum KAT</option>
+                                            <option value="Zemin KAT" <?php echo $property['floor_location'] == 'Zemin KAT' ? 'selected' : ''; ?>>Zemin KAT</option>
+                                            <option value="Bahçe KAT" <?php echo $property['floor_location'] == 'Bahçe KAT' ? 'selected' : ''; ?>>Bahçe KAT</option>
                                             <option value="Yüksek Giriş" <?php echo $property['floor_location'] == 'Yüksek Giriş' ? 'selected' : ''; ?>>Yüksek Giriş</option>
-                                            <option value="1. Kat" <?php echo $property['floor_location'] == '1. Kat' ? 'selected' : ''; ?>>1. Kat</option>
-                                            <option value="2. Kat" <?php echo $property['floor_location'] == '2. Kat' ? 'selected' : ''; ?>>2. Kat</option>
-                                            <option value="3. Kat" <?php echo $property['floor_location'] == '3. Kat' ? 'selected' : ''; ?>>3. Kat</option>
-                                            <option value="4. Kat" <?php echo $property['floor_location'] == '4. Kat' ? 'selected' : ''; ?>>4. Kat</option>
-                                            <option value="5. Kat" <?php echo $property['floor_location'] == '5. Kat' ? 'selected' : ''; ?>>5. Kat</option>
-                                            <option value="6. Kat" <?php echo $property['floor_location'] == '6. Kat' ? 'selected' : ''; ?>>6. Kat</option>
-                                            <option value="7. Kat" <?php echo $property['floor_location'] == '7. Kat' ? 'selected' : ''; ?>>7. Kat</option>
-                                            <option value="8. Kat" <?php echo $property['floor_location'] == '8. Kat' ? 'selected' : ''; ?>>8. Kat</option>
-                                            <option value="9. Kat" <?php echo $property['floor_location'] == '9. Kat' ? 'selected' : ''; ?>>9. Kat</option>
-                                            <option value="10. Kat" <?php echo $property['floor_location'] == '10. Kat' ? 'selected' : ''; ?>>10. Kat</option>
-                                            <option value="11. Kat" <?php echo $property['floor_location'] == '11. Kat' ? 'selected' : ''; ?>>11. Kat</option>
-                                            <option value="12. Kat ve üzeri" <?php echo $property['floor_location'] == '12. Kat ve üzeri' ? 'selected' : ''; ?>>12. Kat ve üzeri</option>
-                                            <option value="Çatı Katı" <?php echo $property['floor_location'] == 'Çatı Katı' ? 'selected' : ''; ?>>Çatı Katı</option>
+                                            <option value="1. KAT" <?php echo $property['floor_location'] == '1. KAT' ? 'selected' : ''; ?>>1. KAT</option>
+                                            <option value="2. KAT" <?php echo $property['floor_location'] == '2. KAT' ? 'selected' : ''; ?>>2. KAT</option>
+                                            <option value="3. KAT" <?php echo $property['floor_location'] == '3. KAT' ? 'selected' : ''; ?>>3. KAT</option>
+                                            <option value="4. KAT" <?php echo $property['floor_location'] == '4. KAT' ? 'selected' : ''; ?>>4. KAT</option>
+                                            <option value="5. KAT" <?php echo $property['floor_location'] == '5. KAT' ? 'selected' : ''; ?>>5. KAT</option>
+                                            <option value="6. KAT" <?php echo $property['floor_location'] == '6. KAT' ? 'selected' : ''; ?>>6. KAT</option>
+                                            <option value="7. KAT" <?php echo $property['floor_location'] == '7. KAT' ? 'selected' : ''; ?>>7. KAT</option>
+                                            <option value="8. KAT" <?php echo $property['floor_location'] == '8. KAT' ? 'selected' : ''; ?>>8. KAT</option>
+                                            <option value="9. KAT" <?php echo $property['floor_location'] == '9. KAT' ? 'selected' : ''; ?>>9. KAT</option>
+                                            <option value="10. KAT" <?php echo $property['floor_location'] == '10. KAT' ? 'selected' : ''; ?>>10. KAT</option>
+                                            <option value="11. KAT" <?php echo $property['floor_location'] == '11. KAT' ? 'selected' : ''; ?>>11. KAT</option>
+                                            <option value="12. KAT ve üzeri" <?php echo $property['floor_location'] == '12. KAT ve üzeri' ? 'selected' : ''; ?>>12. KAT ve üzeri</option>
+                                            <option value="Çatı KAT" <?php echo $property['floor_location'] == 'Çatı KAT' ? 'selected' : ''; ?>>Çatı KAT</option>
                                         </select>
+                                        <?php
+                                        // Debug: Seçili option'ı kontrol et
+                                        error_log("Selected option check:");
+                                        foreach ($property as $key => $value) {
+                                            if ($key == 'floor_location') {
+                                                error_log("Found floor_location in property array:");
+                                                error_log(" - Key: " . $key);
+                                                error_log(" - Value: " . $value);
+                                                error_log(" - Type: " . gettype($value));
+                                            }
+                                        }
+                                        ?>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="total_floors" class="form-label">Kat Sayısı</label>
