@@ -368,7 +368,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
 
         <!-- Agent Profile Section -->
         <section class="agent-profile">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row">
                     <!-- Sol Kolon - Danışman Bilgileri -->
                     <div class="col-lg-4">
