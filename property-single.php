@@ -1144,6 +1144,9 @@ try {
                         </div>
                         
                         <div class="agent-contact-info">
+                            <h3 class="agent-name text-center mb-4">
+                                <?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?>
+                            </h3>
                             <?php if (!empty($property['agent_phone'])): ?>
                             <div class="contact-item">
                                 <i class="bi bi-telephone"></i>
