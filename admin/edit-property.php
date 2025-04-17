@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 gross_area=?,
                 living_room=?,
                 building_age=?,
-                credit_eligible=?,
+                eligible_for_credit=?,
                 swap_eligible=?,
                 updated_at=NOW() 
                 WHERE id=? AND agent_id=?";
@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 gross_area=?,
                 living_room=?,
                 building_age=?,
-                credit_eligible=?,
+                eligible_for_credit=?,
                 swap_eligible=?,
                 updated_at=NOW() 
                 WHERE id=?";
