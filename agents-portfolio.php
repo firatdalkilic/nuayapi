@@ -481,7 +481,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
 
                             <div class="tab-content">
                                 <!-- Hakkımda Tab -->
-                                <div id="about" class="tab-pane fade show active">
+                                <div id="about" class="tab-pane fade show">
                                     <?php if (!empty($agent['about'])): ?>
                                         <?php echo nl2br(htmlspecialchars($agent['about'])); ?>
                                     <?php else: ?>
