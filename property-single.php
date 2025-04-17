@@ -1016,9 +1016,9 @@ try {
                                 <span>Bulunduğu Kat:</span>
                                 <?php 
                                 $floor_options = [
-                                    'Bodrum Kat', 'Yarı Bodrum Kat', 'Zemin Kat', 'Bahçe Katı', 'Yüksek Giriş',
-                                    '1. Kat', '2. Kat', '3. Kat', '4. Kat', '5. Kat', '6. Kat', '7. Kat', '8. Kat',
-                                    '9. Kat', '10. Kat', '11. Kat', '12. Kat ve üzeri', 'Çatı Katı'
+                                    'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
+                                    '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT', '8. KAT',
+                                    '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
                                 ];
                                 
                                 // Debug: floor_location değerini kontrol et
