@@ -28,4 +28,14 @@ if ($property_id > 0) {
 } else {
     echo "Geçerli bir ilan ID'si belirtilmedi.";
 }
+
+// floor_location değerini güncelle
+$sql = "UPDATE properties SET floor_location = '3. Kat' WHERE floor_location = '3'";
+$stmt = $conn->prepare($sql);
+
+if ($stmt->execute()) {
+    echo "floor_location değeri başarıyla güncellendi.";
+} else {
+    echo "Güncelleme sırasında bir hata oluştu: " . $stmt->error;
+}
 ?> 
