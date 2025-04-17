@@ -548,24 +548,21 @@ $required_fields = [
                                         ?>
                                         <select class="form-select" id="floor_location" name="floor_location" onchange="console.log('Selected floor:', this.value);">
                                             <option value="">Seçiniz</option>
-                                            <option value="Bodrum KAT" <?php echo $property['floor_location'] == 'Bodrum KAT' ? 'selected' : ''; ?>>Bodrum KAT</option>
-                                            <option value="Yarı Bodrum KAT" <?php echo $property['floor_location'] == 'Yarı Bodrum KAT' ? 'selected' : ''; ?>>Yarı Bodrum KAT</option>
-                                            <option value="Zemin KAT" <?php echo $property['floor_location'] == 'Zemin KAT' ? 'selected' : ''; ?>>Zemin KAT</option>
-                                            <option value="Bahçe KAT" <?php echo $property['floor_location'] == 'Bahçe KAT' ? 'selected' : ''; ?>>Bahçe KAT</option>
-                                            <option value="Yüksek Giriş" <?php echo $property['floor_location'] == 'Yüksek Giriş' ? 'selected' : ''; ?>>Yüksek Giriş</option>
-                                            <option value="1. KAT" <?php echo $property['floor_location'] == '1. KAT' ? 'selected' : ''; ?>>1. KAT</option>
-                                            <option value="2. KAT" <?php echo $property['floor_location'] == '2. KAT' ? 'selected' : ''; ?>>2. KAT</option>
-                                            <option value="3. KAT" <?php echo $property['floor_location'] == '3. KAT' ? 'selected' : ''; ?>>3. KAT</option>
-                                            <option value="4. KAT" <?php echo $property['floor_location'] == '4. KAT' ? 'selected' : ''; ?>>4. KAT</option>
-                                            <option value="5. KAT" <?php echo $property['floor_location'] == '5. KAT' ? 'selected' : ''; ?>>5. KAT</option>
-                                            <option value="6. KAT" <?php echo $property['floor_location'] == '6. KAT' ? 'selected' : ''; ?>>6. KAT</option>
-                                            <option value="7. KAT" <?php echo $property['floor_location'] == '7. KAT' ? 'selected' : ''; ?>>7. KAT</option>
-                                            <option value="8. KAT" <?php echo $property['floor_location'] == '8. KAT' ? 'selected' : ''; ?>>8. KAT</option>
-                                            <option value="9. KAT" <?php echo $property['floor_location'] == '9. KAT' ? 'selected' : ''; ?>>9. KAT</option>
-                                            <option value="10. KAT" <?php echo $property['floor_location'] == '10. KAT' ? 'selected' : ''; ?>>10. KAT</option>
-                                            <option value="11. KAT" <?php echo $property['floor_location'] == '11. KAT' ? 'selected' : ''; ?>>11. KAT</option>
-                                            <option value="12. KAT ve üzeri" <?php echo $property['floor_location'] == '12. KAT ve üzeri' ? 'selected' : ''; ?>>12. KAT ve üzeri</option>
-                                            <option value="Çatı KAT" <?php echo $property['floor_location'] == 'Çatı KAT' ? 'selected' : ''; ?>>Çatı KAT</option>
+                                            <?php
+                                            $floor_options = [
+                                                'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
+                                                '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT',
+                                                '8. KAT', '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
+                                            ];
+                                            
+                                            error_log("[DEBUG] Current floor_location in DB: " . print_r($property['floor_location'], true));
+                                            
+                                            foreach ($floor_options as $option) {
+                                                $selected = trim($property['floor_location']) === trim($option) ? 'selected' : '';
+                                                echo "<option value=\"$option\" $selected>$option</option>";
+                                                error_log("[DEBUG] Comparing: DB value=[" . trim($property['floor_location']) . "] with Option=[" . trim($option) . "] Selected=$selected");
+                                            }
+                                            ?>
                                         </select>
                                         <?php
                                         // Debug: Seçili option'ı kontrol et
