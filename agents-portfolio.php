@@ -481,7 +481,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
 
                             <div class="tab-content">
                                 <!-- Hakkımda Tab -->
-                                <div id="about" class="tab-pane fade show">
+                                <div id="about" class="tab-pane fade">
                                     <?php if (!empty($agent['about'])): ?>
                                         <?php echo nl2br(htmlspecialchars($agent['about'])); ?>
                                     <?php else: ?>
@@ -490,7 +490,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                 </div>
 
                                 <!-- İlanlar Tab -->
-                                <div id="properties" class="tab-pane fade active">
+                                <div id="properties" class="tab-pane fade show active">
                                     <?php if (!empty($properties)): ?>
                                         <div class="row">
                                             <?php foreach ($properties as $property): ?>
