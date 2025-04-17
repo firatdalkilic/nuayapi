@@ -81,35 +81,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
-        title, price, status, property_type, location, description,
-        net_area, zoning_status, block_no, parcel_no, sheet_no,
-        floor_area_ratio, height_limit, eligible_for_credit,
-        deed_status, neighborhood, usage_status, video_call_available,
-        video_file, price_per_sqm, created_at, agent_id
+        title, description, price, location, neighborhood, property_type,
+        status, net_area, agent_id, agent_name, agent_phone, agent_email,
+        zoning_status, block_no, parcel_no, sheet_no, floor_area_ratio,
+        height_limit, eligible_for_credit, deed_status, video_call_available
     ) VALUES (
-        ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?, ?,
-        ?, ?, ?, ?,
-        ?, ?, ?, ?,
-        ?, NOW()
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )";
     
     try {
         $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Sorgu hazırlanamadı: " . $conn->error);
-        }
-
-        if (!$stmt->bind_param("sdssss" . "dssss" . "ssssdii",
-            $title, $price, $status, $property_type, $location, $description,
-            $net_area, $zoning_status, $block_no, $parcel_no, $sheet_no,
-            $floor_area_ratio, $height_limit, $eligible_for_credit,
-            $deed_status, $neighborhood, $usage_status, $video_call_available,
-            $video_file, $price_per_sqm, $agent_id
-        )) {
-            throw new Exception("Parametre bağlama hatası: " . $stmt->error);
-        }
+        $stmt->bind_param(
+            "ssdssssdisssssssssssss",
+            $title,
+            $description,
+            $price,
+            $location,
+            $neighborhood,
+            $property_type,
+            $status,
+            $net_area,
+            $agent_id,
+            $agent_name,
+            $agent_phone,
+            $agent_email,
+            $zoning_status,
+            $block_no,
+            $parcel_no,
+            $sheet_no,
+            $floor_area_ratio,
+            $height_limit,
+            $eligible_for_credit,
+            $deed_status,
+            $video_call_available
+        );
 
         if (!$stmt->execute()) {
             throw new Exception("Execute failed: " . $stmt->error);
