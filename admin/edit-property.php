@@ -143,31 +143,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt = $conn->prepare($sql);
                 $agent_id = getAgentId();
                 
-                // Debug için parametre değerlerini kontrol et
-                $params = [
-                    $title,              /* 1 - s */
-                    $description,        /* 2 - s */
-                    $price,             /* 3 - s */
-                    $location,          /* 4 - s */
-                    $neighborhood,      /* 5 - s */
-                    $property_type,     /* 6 - s */
-                    $status,           /* 7 - s */
-                    $room_count,       /* 8 - i */
-                    $bathroom_count,   /* 9 - i */
-                    $net_area,        /* 10 - i */
-                    $gross_area,      /* 11 - d */
-                    $living_room,     /* 12 - s */
-                    $building_age,    /* 13 - s */
-                    $eligible_for_credit, /* 14 - s */
-                    $floor_location,  /* 15 - s */
-                    $total_floors,    /* 16 - i */
-                    $heating,         /* 17 - s */
-                    $id,             /* 18 - i */
-                    $agent_id        /* 19 - i */
-                ];
-                error_log("Agent SQL - Number of parameters: " . count($params));
-                error_log("Agent SQL - Parameters: " . print_r($params, true));
-                
                 $stmt->bind_param("sssssssiiidssssissii", 
                     $title, 
                     $description, 
@@ -212,30 +187,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         WHERE id=?";       /* 18 */
                 
                 $stmt = $conn->prepare($sql);
-                
-                // Debug için parametre değerlerini kontrol et
-                $params = [
-                    $title,              /* 1 - s */
-                    $description,        /* 2 - s */
-                    $price,             /* 3 - s */
-                    $location,          /* 4 - s */
-                    $neighborhood,      /* 5 - s */
-                    $property_type,     /* 6 - s */
-                    $status,           /* 7 - s */
-                    $room_count,       /* 8 - i */
-                    $bathroom_count,   /* 9 - i */
-                    $net_area,        /* 10 - i */
-                    $gross_area,      /* 11 - d */
-                    $living_room,     /* 12 - s */
-                    $building_age,    /* 13 - s */
-                    $eligible_for_credit, /* 14 - s */
-                    $floor_location,  /* 15 - s */
-                    $total_floors,    /* 16 - i */
-                    $heating,         /* 17 - s */
-                    $id              /* 18 - i */
-                ];
-                error_log("Non-agent SQL - Number of parameters: " . count($params));
-                error_log("Non-agent SQL - Parameters: " . print_r($params, true));
                 
                 $stmt->bind_param("sssssssiidssssissi", 
                     $title, 
