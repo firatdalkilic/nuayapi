@@ -7,11 +7,12 @@ checkLogin();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Debug bilgisi - tüm POST verilerini logla
-    error_log("=== FORM VERİLERİ BAŞLANGIÇ ===");
+    error_log("\n\n=== YENİ İLAN EKLEME BAŞLADI ===");
+    error_log("Tarih: " . date('Y-m-d H:i:s'));
+    error_log("POST Verileri:");
     foreach ($_POST as $key => $value) {
         error_log("$key: " . print_r($value, true));
     }
-    error_log("=== FORM VERİLERİ BİTİŞ ===");
 
     // Form verilerini kontrol et
     $required_fields = [
@@ -69,9 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
 
     // Isıtma alanı için detaylı debug
-    error_log("=== ISITMA ALANI DETAYLARI ===");
+    error_log("\n=== ISITMA ALANI DETAYLARI ===");
     error_log("POST'ta heating var mı: " . (isset($_POST['heating']) ? 'Evet' : 'Hayır'));
-    error_log("POST['heating'] değeri: " . (isset($_POST['heating']) ? $_POST['heating'] : 'Yok'));
+    error_log("POST['heating'] ham değeri: " . (isset($_POST['heating']) ? $_POST['heating'] : 'Yok'));
     error_log("Trimlenmiş heating değeri: " . $heating);
     error_log("heating değişken tipi: " . gettype($heating));
     error_log("=== ISITMA ALANI BİTİŞ ===");
@@ -138,16 +139,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
-        // Debug bilgisi ekle
+        // SQL sorgusu öncesi debug
+        error_log("\n=== SQL SORGUSU DETAYLARI ===");
         error_log("SQL Query: " . $sql);
-        error_log("Parameters: " . json_encode([
-            $title, $description, $price, $location, $neighborhood, $property_type,
-            $status, $room_count, $bathroom_count, $net_area, $living_room,
-            $agent_id, $agent_name, $agent_phone, $agent_email,
-            $gross_area, $building_age, $floor_location, $total_floors,
-            $heating, $balcony, $site_status, $furnished, $usage_status,
-            $video_call_available, $eligible_for_credit
-        ]));
+        error_log("Parametre Değerleri:");
+        $params = [
+            'title' => $title,
+            'description' => $description,
+            'price' => $price,
+            'location' => $location,
+            'neighborhood' => $neighborhood,
+            'property_type' => $property_type,
+            'status' => $status,
+            'room_count' => $room_count,
+            'bathroom_count' => $bathroom_count,
+            'net_area' => $net_area,
+            'living_room' => $living_room,
+            'agent_id' => $agent_id,
+            'agent_name' => $agent_name,
+            'agent_phone' => $agent_phone,
+            'agent_email' => $agent_email,
+            'gross_area' => $gross_area,
+            'building_age' => $building_age,
+            'floor_location' => $floor_location,
+            'total_floors' => $total_floors,
+            'heating' => $heating,
+            'balcony' => $balcony,
+            'site_status' => $site_status,
+            'furnished' => $furnished,
+            'usage_status' => $usage_status,
+            'video_call_available' => $video_call_available,
+            'eligible_for_credit' => $eligible_for_credit
+        ];
+        error_log(print_r($params, true));
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssdssssiidsisssdssiissssss", 
@@ -179,8 +203,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $eligible_for_credit
         );
         
+        // SQL çalıştırma sonrası debug
         if ($stmt->execute()) {
             $property_id = $conn->insert_id;
+            error_log("\n=== SQL SORGUSU BAŞARILI ===");
+            error_log("Yeni ilan ID: " . $property_id);
             
             // Resimleri yükle
             $upload_success = false;
@@ -246,10 +273,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $conn->query("DELETE FROM properties WHERE id = " . $property_id);
                 $_SESSION['error'] = "Resimler yüklenirken bir hata oluştu. İlan eklenemedi.";
             }
+        } else {
+            error_log("\n=== SQL SORGUSU HATASI ===");
+            error_log("SQL Hata: " . $stmt->error);
+            throw new Exception("SQL error: " . $stmt->error);
         }
     } catch (Exception $e) {
+        error_log("\n=== HATA OLUŞTU ===");
+        error_log("Hata mesajı: " . $e->getMessage());
         $_SESSION['error'] = "İlan eklenirken bir hata oluştu: " . $e->getMessage();
     }
+    error_log("\n=== İLAN EKLEME İŞLEMİ BİTTİ ===\n");
 }
 ?>
 
