@@ -310,13 +310,6 @@ $required_fields = [
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="price_per_sqm" class="form-label">m² Birim Fiyatı (TL)</label>
-                                    <input type="text" class="form-control" id="price_per_sqm" name="price_per_sqm" value="<?php echo !empty($property['price_per_sqm']) ? number_format($property['price_per_sqm'], 2, ',', '.') : ''; ?>" readonly>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
                                         <option value="rent" <?php echo $property['status'] == 'rent' ? 'selected' : ''; ?>>Kiralık</option>
@@ -703,52 +696,6 @@ $required_fields = [
         document.addEventListener('DOMContentLoaded', function() {
             togglePropertyFields();
             document.getElementById('property_type').addEventListener('change', togglePropertyFields);
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const priceInput = document.getElementById('price');
-            const areaInput = document.getElementById('net_area');
-            const pricePerSqmInput = document.getElementById('price_per_sqm');
-
-            // Fiyat formatı için yardımcı fonksiyon
-            function formatPrice(price) {
-                return new Intl.NumberFormat('tr-TR').format(price);
-            }
-
-            // String formatındaki fiyatı sayıya çevirme
-            function parseFormattedPrice(formattedPrice) {
-                return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
-            }
-
-            // Metrekare başına fiyatı hesapla
-            function calculatePricePerSqm() {
-                const price = parseFormattedPrice(priceInput.value);
-                const area = parseFloat(areaInput.value);
-                
-                if (!isNaN(price) && !isNaN(area) && area > 0) {
-                    const pricePerSqm = price / area;
-                    pricePerSqmInput.value = formatPrice(pricePerSqm.toFixed(2));
-                } else {
-                    pricePerSqmInput.value = '';
-                }
-            }
-
-            // Fiyat alanı için olay dinleyicisi
-            priceInput.addEventListener('input', function(e) {
-                // Sadece sayı ve virgül girişine izin ver
-                let value = e.target.value.replace(/[^\d,]/g, '');
-                
-                // Sayıyı formatla
-                const number = parseFloat(value.replace(/,/g, ''));
-                if (!isNaN(number)) {
-                    e.target.value = formatPrice(number);
-                }
-                
-                calculatePricePerSqm();
-            });
-
-            // Alan alanı için olay dinleyicisi
-            areaInput.addEventListener('input', calculatePricePerSqm);
         });
     </script>
 </body>
