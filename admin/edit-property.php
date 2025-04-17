@@ -1,6 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', 'php://stderr');
 
 require_once 'config.php';
 require_once 'check_login.php';
@@ -39,6 +41,9 @@ if ($result->num_rows === 0) {
 
 $property = $result->fetch_assoc();
 
+error_log("[DEBUG] Retrieved property floor_location: " . (isset($property['floor_location']) ? $property['floor_location'] : 'not set'));
+error_log("[DEBUG] Retrieved property floor_location type: " . (isset($property['floor_location']) ? gettype($property['floor_location']) : 'undefined'));
+
 // Debug için POST verilerini kontrol et
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("POST request received");
@@ -60,13 +65,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
     $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : '';
+    error_log("[DEBUG] POST floor_location value: " . (isset($_POST['floor_location']) ? $_POST['floor_location'] : 'not set'));
+    error_log("[DEBUG] floor_location after trim: " . $floor_location);
+    error_log("[DEBUG] floor_location type: " . gettype($floor_location));
     $total_floors = isset($_POST['total_floors']) ? (int)trim($_POST['total_floors']) : 0;
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
-    
-    // Debug: POST verilerini ve floor_location değerini kontrol et
-    error_log("POST data for floor_location: " . (isset($_POST['floor_location']) ? $_POST['floor_location'] : 'not set'));
-    error_log("floor_location after processing: " . $floor_location);
-    error_log("floor_location type: " . gettype($floor_location));
     
     // İlanı güncelle
     if (isAgent()) {
@@ -211,6 +214,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     if ($stmt->execute()) {
+        error_log("[DEBUG] SQL executed successfully");
+        error_log("[DEBUG] Last floor_location value before save: " . $floor_location);
         // Önce tüm resimlerin vitrin durumunu false yap
         $reset_featured = $conn->prepare("UPDATE property_images SET is_featured = 0 WHERE property_id = ?");
         $reset_featured->bind_param("i", $id);
@@ -250,6 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: dashboard.php");
         exit;
     } else {
+        error_log("[DEBUG] SQL execution failed: " . $stmt->error);
         $_SESSION['error'] = "İlan güncellenirken bir hata oluştu.";
     }
 }
