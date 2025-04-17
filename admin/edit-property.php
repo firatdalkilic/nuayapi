@@ -594,7 +594,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                                     </div>
                                     <div class="col-md-4">
                                         <label for="heating" class="form-label">Isıtma</label>
-                                        <select class="form-select" id="heating" name="heating">
+                                        <select class="form-select" id="heating" name="heating" required>
                                             <option value="">Seçiniz</option>
                                             <option value="Kombi (Doğalgaz)" <?php echo ($property['heating'] == 'Kombi (Doğalgaz)') ? 'selected' : ''; ?>>Kombi (Doğalgaz)</option>
                                             <option value="Merkezi" <?php echo ($property['heating'] == 'Merkezi') ? 'selected' : ''; ?>>Merkezi</option>
