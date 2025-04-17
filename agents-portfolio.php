@@ -416,15 +416,21 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                             <div class="agent-title">
                                 <?php echo !empty($agent['agent_title']) ? htmlspecialchars($agent['agent_title']) : 'Gayrimenkul Danışmanı'; ?>
                                 <div class="platform-icons">
-                                    <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store'] ?? ''); ?>" target="_blank" title="Sahibinden.com Mağazası">
+                                    <?php if (!empty($agent['sahibinden_store'])): ?>
+                                    <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
                                         <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com">
                                     </a>
-                                    <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile'] ?? ''); ?>" target="_blank" title="Emlakjet Profili">
+                                    <?php endif; ?>
+                                    <?php if (!empty($agent['emlakjet_profile'])): ?>
+                                    <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile']); ?>" target="_blank" title="Emlakjet Profili">
                                         <img src="assets/img/emlakjet-icon.png" alt="Emlakjet">
                                     </a>
-                                    <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username'] ?? ''); ?>" target="_blank" title="Facebook Profili">
-                                        <i class="bi bi-facebook" style="font-size: 24px;"></i>
+                                    <?php endif; ?>
+                                    <?php if (!empty($agent['facebook_username'])): ?>
+                                    <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank" title="Facebook">
+                                        <i class="bi bi-facebook"></i>
                                     </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -440,14 +446,20 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                             </div>
 
                             <div class="agent-social">
-                                <?php if (!empty($agent['facebook_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['facebook_url']); ?>" target="_blank"><i class="bi bi-facebook"></i></a>
+                                <?php if (!empty($agent['instagram_username'])): ?>
+                                <a href="https://www.instagram.com/<?php echo htmlspecialchars($agent['instagram_username']); ?>" target="_blank" title="Instagram">
+                                    <i class="bi bi-instagram"></i>
+                                </a>
                                 <?php endif; ?>
-                                <?php if (!empty($agent['instagram_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['instagram_url']); ?>" target="_blank"><i class="bi bi-instagram"></i></a>
+                                <?php if (!empty($agent['twitter_username'])): ?>
+                                <a href="https://twitter.com/<?php echo htmlspecialchars($agent['twitter_username']); ?>" target="_blank" title="Twitter">
+                                    <i class="bi bi-twitter"></i>
+                                </a>
                                 <?php endif; ?>
-                                <?php if (!empty($agent['linkedin_url'])): ?>
-                                <a href="<?php echo htmlspecialchars($agent['linkedin_url']); ?>" target="_blank"><i class="bi bi-linkedin"></i></a>
+                                <?php if (!empty($agent['linkedin_username'])): ?>
+                                <a href="https://www.linkedin.com/in/<?php echo htmlspecialchars($agent['linkedin_username']); ?>" target="_blank" title="LinkedIn">
+                                    <i class="bi bi-linkedin"></i>
+                                </a>
                                 <?php endif; ?>
                             </div>
                         </div>
