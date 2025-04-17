@@ -48,26 +48,6 @@ try {
                 '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
             ];
             
-            // Debug bilgileri
-            echo '<div style="background: #f8f9fa; padding: 15px; margin: 15px; border-radius: 5px;">';
-            echo '<h5>Debug Bilgileri:</h5>';
-            echo '<pre>';
-            echo 'floor_location değeri: [' . $property['floor_location'] . ']<br>';
-            echo 'floor_location tipi: ' . gettype($property['floor_location']) . '<br>';
-            echo 'floor_location uzunluğu: ' . strlen($property['floor_location']) . '<br>';
-            echo 'floor_location binary: ' . bin2hex($property['floor_location']) . '<br>';
-            echo 'floor_location trim sonrası: [' . trim($property['floor_location']) . ']<br>';
-            echo 'floor_location options listesi: ' . print_r($floor_options, true) . '<br>';
-            echo 'floor_location listede var mı: ' . (in_array(trim($property['floor_location']), $floor_options) ? 'Evet' : 'Hayır') . '<br>';
-            echo '</pre>';
-            echo '</div>';
-            
-            // Debug: floor_location değerini ve kontrollerini detaylı göster
-            error_log('Floor Location Value: ' . print_r($property['floor_location'], true));
-            error_log('Floor Location Type: ' . gettype($property['floor_location']));
-            error_log('Floor Options: ' . print_r($floor_options, true));
-            error_log('In Array Check: ' . (in_array($property['floor_location'], $floor_options) ? 'true' : 'false'));
-            
             // Trim kullanarak boşlukları temizle
             $floor_location = isset($property['floor_location']) ? trim($property['floor_location']) : '';
             
@@ -76,15 +56,9 @@ try {
                 $floor_location = $floor_location . '. KAT';
             }
             
-            // Debug: Format sonrası değeri göster
-            error_log('Formatted floor_location: ' . $floor_location);
-            
             $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
                 ? $floor_location 
                 : '-';
-            
-            // Debug: Son değeri göster
-            error_log('Final Floor Value: ' . $floor);
         } else {
             header("Location: index.html");
             exit;
@@ -1066,26 +1040,6 @@ try {
                                     '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
                                 ];
                                 
-                                // Debug bilgileri
-                                echo '<div style="background: #f8f9fa; padding: 15px; margin: 15px; border-radius: 5px;">';
-                                echo '<h5>Debug Bilgileri:</h5>';
-                                echo '<pre>';
-                                echo 'floor_location değeri: [' . $property['floor_location'] . ']<br>';
-                                echo 'floor_location tipi: ' . gettype($property['floor_location']) . '<br>';
-                                echo 'floor_location uzunluğu: ' . strlen($property['floor_location']) . '<br>';
-                                echo 'floor_location binary: ' . bin2hex($property['floor_location']) . '<br>';
-                                echo 'floor_location trim sonrası: [' . trim($property['floor_location']) . ']<br>';
-                                echo 'floor_location options listesi: ' . print_r($floor_options, true) . '<br>';
-                                echo 'floor_location listede var mı: ' . (in_array(trim($property['floor_location']), $floor_options) ? 'Evet' : 'Hayır') . '<br>';
-                                echo '</pre>';
-                                echo '</div>';
-                                
-                                // Debug: floor_location değerini ve kontrollerini detaylı göster
-                                error_log('Floor Location Value: ' . print_r($property['floor_location'], true));
-                                error_log('Floor Location Type: ' . gettype($property['floor_location']));
-                                error_log('Floor Options: ' . print_r($floor_options, true));
-                                error_log('In Array Check: ' . (in_array($property['floor_location'], $floor_options) ? 'true' : 'false'));
-                                
                                 // Trim kullanarak boşlukları temizle
                                 $floor_location = isset($property['floor_location']) ? trim($property['floor_location']) : '';
                                 
@@ -1094,15 +1048,9 @@ try {
                                     $floor_location = $floor_location . '. KAT';
                                 }
                                 
-                                // Debug: Format sonrası değeri göster
-                                error_log('Formatted floor_location: ' . $floor_location);
-                                
                                 $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
                                     ? $floor_location 
                                     : '-';
-                                
-                                // Debug: Son değeri göster
-                                error_log('Final Floor Value: ' . $floor);
                                 ?>
                                 <strong><?php echo htmlspecialchars($floor); ?></strong>
                             </div>
