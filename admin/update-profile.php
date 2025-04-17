@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
         // Temel SQL sorgusu
         $sql = "UPDATE agents SET 
                 agent_name=?, 
-                username=?, 
+                username_panel=?, 
                 phone=?, 
                 email=?, 
                 about=?,
