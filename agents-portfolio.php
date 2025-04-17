@@ -502,7 +502,30 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                                 $stmt->execute();
                                                 $image_result = $stmt->get_result();
                                                 $image_data = $image_result->fetch_assoc();
-                                                $image_path = $image_data ? $image_data['image_name'] : 'assets/img/property-default.jpg';
+                                                
+                                                // Varsayılan resim yolu
+                                                $default_image = 'assets/img/property-default.jpg';
+                                                
+                                                // Resim yolunu kontrol et
+                                                if ($image_data && !empty($image_data['image_name'])) {
+                                                    $image_path = $image_data['image_name'];
+                                                    // Eğer resim yolu tam değilse (http veya https ile başlamıyorsa)
+                                                    if (!preg_match("~^(?:f|ht)tps?://~i", $image_path)) {
+                                                        // Dosyanın varlığını kontrol et
+                                                        if (file_exists($image_path)) {
+                                                            $image_path = '/' . ltrim($image_path, '/');
+                                                        } else {
+                                                            $image_path = $default_image;
+                                                        }
+                                                    }
+                                                } else {
+                                                    $image_path = $default_image;
+                                                }
+                                                
+                                                // Varsayılan resmin varlığını kontrol et
+                                                if ($image_path === $default_image && !file_exists($default_image)) {
+                                                    $image_path = 'assets/img/nua_logo.jpg';
+                                                }
                                                 ?>
                                                 <div class="col-md-6">
                                                     <a href="property-single.php?id=<?php echo $property['id']; ?>" class="property-card">

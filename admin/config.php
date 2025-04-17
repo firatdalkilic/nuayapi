@@ -101,6 +101,7 @@ if ($result->num_rows == 0) {
         id INT AUTO_INCREMENT PRIMARY KEY,
         property_id INT NOT NULL,
         image_name VARCHAR(255) NOT NULL,
+        is_featured BOOLEAN DEFAULT FALSE,
         display_order INT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
@@ -109,6 +110,17 @@ if ($result->num_rows == 0) {
     if (!$conn->query($create_images_table)) {
         error_log("Images table creation error: " . $conn->error);
         die("Resim tablosu oluşturma hatası: " . $conn->error);
+    }
+}
+
+// property_images tablosunda is_featured sütununu kontrol et ve ekle
+$check_featured_column = "SHOW COLUMNS FROM property_images LIKE 'is_featured'";
+$result = $conn->query($check_featured_column);
+if ($result->num_rows == 0) {
+    $add_featured_column = "ALTER TABLE property_images ADD COLUMN is_featured BOOLEAN DEFAULT FALSE AFTER image_name";
+    if (!$conn->query($add_featured_column)) {
+        error_log("Add is_featured column error: " . $conn->error);
+        die("is_featured sütunu ekleme hatası: " . $conn->error);
     }
 }
 
