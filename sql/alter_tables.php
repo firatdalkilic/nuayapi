@@ -1,11 +1,18 @@
 <?php
-require_once '../admin/config.php';
+require_once 'admin/config.php';
 
 // Agents tablosuna platform alanlarını ekle
 $alter_agents_table = "ALTER TABLE agents 
     ADD COLUMN sahibinden_store VARCHAR(255) DEFAULT NULL,
     ADD COLUMN emlakjet_profile VARCHAR(255) DEFAULT NULL,
     ADD COLUMN facebook_username VARCHAR(255) DEFAULT NULL";
+
+$alterQueries = [
+    "ALTER TABLE properties ADD COLUMN room_count VARCHAR(50) DEFAULT NULL AFTER net_area",
+    "ALTER TABLE properties ADD COLUMN living_room_count VARCHAR(50) DEFAULT NULL AFTER room_count",
+    "ALTER TABLE agents ADD COLUMN sahibinden_store VARCHAR(255) DEFAULT NULL",
+    "ALTER TABLE agents ADD COLUMN emlakjet_profile VARCHAR(255) DEFAULT NULL"
+];
 
 try {
     if ($conn->query($alter_agents_table)) {

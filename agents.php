@@ -181,16 +181,24 @@
                             <h4><?php echo htmlspecialchars($agent_name); ?></h4>
                             <span><?php echo htmlspecialchars($agent_title); ?></span>
                             <div class="social">
+                              <?php
+                              // Debug bilgisi
+                              error_log("Sahibinden Store: " . (isset($agent['sahibinden_store']) ? $agent['sahibinden_store'] : 'boş'));
+                              error_log("Emlakjet Profile: " . (isset($agent['emlakjet_profile']) ? $agent['emlakjet_profile'] : 'boş'));
+                              ?>
+                              
                               <?php if (!empty($agent['sahibinden_store'])): ?>
                                 <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
-                                    <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
+                                    <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com" style="width: 24px; height: 24px;">
                                 </a>
                               <?php endif; ?>
+                              
                               <?php if (!empty($agent['emlakjet_profile'])): ?>
                                 <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile']); ?>" target="_blank" title="Emlakjet Profili">
-                                    <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet">
+                                    <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet" style="width: 24px; height: 24px;">
                                 </a>
                               <?php endif; ?>
+                              
                               <?php if (!empty($agent['facebook_username'])): ?>
                                 <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank" title="Facebook">
                                     <i class="bi bi-facebook"></i>
