@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 living_room=? 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssiiii", 
+        $stmt->bind_param("sssssssiiiii", 
             $title, 
             $description, 
             $price, 
