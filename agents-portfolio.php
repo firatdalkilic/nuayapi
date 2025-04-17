@@ -387,7 +387,7 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                 <div class="row">
                     <div class="col-12">
                         <ol>
-                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="index.html">Anasayfa</a></li>
                             <li><a href="agents.php">Danışmanlarımız</a></li>
                             <li class="current"><?php echo htmlspecialchars($agent['agent_name']); ?></li>
                         </ol>
@@ -416,21 +416,23 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                             <div class="agent-title">
                                 <?php echo !empty($agent['agent_title']) ? htmlspecialchars($agent['agent_title']) : 'Gayrimenkul Danışmanı'; ?>
                                 <div class="platform-icons">
-                                    <?php if (!empty($agent['sahibinden_store'])): ?>
-                                    <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
-                                        <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com">
-                                    </a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($agent['emlakjet_profile'])): ?>
-                                    <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile']); ?>" target="_blank" title="Emlakjet Profili">
-                                        <img src="assets/img/emlakjet-icon.png" alt="Emlakjet">
-                                    </a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($agent['facebook_username'])): ?>
-                                    <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username']); ?>" target="_blank" title="Facebook">
-                                        <i class="bi bi-facebook"></i>
-                                    </a>
-                                    <?php endif; ?>
+                                <?php if (!empty($agent['sahibinden_link'])): ?>
+                                  <a href="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası" class="social-icon">
+                                      <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
+                                  </a>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($agent['emlakjet_link'])): ?>
+                                  <a href="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>" target="_blank" title="Emlakjet Profili" class="social-icon">
+                                      <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet">
+                                  </a>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($agent['facebook_link'])): ?>
+                                  <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook" class="social-icon facebook">
+                                      <i class="bi bi-facebook"></i>
+                                  </a>
+                                <?php endif; ?>
                                 </div>
                             </div>
 
@@ -470,10 +472,10 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                         <div class="content-tabs">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#about">Hakkımda</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#properties">İlanlar (<?php echo count($properties); ?>)</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#properties">İlanlar (<?php echo count($properties); ?>)</a>
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#about">Hakkımda</a>
                                 </li>
                             </ul>
 
