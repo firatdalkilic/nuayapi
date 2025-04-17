@@ -77,14 +77,8 @@
       height: 28px;
       background: #f8f9fa;
       border-radius: 50%;
-      color: #002e5c;
       text-decoration: none;
-      transition: all 0.3s;
       padding: 5px;
-    }
-
-    .member .social-icon:hover {
-      background: #002e5c;
     }
 
     .member .social-icon img {
@@ -93,12 +87,12 @@
       object-fit: contain;
     }
 
-    .member .social-icon i {
-      font-size: 16px;
+    .member .social-icon.facebook {
+      color: #0866FF;
     }
 
-    .member .social-icon:hover i {
-      color: #fff;
+    .member .social-icon.facebook i {
+      font-size: 16px;
     }
   </style>
 
@@ -212,7 +206,7 @@
                                 <?php endif; ?>
                                 
                                 <?php if (!empty($agent['facebook_link'])): ?>
-                                  <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook" class="social-icon">
+                                  <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook" class="social-icon facebook">
                                       <i class="bi bi-facebook"></i>
                                   </a>
                                 <?php endif; ?>
