@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
-        $stmt->bind_param("sssssssiiidssii", 
+        $stmt->bind_param("sssssssiiiissii", 
             $title, 
             $description, 
             $price, 
@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 updated_at=NOW() 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssiiidssi", 
+        $stmt->bind_param("sssssssiiiisss", 
             $title, 
             $description, 
             $price, 
