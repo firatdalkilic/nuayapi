@@ -63,6 +63,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $total_floors = isset($_POST['total_floors']) ? (int)trim($_POST['total_floors']) : 0;
     $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
     
+    // Debug: POST verilerini ve floor_location değerini kontrol et
+    error_log("POST data for floor_location: " . (isset($_POST['floor_location']) ? $_POST['floor_location'] : 'not set'));
+    error_log("floor_location after processing: " . $floor_location);
+    error_log("floor_location type: " . gettype($floor_location));
+    
     // İlanı güncelle
     if (isAgent()) {
         $sql = "UPDATE properties SET 
