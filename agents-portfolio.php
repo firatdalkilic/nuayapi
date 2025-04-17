@@ -503,62 +503,67 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                                                 $image_result = $stmt->get_result();
                                                 $image_data = $image_result->fetch_assoc();
                                                 
-                                                // Varsayılan resim yolu
-                                                $default_image = 'assets/img/property-default.jpg';
-                                                
-                                                // Resim yolunu kontrol et
+                                                $image_path = 'assets/img/property-default.jpg';
                                                 if ($image_data && !empty($image_data['image_name'])) {
-                                                    $image_path = $image_data['image_name'];
-                                                    // Eğer resim yolu tam değilse (http veya https ile başlamıyorsa)
-                                                    if (!preg_match("~^(?:f|ht)tps?://~i", $image_path)) {
-                                                        // Dosyanın varlığını kontrol et
-                                                        if (file_exists($image_path)) {
-                                                            $image_path = '/' . ltrim($image_path, '/');
-                                                        } else {
-                                                            $image_path = $default_image;
-                                                        }
+                                                    if (file_exists($image_data['image_name'])) {
+                                                        $image_path = $image_data['image_name'];
+                                                    } elseif (file_exists('uploads/' . basename($image_data['image_name']))) {
+                                                        $image_path = 'uploads/' . basename($image_data['image_name']);
                                                     }
-                                                } else {
-                                                    $image_path = $default_image;
                                                 }
                                                 
-                                                // Varsayılan resmin varlığını kontrol et
-                                                if ($image_path === $default_image && !file_exists($default_image)) {
+                                                if (!file_exists($image_path)) {
                                                     $image_path = 'assets/img/nua_logo.jpg';
                                                 }
                                                 ?>
-                                                <div class="col-md-6">
-                                                    <a href="property-single.php?id=<?php echo $property['id']; ?>" class="property-card">
-                                                        <?php if ($property['status'] == 'sale'): ?>
-                                                            <div class="property-status status-sale">Satılık</div>
-                                                        <?php else: ?>
-                                                            <div class="property-status status-rent">Kiralık</div>
-                                                        <?php endif; ?>
-                                                        <img src="<?php echo htmlspecialchars($image_path); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" class="property-image">
-                                                        <div class="property-info">
-                                                            <h3 class="property-title"><?php echo htmlspecialchars($property['title']); ?></h3>
-                                                            <div class="property-location">
-                                                                <i class="bi bi-geo-alt"></i>
-                                                                <?php echo htmlspecialchars($property['location']); ?>
-                                                                <?php if (!empty($property['neighborhood'])): ?>
-                                                                    , <?php echo htmlspecialchars($property['neighborhood']); ?>
-                                                                <?php endif; ?>
+                                                <div class="col-md-6 col-lg-4 mb-4">
+                                                    <div class="property-card h-100">
+                                                        <a href="property-single.php?id=<?php echo $property['id']; ?>" class="text-decoration-none">
+                                                            <div class="position-relative">
+                                                                <img src="<?php echo htmlspecialchars($image_path); ?>" 
+                                                                     alt="<?php echo htmlspecialchars($property['title']); ?>" 
+                                                                     class="img-fluid w-100" 
+                                                                     style="height: 200px; object-fit: cover;">
+                                                                <div class="position-absolute top-0 start-0 m-3">
+                                                                    <span class="badge <?php echo $property['status'] == 'sale' ? 'bg-primary' : 'bg-success'; ?>">
+                                                                        <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?>
+                                                                    </span>
+                                                                </div>
                                                             </div>
-                                                            <div class="property-details">
-                                                                <span><i class="bi bi-house-door"></i> <?php echo $property['net_area']; ?> m²</span>
-                                                                <span><i class="bi bi-door-open"></i> <?php echo $property['room_count']; ?> Oda</span>
-                                                                <?php if (!empty($property['living_room'])): ?>
-                                                                    <span><i class="bi bi-plus-circle"></i> <?php echo $property['living_room']; ?> Salon</span>
-                                                                <?php endif; ?>
+                                                            <div class="card-body p-3">
+                                                                <h5 class="card-title text-dark mb-1"><?php echo htmlspecialchars($property['title']); ?></h5>
+                                                                <p class="property-location mb-2">
+                                                                    <i class="bi bi-geo-alt"></i>
+                                                                    <?php echo htmlspecialchars($property['location']); ?>
+                                                                    <?php if (!empty($property['neighborhood'])): ?>
+                                                                        , <?php echo htmlspecialchars($property['neighborhood']); ?>
+                                                                    <?php endif; ?>
+                                                                </p>
+                                                                <div class="property-details mb-2">
+                                                                    <span class="detail-item">
+                                                                        <i class="bi bi-house-door"></i>
+                                                                        <?php echo $property['net_area']; ?> m²
+                                                                    </span>
+                                                                    <span class="detail-item">
+                                                                        <i class="bi bi-door-open"></i>
+                                                                        <?php echo $property['room_count']; ?> Oda
+                                                                    </span>
+                                                                    <?php if (!empty($property['living_room'])): ?>
+                                                                        <span class="detail-item">
+                                                                            <i class="bi bi-plus-circle"></i>
+                                                                            <?php echo $property['living_room']; ?> Salon
+                                                                        </span>
+                                                                    <?php endif; ?>
+                                                                </div>
+                                                                <div class="property-price fw-bold text-primary">
+                                                                    <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
+                                                                    <?php if ($property['status'] == 'rent'): ?>
+                                                                        <small class="text-muted">/ay</small>
+                                                                    <?php endif; ?>
+                                                                </div>
                                                             </div>
-                                                            <div class="property-price">
-                                                                <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
-                                                                <?php if ($property['status'] == 'rent'): ?>
-                                                                    <small>/ay</small>
-                                                                <?php endif; ?>
-                                                            </div>
-                                                        </div>
-                                                    </a>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
