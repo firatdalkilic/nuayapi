@@ -183,12 +183,12 @@
                             <div class="social">
                               <?php if (!empty($agent['sahibinden_store'])): ?>
                                 <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store']); ?>" target="_blank" title="Sahibinden.com Mağazası">
-                                    <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com">
+                                    <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
                                 </a>
                               <?php endif; ?>
                               <?php if (!empty($agent['emlakjet_profile'])): ?>
                                 <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile']); ?>" target="_blank" title="Emlakjet Profili">
-                                    <img src="assets/img/emlakjet-icon.png" alt="Emlakjet">
+                                    <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet">
                                 </a>
                               <?php endif; ?>
                               <?php if (!empty($agent['facebook_username'])): ?>
