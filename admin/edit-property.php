@@ -59,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : '';
     $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
-    $swap_eligible = isset($_POST['swap_eligible']) ? trim($_POST['swap_eligible']) : 'Hayır';
     
     // İlanı güncelle
     if (isAgent()) {
@@ -78,12 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 living_room=?,
                 building_age=?,
                 eligible_for_credit=?,
-                swap_eligible=?,
                 updated_at=NOW() 
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
-        $stmt->bind_param("sssssssiiidsssii", 
+        $stmt->bind_param("sssssssiiidssii", 
             $title, 
             $description, 
             $price, 
@@ -98,7 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $living_room,
             $building_age,
             $eligible_for_credit,
-            $swap_eligible,
             $id, 
             $agent_id
         );
@@ -118,11 +115,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 living_room=?,
                 building_age=?,
                 eligible_for_credit=?,
-                swap_eligible=?,
                 updated_at=NOW() 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssiiidssssi", 
+        $stmt->bind_param("sssssssiiidssi", 
             $title, 
             $description, 
             $price, 
@@ -137,7 +133,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $living_room,
             $building_age,
             $eligible_for_credit,
-            $swap_eligible,
             $id
         );
     }
