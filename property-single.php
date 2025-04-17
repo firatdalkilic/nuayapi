@@ -9,7 +9,11 @@ try {
         $property_id = (int)$_GET['id'];
         
         // İlan detaylarını ve öne çıkan resmi al
-        $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, a.image as agent_image 
+        $sql = "SELECT p.id, p.title, p.description, p.price, p.location, p.property_type, p.room_count, 
+                p.bathroom_count, p.net_area, p.gross_area, p.heating, p.building_age, p.floor_number, 
+                p.total_floors, p.furnished, p.status, p.balcony, p.eligible_for_credit, p.site_status, 
+                p.created_at, p.updated_at, p.agent_id, p.neighborhood, p.using_status, p.dues,
+                pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, a.image as agent_image 
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id

@@ -101,13 +101,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Veritabanına kaydet
     $sql = "INSERT INTO properties (
         title, description, price, location, neighborhood, property_type,
-        status, room_count, bathroom_count, net_area, features, living_room,
+        status, room_count, bathroom_count, net_area, living_room,
         agent_id, agent_name, agent_phone, agent_email
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     try {
+        // Debug bilgisi ekle
+        error_log("SQL Query: " . $sql);
+        error_log("Parameters: " . json_encode([
+            $title, $description, $price, $location, $neighborhood, $property_type,
+            $status, $room_count, $bathroom_count, $net_area, $living_room,
+            $agent_id, $agent_name, $agent_phone, $agent_email
+        ]));
+
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdssssiissis", 
+        $stmt->bind_param("ssdssssiidsisss", 
             $title, 
             $description, 
             $price, 
@@ -118,7 +126,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $room_count, 
             $bathroom_count, 
             $net_area, 
-            $features, 
             $living_room,
             $agent_id,
             $agent_name,
