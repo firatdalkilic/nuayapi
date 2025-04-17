@@ -142,6 +142,36 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
             color: #fff;
         }
 
+        .platform-icons {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .platform-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .platform-icons a:hover {
+            color: #002e5c;
+        }
+
+        .platform-icons img {
+            width: 24px;
+            height: 24px;
+            margin-right: 5px;
+        }
+
+        .platform-icons span {
+            font-size: 14px;
+        }
+
         .nav-tabs {
             border: none;
             margin-bottom: 20px;
@@ -385,6 +415,17 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                             
                             <div class="agent-title">
                                 <?php echo !empty($agent['agent_title']) ? htmlspecialchars($agent['agent_title']) : 'Gayrimenkul Danışmanı'; ?>
+                                <div class="platform-icons">
+                                    <a href="https://www.sahibinden.com/magaza/<?php echo htmlspecialchars($agent['sahibinden_store'] ?? ''); ?>" target="_blank" title="Sahibinden.com Mağazası">
+                                        <img src="assets/img/sahibinden-icon.png" alt="Sahibinden.com">
+                                    </a>
+                                    <a href="https://www.emlakjet.com/emlakci/<?php echo htmlspecialchars($agent['emlakjet_profile'] ?? ''); ?>" target="_blank" title="Emlakjet Profili">
+                                        <img src="assets/img/emlakjet-icon.png" alt="Emlakjet">
+                                    </a>
+                                    <a href="https://www.facebook.com/<?php echo htmlspecialchars($agent['facebook_username'] ?? ''); ?>" target="_blank" title="Facebook Profili">
+                                        <i class="bi bi-facebook" style="font-size: 24px;"></i>
+                                    </a>
+                                </div>
                             </div>
 
                             <div class="agent-contact">
