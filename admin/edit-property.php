@@ -122,26 +122,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     if ($stmt->execute()) {
-        // Fotoğrafları güncelle
-        if (isset($_FILES['images'])) {
-            $uploadDir = "../uploads/";
-            if (!file_exists($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-            
-            foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-                if ($_FILES['images']['error'][$key] == 0) {
-                    $fileName = time() . '_' . $_FILES['images']['name'][$key];
-                    $targetFile = $uploadDir . $fileName;
+        // Önce tüm resimlerin vitrin durumunu false yap
+        $reset_featured = $conn->prepare("UPDATE property_images SET is_featured = 0 WHERE property_id = ?");
+        $reset_featured->bind_param("i", $id);
+        $reset_featured->execute();
+
+        // Seçilen resmin vitrin durumunu true yap
+        if (isset($_POST['featured_image'])) {
+            $featured_id = $_POST['featured_image'];
+            $update_featured = $conn->prepare("UPDATE property_images SET is_featured = 1 WHERE id = ? AND property_id = ?");
+            $update_featured->bind_param("ii", $featured_id, $id);
+            $update_featured->execute();
+        }
+        
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['images']['error'][$key] == 0) {
+                $fileName = time() . '_' . $_FILES['images']['name'][$key];
+                $targetFile = $uploadDir . $fileName;
+                
+                if (move_uploaded_file($tmp_name, $targetFile)) {
+                    // Eğer hiç vitrin fotoğrafı yoksa ilk yüklenen fotoğrafı vitrin yap
+                    $check_featured = $conn->prepare("SELECT COUNT(*) as count FROM property_images WHERE property_id = ? AND is_featured = 1");
+                    $check_featured->bind_param("i", $id);
+                    $check_featured->execute();
+                    $result = $check_featured->get_result();
+                    $row = $result->fetch_assoc();
+                    $is_featured = ($row['count'] == 0) ? 1 : 0;
                     
-                    if (move_uploaded_file($tmp_name, $targetFile)) {
-                        $is_featured = isset($_POST['featured_image']) && $_POST['featured_image'] == $key;
-                        
-                        $sql = "INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)";
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bind_param("isi", $id, $fileName, $is_featured);
-                        $stmt->execute();
-                    }
+                    $sql = "INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("isi", $id, $fileName, $is_featured);
+                    $stmt->execute();
                 }
             }
         }
