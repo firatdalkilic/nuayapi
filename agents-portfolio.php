@@ -472,10 +472,10 @@ $sales = $stmt->get_result()->fetch_assoc()['total'];
                         <div class="content-tabs">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#properties">İlanlar (<?php echo count($properties); ?>)</a>
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#properties">İlanlar (<?php echo count($properties); ?>)</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#about">Hakkımda</a>
+                                    <a class="nav-link" data-bs-toggle="tab" href="#about">Hakkımda</a>
                                 </li>
                             </ul>
 
