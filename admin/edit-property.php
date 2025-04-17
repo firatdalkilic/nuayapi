@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $eligible_for_credit = isset($_POST['eligible_for_credit']) ? trim($_POST['eligible_for_credit']) : 'Hayır';
     $floor_location = isset($_POST['floor_location']) ? trim($_POST['floor_location']) : '';
     $total_floors = isset($_POST['total_floors']) ? (int)trim($_POST['total_floors']) : 0;
+    $heating = isset($_POST['heating']) ? trim($_POST['heating']) : '';
     
     // İlanı güncelle
     if (isAgent()) {
@@ -81,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 eligible_for_credit=?,
                 floor_location=?,
                 total_floors=?,
+                heating=?,
                 updated_at=NOW() 
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
@@ -90,9 +92,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $property_type, $status, $room_count, $bathroom_count, 
             $net_area, $gross_area, $living_room, $building_age,
             $eligible_for_credit, $floor_location, $total_floors,
-            $id, $agent_id
+            $heating, $id, $agent_id
         ], true));
-        $stmt->bind_param("sssssssiiiissssiii", 
+        $stmt->bind_param("sssssssiiiissssissii", 
             $title, 
             $description, 
             $price, 
@@ -109,6 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $eligible_for_credit,
             $floor_location,
             $total_floors,
+            $heating,
             $id, 
             $agent_id
         );
@@ -130,6 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 eligible_for_credit=?,
                 floor_location=?,
                 total_floors=?,
+                heating=?,
                 updated_at=NOW() 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
@@ -138,9 +142,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $property_type, $status, $room_count, $bathroom_count, 
             $net_area, $gross_area, $living_room, $building_age,
             $eligible_for_credit, $floor_location, $total_floors,
-            $id
+            $heating, $id
         ], true));
-        $stmt->bind_param("sssssssiiiissssii", 
+        $stmt->bind_param("sssssssiiiissssissi", 
             $title, 
             $description, 
             $price, 
@@ -157,6 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $eligible_for_credit,
             $floor_location,
             $total_floors,
+            $heating,
             $id
         );
     }
