@@ -13,6 +13,8 @@ try {
                 p.bathroom_count, p.net_area, p.gross_area, p.heating, p.building_age, p.floor_location, 
                 p.total_floors, p.furnished, p.status, p.balcony, p.eligible_for_credit, p.site_status,
                 p.created_at, p.updated_at, p.agent_id, p.neighborhood, p.usage_status, p.dues,
+                p.block_no, p.parcel_no, p.sheet_no, p.zoning_status, p.floor_area_ratio,
+                p.height_limit, p.deed_status, p.site_name, p.video_call_available, p.living_room,
                 pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, a.image as agent_image 
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
