@@ -2,25 +2,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$servername = "localhost";
-$username = "root";
-$password = "";
+require_once 'admin/config.php';
 
 try {
-    // Ana bağlantıyı oluştur
-    $conn = new mysqli($servername, $username, $password);
-    
-    // Veritabanını oluştur
-    $sql = "CREATE DATABASE IF NOT EXISTS nuayapi";
-    if ($conn->query($sql)) {
-        echo "Veritabanı oluşturuldu veya zaten mevcut.<br>";
-    } else {
-        throw new Exception("Veritabanı oluşturma hatası: " . $conn->error);
-    }
-    
-    // Veritabanını seç
-    $conn->select_db("nuayapi");
-    
     // Agents tablosunu oluştur
     $sql = "CREATE TABLE IF NOT EXISTS agents (
         id INT AUTO_INCREMENT PRIMARY KEY,
