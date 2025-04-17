@@ -898,13 +898,24 @@ try {
                                 <i class="bi bi-building"></i>
                                 <span>Durum:</span>
                                 <?php 
-                                $status = $property['status'];
-                                if ($status == 'rent') {
+                                // Debug: Status değerini kontrol et
+                                error_log('Raw status value: [' . $property['status'] . ']');
+                                error_log('Raw property type: [' . $property['property_type'] . ']');
+                                
+                                $status = strtolower(trim($property['status']));
+                                error_log('Status after strtolower and trim: [' . $status . ']');
+                                
+                                if ($status === 'rent') {
                                     $status = 'Kiralık';
-                                } elseif ($status == 'sale') {
+                                } else if ($status === 'sale') {
                                     $status = 'Satılık';
                                 }
-                                echo htmlspecialchars($status . ' ' . $property['property_type']); 
+                                error_log('Final converted status: [' . $status . ']');
+                                
+                                $display_text = $status . ' ' . $property['property_type'];
+                                error_log('Final display text: [' . $display_text . ']');
+                                
+                                echo htmlspecialchars($display_text); 
                                 ?>
                             </div>
                         </div>
