@@ -31,9 +31,7 @@ if ($conn->connect_error) {
 
 echo "Connected successfully\n";
 
-// Run the migration script
-require_once('add_features_column.php');
-
+// Close the connection
 $conn->close();
 echo "Connection closed\n";
 ?> 
