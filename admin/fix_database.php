@@ -79,11 +79,16 @@ try {
     }
 
     // site_status sütununu ekle
-    $sql = "ALTER TABLE properties ADD COLUMN IF NOT EXISTS site_status VARCHAR(50) DEFAULT NULL AFTER status";
-    if ($conn->query($sql) === TRUE) {
-        echo "site_status sütunu başarıyla eklendi.<br>";
-    } else {
-        echo "Hata: site_status sütunu eklenirken bir hata oluştu: " . $conn->error . "<br>";
+    $sql = "ALTER TABLE properties ADD COLUMN site_status VARCHAR(50) DEFAULT NULL AFTER status";
+    try {
+        if ($conn->query($sql) === TRUE) {
+            echo "site_status sütunu başarıyla eklendi.<br>";
+        }
+    } catch (Exception $e) {
+        // Sütun zaten varsa hata mesajını görmezden gel
+        if (!strpos($e->getMessage(), "Duplicate column name")) {
+            echo "Hata: " . $e->getMessage() . "<br>";
+        }
     }
 
     // Property_images tablosunu oluştur
