@@ -1195,7 +1195,6 @@ try {
                             <h3 class="agent-name text-center mb-4">
                                 <?php echo !empty($property['agent_name']) ? htmlspecialchars($property['agent_name']) : 'NUA YAPI'; ?>
                             </h3>
-                            
                             <?php if (!empty($property['agent_phone'])): ?>
                             <div class="contact-item">
                                 <i class="bi bi-telephone"></i>
@@ -1228,26 +1227,6 @@ try {
                             </div>
                             <?php endif; ?>
                         </div>
-
-                        <div class="social">
-                                <?php if (!empty($agent['sahibinden_link'])): ?>
-                                  <a href="<?php echo htmlspecialchars($agent['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası" class="social-icon">
-                                      <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
-                                  </a>
-                                <?php endif; ?>
-                                
-                                <?php if (!empty($agent['emlakjet_link'])): ?>
-                                  <a href="<?php echo htmlspecialchars($agent['emlakjet_link']); ?>" target="_blank" title="Emlakjet Profili" class="social-icon">
-                                      <img src="assets/img/platforms/emlakjet-icon.png" alt="Emlakjet">
-                                  </a>
-                                <?php endif; ?>
-                                
-                                <?php if (!empty($agent['facebook_link'])): ?>
-                                  <a href="<?php echo htmlspecialchars($agent['facebook_link']); ?>" target="_blank" title="Facebook" class="social-icon facebook">
-                                      <i class="bi bi-facebook"></i>
-                                  </a>
-                                <?php endif; ?>
-                              </div>
                         
                         <div class="mt-4">
                             <a href="https://wa.me/<?php 
