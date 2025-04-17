@@ -160,6 +160,9 @@
 
               if ($result && $result->num_rows > 0) {
                   while($agent = $result->fetch_assoc()) {
+                      // Debug için tüm agent bilgilerini yazdır
+                      error_log("Agent Data: " . print_r($agent, true));
+                      
                       // Fotoğraf yolunu kontrol et
                       $agent_photo = 'assets/img/nua_logo.jpg'; // Varsayılan fotoğraf olarak Nua Yapı logosu
                       if (!empty($agent['image'])) {
