@@ -56,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
     $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
     $gross_area = isset($_POST['gross_area']) ? (float)trim($_POST['gross_area']) : null;
+    $building_age = isset($_POST['building_age']) ? trim($_POST['building_age']) : '';
     $features = isset($_POST['features']) ? implode(',', $_POST['features']) : '';
     $living_room = isset($_POST['living_room']) ? trim($_POST['living_room']) : '';
     
@@ -73,7 +74,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 bathroom_count=?, 
                 net_area=?, 
                 gross_area=?,
-                living_room=? 
+                living_room=?,
+                building_age=?,
+                credit_eligible=?,
+                swap_eligible=?,
+                updated_at=NOW() 
                 WHERE id=? AND agent_id=?";
         $stmt = $conn->prepare($sql);
         $agent_id = getAgentId();
@@ -90,6 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $net_area, 
             $gross_area,
             $living_room,
+            $building_age,
             $id, 
             $agent_id
         );
@@ -106,7 +112,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 bathroom_count=?, 
                 net_area=?, 
                 gross_area=?,
-                living_room=? 
+                living_room=?,
+                building_age=?,
+                credit_eligible=?,
+                swap_eligible=?,
+                updated_at=NOW() 
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssssssiiidii", 
@@ -122,6 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $net_area, 
             $gross_area,
             $living_room,
+            $building_age,
             $id
         );
     }
