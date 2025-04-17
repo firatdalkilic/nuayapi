@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'config.php';
+require_once 'check_login.php';
 checkLogin();
 
 if (!isset($_GET['id']) || !isset($_GET['property_id'])) {
