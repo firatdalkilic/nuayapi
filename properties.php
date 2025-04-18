@@ -33,9 +33,10 @@ $params = [];
 $param_types = "";
 
 // Ana sorguyu tanımla
-$base_query = "SELECT p.*, 
-          (SELECT image_name FROM property_images WHERE property_id = p.id AND is_featured = TRUE LIMIT 1) as image_name 
-          FROM properties p";
+$base_query = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email 
+               FROM properties p 
+               LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
+               LEFT JOIN agents a ON p.agent_id = a.id";
 
 // Aktif filtreleri kontrol eden fonksiyon
 function hasActiveFilters() {
@@ -177,7 +178,7 @@ $query = $base_query;
 if (!empty($where_conditions)) {
     $query .= " WHERE " . implode(" AND ", $where_conditions);
 }
-$query .= " ORDER BY p.id DESC LIMIT ?, ?";
+$query .= " ORDER BY p.created_at DESC LIMIT ?, ?";
 $params[] = $baslangic;
 $params[] = $limit;
 $param_types .= "ii";
@@ -781,10 +782,29 @@ if (!file_exists('uploads')) {
                                 <i class="bi bi-rulers"></i>
                                 <span><?php echo number_format($ilan['net_area'], 0, ',', '.'); ?> m²</span>
                             </div>
+                            <?php if (!empty($ilan['zoning_status'])): ?>
                             <div class="detail-item me-4">
                                 <i class="bi bi-clipboard-check"></i>
                                 <span><?php echo htmlspecialchars($ilan['zoning_status']); ?></span>
                             </div>
+                            <?php endif; ?>
+                        <?php elseif ($ilan['property_type'] == 'İş Yeri'): ?>
+                            <div class="detail-item me-4">
+                                <i class="bi bi-building"></i>
+                                <span><?php echo htmlspecialchars($ilan['status'] . ' ' . $ilan['property_type']); ?></span>
+                            </div>
+                            <?php if (!empty($ilan['square_meters'])): ?>
+                            <div class="detail-item me-4">
+                                <i class="bi bi-rulers"></i>
+                                <span><?php echo number_format($ilan['square_meters'], 0, ',', '.'); ?> m²</span>
+                            </div>
+                            <?php endif; ?>
+                            <?php if (!empty($ilan['room_count'])): ?>
+                            <div class="detail-item">
+                                <i class="bi bi-door-open"></i>
+                                <span><?php echo htmlspecialchars($ilan['room_count']); ?> Bölüm</span>
+                            </div>
+                            <?php endif; ?>
                         <?php else: ?>
                             <div class="detail-item me-4">
                                 <i class="bi bi-building"></i>
