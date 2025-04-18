@@ -1028,22 +1028,15 @@ try {
                 <?php elseif ($property['property_type'] == 'İş Yeri'): ?>
                     <!-- İş Yeri özellikleri -->
                     <div class="row g-2">
-                        <?php if (!empty($property['status'])): ?>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <i class="bi bi-bookmark"></i>
-                                <span>Durum:</span>
-                                <strong><?php echo htmlspecialchars($property['status']); ?></strong>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-
-                        <?php if (!empty($property['property_type'])): ?>
+                        <?php if (!empty($property['status']) && !empty($property['property_type'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
-                                <span>Emlak Tipi:</span>
-                                <strong><?php echo htmlspecialchars($property['property_type']); ?></strong>
+                                <span>Durum:</span>
+                                <strong><?php 
+                                    $status = $property['status'] == 'sale' ? 'Satılık' : 'Kiralık';
+                                    echo $status . ' ' . htmlspecialchars($property['property_type']); 
+                                ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
