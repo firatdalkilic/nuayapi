@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Video yüklenemedi.");
                 }
 
-                $video_sql = "UPDATE properties SET video_url = ? WHERE id = ?";
+                $video_sql = "UPDATE properties SET video_file = ? WHERE id = ?";
                 $stmt = $conn->prepare($video_sql);
                 $stmt->bind_param("si", $video_name, $property_id);
                 if (!$stmt->execute()) {

@@ -8,11 +8,11 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../admin/config.php';
 
 try {
-    // Properties tablosunda video_url sütununu kontrol et ve ekle
-    $check_video_url = $conn->query("SHOW COLUMNS FROM properties LIKE 'video_url'");
-    if ($check_video_url->num_rows === 0) {
-        $conn->query("ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_url VARCHAR(255) DEFAULT NULL AFTER video_call_available");
-        echo "video_url sütunu eklendi.\n";
+    // Properties tablosunda video_file sütununu kontrol et ve ekle
+    $check_video_file = $conn->query("SHOW COLUMNS FROM properties LIKE 'video_file'");
+    if ($check_video_file->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_file VARCHAR(255) DEFAULT NULL AFTER video_call_available");
+        echo "video_file sütunu eklendi.\n";
     }
 
     // Properties tablosunda property_type sütununu kontrol et ve ekle

@@ -1297,11 +1297,11 @@ try {
             </div>
             <?php endif; ?>
 
-            <?php if (!empty($property['video_url'])): ?>
+            <?php if (!empty($property['video_file'])): ?>
             <div class="property-video mt-4">
                 <h4>Video</h4>
                 <video controls class="w-100">
-                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_url']); ?>" type="video/mp4">
+                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
                     Tarayıcınız video oynatmayı desteklemiyor.
                 </video>
             </div>
