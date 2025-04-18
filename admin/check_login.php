@@ -38,6 +38,6 @@ function getAgentId() {
     return isset($_SESSION['agent_id']) ? $_SESSION['agent_id'] : null;
 }
 
-// Fonksiyonu çağır
+// Oturum kontrolünü yap
 checkLogin();
 ?> 
