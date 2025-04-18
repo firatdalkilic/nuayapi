@@ -4,24 +4,25 @@ ini_set('display_errors', 1);
 
 require_once 'admin/config.php';
 
+// Debug log dosyası
+$debug_log = fopen("property_debug.log", "a");
+
 try {
     if (isset($_GET['id'])) {
         $property_id = (int)$_GET['id'];
         
+        fwrite($debug_log, "\n\n" . date('Y-m-d H:i:s') . " - İLAN DETAY SAYFASI\n");
+        fwrite($debug_log, "İlan ID: $property_id\n");
+        
         // İlan detaylarını ve öne çıkan resmi al
-        $sql = "SELECT p.id, p.title, p.description, p.price, p.location, p.property_type, p.room_count, 
-                p.bathroom_count, p.net_area, p.gross_area, p.heating, p.building_age, p.floor_location, 
-                p.total_floors, p.furnished, p.status, p.balcony, p.eligible_for_credit, p.site_status,
-                p.created_at, p.updated_at, p.agent_id, p.neighborhood, p.usage_status, p.dues,
-                p.block_no, p.parcel_no, p.sheet_no, p.zoning_status, p.floor_area_ratio,
-                p.height_limit, p.deed_status, p.site_name, p.video_call_available, p.living_room,
-                p.square_meters,
-                pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
+        $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
                 a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link 
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id
                 WHERE p.id = ?";
+        
+        fwrite($debug_log, "SQL Sorgusu: $sql\n");
         
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $property_id);
@@ -30,6 +31,22 @@ try {
         
         if ($result->num_rows > 0) {
             $property = $result->fetch_assoc();
+            
+            // Debug bilgisi ekranın en üstünde gösterilsin
+            echo '<div style="background-color: #f8d7da; padding: 10px; margin: 10px; border-radius: 5px;">';
+            echo '<h4>Debug Bilgileri:</h4>';
+            echo '<pre>';
+            echo "İlan ID: " . $property['id'] . "\n";
+            echo "Emlak Tipi: " . $property['property_type'] . "\n";
+            echo "square_meters: " . ($property['square_meters'] ?? 'NULL') . "\n";
+            echo "net_area: " . ($property['net_area'] ?? 'NULL') . "\n";
+            echo '</pre>';
+            echo '</div>';
+            
+            fwrite($debug_log, "Veritabanından gelen veriler:\n");
+            fwrite($debug_log, "property_type: " . $property['property_type'] . "\n");
+            fwrite($debug_log, "square_meters: " . ($property['square_meters'] ?? 'NULL') . "\n");
+            fwrite($debug_log, "net_area: " . ($property['net_area'] ?? 'NULL') . "\n");
             
             // Tüm resimleri al
             $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
@@ -1009,7 +1026,7 @@ try {
                     <!-- Arsa özellikleri -->
                     <div class="row g-2">
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>Alan</span>
                                 <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
@@ -1017,7 +1034,7 @@ try {
                         </div>
                         <?php if (!empty($property['zoning_status'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-clipboard-check"></i>
                                 <span>İmar Durumu</span>
                                 <strong><?php echo htmlspecialchars($property['zoning_status']); ?></strong>
