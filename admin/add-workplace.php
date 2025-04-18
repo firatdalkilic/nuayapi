@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cleaned_description = $description;
 
         if (!$stmt->bind_param(
-            "sssssssssssss",
+            "sssssssssssssi",
             $cleaned_title,
             $cleaned_price,
             $cleaned_status,
@@ -89,7 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $cleaned_heating,
             $cleaned_credit_eligible,
             $cleaned_deed_status,
-            $cleaned_description
+            $cleaned_description,
+            $agent_id
         )) {
             throw new Exception("Bind hatası: " . $stmt->error);
         }
