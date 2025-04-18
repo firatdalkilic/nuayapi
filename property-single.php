@@ -1029,64 +1029,82 @@ try {
                 <?php elseif ($property['property_type'] == 'İş Yeri'): ?>
                     <!-- İş Yeri özellikleri -->
                     <div class="row g-2">
+                        <?php if (!empty($property['square_meters'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-building"></i>
-                                <span>Alan</span>
+                                <span>Alan:</span>
                                 <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
                             </div>
                         </div>
+                        <?php endif; ?>
+                        
                         <?php if (!empty($property['room_count'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-door-open"></i>
-                                <span>Bölüm Sayısı</span>
+                                <span>Bölüm Sayısı:</span>
                                 <strong><?php echo htmlspecialchars($property['room_count']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
+                        
                         <?php if (!empty($property['floor_location'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-layers"></i>
-                                <span>Bulunduğu Kat</span>
+                                <span>Bulunduğu Kat:</span>
                                 <strong><?php echo htmlspecialchars($property['floor_location']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
+                        
                         <?php if (!empty($property['building_age'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-calendar3"></i>
-                                <span>Bina Yaşı</span>
+                                <span>Bina Yaşı:</span>
                                 <strong><?php echo htmlspecialchars($property['building_age']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
+                        
                         <?php if (!empty($property['heating'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-thermometer-half"></i>
-                                <span>Isıtma</span>
+                                <span>Isıtma:</span>
                                 <strong><?php echo htmlspecialchars($property['heating']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
+                        
                         <?php if (!empty($property['credit_eligible'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-credit-card"></i>
-                                <span>Krediye Uygun</span>
+                                <span>Krediye Uygun:</span>
                                 <strong><?php echo htmlspecialchars($property['credit_eligible']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
+                        
                         <?php if (!empty($property['deed_status'])): ?>
                         <div class="col-6 col-md-4">
-                            <div class="detail-box">
+                            <div class="detail-item">
                                 <i class="bi bi-file-earmark-text"></i>
-                                <span>Tapu Durumu</span>
+                                <span>Tapu Durumu:</span>
                                 <strong><?php echo htmlspecialchars($property['deed_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($property['usage_status'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-house-gear"></i>
+                                <span>Kullanım Durumu:</span>
+                                <strong><?php echo htmlspecialchars($property['usage_status']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>

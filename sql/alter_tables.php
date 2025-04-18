@@ -11,7 +11,7 @@ try {
     // Properties tablosunda video_url sütununu kontrol et ve ekle
     $check_video_url = $conn->query("SHOW COLUMNS FROM properties LIKE 'video_url'");
     if ($check_video_url->num_rows === 0) {
-        $conn->query("ALTER TABLE properties ADD COLUMN video_url VARCHAR(255) DEFAULT NULL AFTER description");
+        $conn->query("ALTER TABLE properties ADD COLUMN IF NOT EXISTS video_url VARCHAR(255) DEFAULT NULL AFTER video_call_available");
         echo "video_url sütunu eklendi.\n";
     }
 
