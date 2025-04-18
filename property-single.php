@@ -797,6 +797,54 @@ try {
     .social-icon.facebook i {
       font-size: 18px;
     }
+
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .share-buttons-label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-right: 5px;
+    }
+
+    .share-button {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .share-button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .share-facebook {
+      background-color: #1877f2;
+    }
+
+    .share-twitter {
+      background-color: #000000;
+    }
+
+    .share-whatsapp {
+      background-color: #25d366;
+    }
+
+    .share-email {
+      background-color: #666;
+    }
   </style>
 </head>
 
@@ -912,6 +960,38 @@ try {
               İlan Tarihi: <span><?php echo date('d.m.Y', strtotime($property['created_at'])); ?></span>
             </div>
             <h1 class="property-title"><?php echo htmlspecialchars($property['title']); ?></h1>
+
+            <div class="share-buttons">
+              <span class="share-buttons-label">Paylaş:</span>
+              <?php
+              $current_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+              $share_text = htmlspecialchars($property['title']);
+              ?>
+              <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($current_url); ?>" 
+                 target="_blank" 
+                 class="share-button share-facebook" 
+                 title="Facebook'ta Paylaş">
+                <i class="bi bi-facebook"></i>
+              </a>
+              <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode($current_url); ?>&text=<?php echo urlencode($share_text); ?>" 
+                 target="_blank" 
+                 class="share-button share-twitter" 
+                 title="X'te Paylaş">
+                <i class="bi bi-twitter-x"></i>
+              </a>
+              <a href="https://wa.me/?text=<?php echo urlencode($share_text . ' ' . $current_url); ?>" 
+                 target="_blank" 
+                 class="share-button share-whatsapp" 
+                 title="WhatsApp'ta Paylaş">
+                <i class="bi bi-whatsapp"></i>
+              </a>
+              <a href="mailto:?subject=<?php echo urlencode($share_text); ?>&body=<?php echo urlencode($current_url); ?>" 
+                 class="share-button share-email" 
+                 title="E-posta ile Paylaş">
+                <i class="bi bi-envelope"></i>
+              </a>
+            </div>
+
             <div class="property-price">
               <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
             </div>
