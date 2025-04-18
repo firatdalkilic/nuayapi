@@ -1423,17 +1423,6 @@ try {
           </div>
         </div>
 
-        <?php if (!empty($property['description'])): ?>
-        <div class="row mt-4">
-          <div class="col-12">
-            <div class="property-description">
-                <h4>İlan Açıklaması</h4>
-                <p><?php echo nl2br(htmlspecialchars($property['description'])); ?></p>
-            </div>
-          </div>
-        </div>
-        <?php endif; ?>
-
         <?php if (!empty($property['video_file'])): ?>
         <div class="row mt-4">
           <div class="col-12">
@@ -1447,6 +1436,15 @@ try {
           </div>
         </div>
         <?php endif; ?>
+
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="property-description">
+                <h4>İlan Açıklaması</h4>
+                <p><?php echo nl2br(htmlspecialchars($property['description'])); ?></p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
