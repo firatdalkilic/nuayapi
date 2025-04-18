@@ -1,7 +1,7 @@
 <?php
-require_once 'header.php';
+session_start();
 require_once 'config.php';
-require_once 'check-login.php';
+require_once 'check_login.php';
 require_once '../includes/functions.php';
 
 ini_set('display_errors', 1);
