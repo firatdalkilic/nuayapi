@@ -15,6 +15,7 @@ try {
                 p.created_at, p.updated_at, p.agent_id, p.neighborhood, p.usage_status, p.dues,
                 p.block_no, p.parcel_no, p.sheet_no, p.zoning_status, p.floor_area_ratio,
                 p.height_limit, p.deed_status, p.site_name, p.video_call_available, p.living_room,
+                p.square_meters,
                 pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
                 a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link 
                 FROM properties p 
@@ -1097,12 +1098,12 @@ try {
                         </div>
                         <?php endif; ?>
 
-                        <?php if (isset($property['credit_eligible'])): ?>
+                        <?php if (isset($property['eligible_for_credit'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-credit-card"></i>
                                 <span>Krediye Uygun:</span>
-                                <strong><?php echo $property['credit_eligible'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
+                                <strong><?php echo $property['eligible_for_credit'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
