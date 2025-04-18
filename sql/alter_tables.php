@@ -7,30 +7,42 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 try {
-    // properties tablosuna yeni sütunlar ekleniyor
-    $alterQueries = [
-        "ALTER TABLE properties 
-        ADD COLUMN IF NOT EXISTS square_meters VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS floor VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS floor_location VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS building_age VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS room_count VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS heating VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS credit_eligible VARCHAR(10) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS deed_status VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS property_type VARCHAR(50) DEFAULT 'Konut';"
+    // Önce mevcut sütunları kontrol et
+    $table = "properties";
+    $result = $conn->query("SHOW COLUMNS FROM $table");
+    $existing_columns = [];
+    while($row = $result->fetch_assoc()) {
+        $existing_columns[] = $row['Field'];
+    }
+
+    // Eklenecek sütunlar
+    $columns = [
+        'square_meters' => 'VARCHAR(50) DEFAULT NULL',
+        'floor' => 'VARCHAR(50) DEFAULT NULL',
+        'floor_location' => 'VARCHAR(50) DEFAULT NULL',
+        'building_age' => 'VARCHAR(50) DEFAULT NULL',
+        'room_count' => 'VARCHAR(50) DEFAULT NULL',
+        'heating' => 'VARCHAR(50) DEFAULT NULL',
+        'credit_eligible' => 'VARCHAR(10) DEFAULT NULL',
+        'deed_status' => 'VARCHAR(50) DEFAULT NULL',
+        'property_type' => 'VARCHAR(50) DEFAULT \'Konut\''
     ];
 
-    // Sorguları çalıştır
-    foreach ($alterQueries as $query) {
-        if ($conn->query($query) === TRUE) {
-            echo "Tablo başarıyla güncellendi: " . $query . "<br>";
+    // Her sütun için ayrı ALTER TABLE komutu
+    foreach ($columns as $column => $definition) {
+        if (!in_array($column, $existing_columns)) {
+            $query = "ALTER TABLE $table ADD COLUMN $column $definition";
+            if ($conn->query($query) === TRUE) {
+                echo "Sütun başarıyla eklendi: $column<br>";
+            } else {
+                throw new Exception("Sütun eklenirken hata oluştu ($column): " . $conn->error);
+            }
         } else {
-            throw new Exception("Tablo güncellenirken hata oluştu: " . $conn->error);
+            echo "Sütun zaten mevcut: $column<br>";
         }
     }
 
-    echo "Tüm tablo güncellemeleri başarıyla tamamlandı.";
+    echo "<br>Tüm tablo güncellemeleri başarıyla tamamlandı.";
 
 } catch (Exception $e) {
     echo "Hata: " . $e->getMessage();
