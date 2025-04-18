@@ -330,7 +330,7 @@ try {
     .gallery-thumbnail img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
       display: block;
     }
@@ -881,6 +881,29 @@ try {
     .breadcrumbs ol li.current {
       color: #fff;
       font-weight: 600;
+    }
+
+    /* Thumbnail Container Styles */
+    .thumbnail-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .thumbnail-container img.thumbnail {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .thumbnail-container img.thumbnail:hover {
+      border-color: #2563eb;
+      transform: translateY(-2px);
     }
   </style>
 </head>
