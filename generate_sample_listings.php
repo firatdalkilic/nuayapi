@@ -202,9 +202,8 @@ if (isset($_POST['generate'])) {
                 $property_id = $stmt->insert_id;
                 $created_count++;
                 
-                // Örnek resim ekle
-                $image_number = rand(1, 5);
-                $image_name = "sample_" . strtolower(str_replace(' ', '_', $type)) . "_$image_number.jpg";
+                // Varsayılan resmi ekle
+                $image_name = "property-default.jpg";
                 
                 $sql = "INSERT INTO property_images (property_id, image_name, is_featured, created_at) 
                        VALUES (?, ?, 1, NOW())";
