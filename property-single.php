@@ -935,14 +935,14 @@ try {
           <div class="col-lg-5">
             <div class="property-gallery">
               <!-- Main Image -->
-              <div class="main-image-container mb-3">
+              <div class="main-image-container mb-3" style="max-height: 500px; height: auto; padding-bottom: 0;">
                   <img src="<?php 
                       echo !empty($images[0]['image_name']) 
                           ? (strpos($images[0]['image_name'], 'assets/') === 0 
                              ? $images[0]['image_name'] 
                              : 'uploads/' . htmlspecialchars($images[0]['image_name']))
                           : 'assets/img/property-default.jpg';
-                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" onclick="changeImage(1)">
+                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" onclick="changeImage(1)" style="max-height: 500px; width: 100%; object-fit: contain;">
               </div>
 
               <!-- Thumbnail Images -->
