@@ -310,11 +310,16 @@ while ($row = $result->fetch_assoc()) {
                     <div class="details">
                       <div class="detail-item">
                         <i class="bi bi-house-door"></i>
-                        <?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²
+                        <?php 
+                          $square_meters = !empty($property['square_meters']) ? (float)$property['square_meters'] : 0;
+                          echo $square_meters > 0 ? number_format($square_meters, 0, ',', '.') . ' m²' : 'Belirtilmemiş';
+                        ?>
                       </div>
                       <div class="detail-item">
                         <i class="bi bi-door-open"></i>
-                        <?php echo $property['room_count']; ?> Oda
+                        <?php 
+                          echo !empty($property['room_count']) ? $property['room_count'] . ' Oda' : 'Belirtilmemiş';
+                        ?>
                       </div>
                       <?php if (!empty($property['living_room'])): ?>
                         <div class="detail-item">
@@ -324,8 +329,11 @@ while ($row = $result->fetch_assoc()) {
                       <?php endif; ?>
                     </div>
                     <p class="price">
-                      <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
-                      <?php if ($property['status'] == 'rent'): ?>
+                      <?php 
+                        $price = !empty($property['price']) ? (float)$property['price'] : 0;
+                        echo $price > 0 ? number_format($price, 0, ',', '.') . ' TL' : 'Fiyat Sorunuz';
+                        if ($property['status'] == 'rent' && $price > 0): 
+                      ?>
                         <small>/ay</small>
                       <?php endif; ?>
                     </p>
