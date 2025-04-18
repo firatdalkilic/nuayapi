@@ -8,6 +8,13 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Debug fonksiyonu
+function debug($data) {
+    echo '<pre>';
+    var_dump($data);
+    echo '</pre>';
+}
+
 // Initialize variables
 $title = $price = $status = $neighborhood = $square_meters = $floor = $floor_location = '';
 $building_age = $room_count = $heating = $credit_eligible = $deed_status = $description = '';
@@ -15,85 +22,148 @@ $success_message = $error_message = '';
 
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
-    $title = sanitize_input($_POST['title'] ?? '');
-    $price = str_replace('.', '', sanitize_input($_POST['price'] ?? '')); // Remove thousand separators
-    $status = sanitize_input($_POST['status'] ?? '');
-    $neighborhood = sanitize_input($_POST['neighborhood'] ?? '');
-    $square_meters = sanitize_input($_POST['square_meters'] ?? '');
-    $floor = sanitize_input($_POST['floor'] ?? '');
-    $floor_location = sanitize_input($_POST['floor_location'] ?? '');
-    $building_age = sanitize_input($_POST['building_age'] ?? '');
-    $room_count = sanitize_input($_POST['room_count'] ?? '');
-    $heating = sanitize_input($_POST['heating'] ?? '');
-    $credit_eligible = isset($_POST['credit_eligible']) ? 1 : 0;
-    $deed_status = sanitize_input($_POST['deed_status'] ?? '');
-    $description = sanitize_input($_POST['description'] ?? '');
+    try {
+        // Debug için POST verilerini göster
+        echo '<div class="alert alert-info">';
+        echo 'POST Verileri:';
+        debug($_POST);
+        echo '</div>';
 
-    // Validate required fields
-    if (empty($title) || empty($price) || empty($status) || empty($neighborhood)) {
-        $error_message = "Lütfen zorunlu alanları doldurun.";
-    } else {
-        try {
-            $stmt = $conn->prepare("INSERT INTO properties (
-                title, price, status, location, neighborhood, property_type,
-                square_meters, floor, floor_location, building_age,
-                room_count, heating, credit_eligible, deed_status,
-                description, agent_id, created_at
-            ) VALUES (
-                ?, ?, ?, 'Didim', ?, 'İş Yeri',
-                ?, ?, ?, ?,
-                ?, ?, ?, ?,
-                ?, ?, NOW()
-            )");
+        // Get form data
+        $title = sanitize_input($_POST['title'] ?? '');
+        $price = str_replace('.', '', sanitize_input($_POST['price'] ?? '')); // Remove thousand separators
+        $status = sanitize_input($_POST['status'] ?? '');
+        $neighborhood = sanitize_input($_POST['neighborhood'] ?? '');
+        $square_meters = sanitize_input($_POST['square_meters'] ?? '');
+        $floor = sanitize_input($_POST['floor'] ?? '');
+        $floor_location = sanitize_input($_POST['floor_location'] ?? '');
+        $building_age = sanitize_input($_POST['building_age'] ?? '');
+        $room_count = sanitize_input($_POST['room_count'] ?? '');
+        $heating = sanitize_input($_POST['heating'] ?? '');
+        $credit_eligible = isset($_POST['credit_eligible']) ? 1 : 0;
+        $deed_status = sanitize_input($_POST['deed_status'] ?? '');
+        $description = sanitize_input($_POST['description'] ?? '');
 
-            $agent_id = $_SESSION['agent_id'] ?? null;
+        // Debug için temizlenmiş verileri göster
+        echo '<div class="alert alert-info">';
+        echo 'Temizlenmiş Veriler:';
+        debug([
+            'title' => $title,
+            'price' => $price,
+            'status' => $status,
+            'neighborhood' => $neighborhood,
+            'square_meters' => $square_meters,
+            'floor' => $floor,
+            'floor_location' => $floor_location,
+            'building_age' => $building_age,
+            'room_count' => $room_count,
+            'heating' => $heating,
+            'credit_eligible' => $credit_eligible,
+            'deed_status' => $deed_status,
+            'description' => $description,
+            'agent_id' => $_SESSION['agent_id'] ?? null
+        ]);
+        echo '</div>';
 
-            $stmt->bind_param("sdssdisisisss",
+        // Validate required fields
+        if (empty($title) || empty($price) || empty($status) || empty($neighborhood)) {
+            throw new Exception("Lütfen zorunlu alanları doldurun.");
+        }
+
+        $stmt = $conn->prepare("INSERT INTO properties (
+            title, price, status, location, neighborhood, property_type,
+            square_meters, floor, floor_location, building_age,
+            room_count, heating, credit_eligible, deed_status,
+            description, agent_id, created_at
+        ) VALUES (
+            ?, ?, ?, 'Didim', ?, 'İş Yeri',
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, NOW()
+        )");
+
+        // Debug için SQL sorgusunu göster
+        echo '<div class="alert alert-info">';
+        echo 'SQL Sorgusu:';
+        debug([
+            'query' => $stmt->queryString,
+            'params' => [
                 $title, $price, $status, $neighborhood,
                 $square_meters, $floor, $floor_location, $building_age,
                 $room_count, $heating, $credit_eligible, $deed_status,
-                $description, $agent_id
-            );
+                $description, $_SESSION['agent_id'] ?? null
+            ]
+        ]);
+        echo '</div>';
 
-            if ($stmt->execute()) {
-                $property_id = $conn->insert_id;
+        $agent_id = $_SESSION['agent_id'] ?? null;
 
-                // Handle image uploads
-                if (!empty($_FILES['images']['name'][0])) {
-                    $upload_dir = "../uploads/properties/";
-                    foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-                        if ($_FILES['images']['error'][$key] === 0) {
-                            $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
-                            if (move_uploaded_file($tmp_name, $upload_dir . $file_name)) {
-                                $stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name) VALUES (?, ?)");
-                                $stmt->bind_param("is", $property_id, $file_name);
-                                $stmt->execute();
+        $stmt->bind_param("sdssdisisisss",
+            $title, $price, $status, $neighborhood,
+            $square_meters, $floor, $floor_location, $building_age,
+            $room_count, $heating, $credit_eligible, $deed_status,
+            $description, $agent_id
+        );
+
+        if ($stmt->execute()) {
+            $property_id = $conn->insert_id;
+            echo '<div class="alert alert-success">Property inserted successfully. ID: ' . $property_id . '</div>';
+
+            // Handle image uploads
+            if (!empty($_FILES['images']['name'][0])) {
+                $upload_dir = "../uploads/properties/";
+                foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+                    if ($_FILES['images']['error'][$key] === 0) {
+                        $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
+                        echo '<div class="alert alert-info">Uploading image: ' . $file_name . '</div>';
+                        
+                        if (move_uploaded_file($tmp_name, $upload_dir . $file_name)) {
+                            $img_stmt = $conn->prepare("INSERT INTO property_images (property_id, image_name) VALUES (?, ?)");
+                            $img_stmt->bind_param("is", $property_id, $file_name);
+                            
+                            if ($img_stmt->execute()) {
+                                echo '<div class="alert alert-success">Image uploaded and saved to database: ' . $file_name . '</div>';
+                            } else {
+                                echo '<div class="alert alert-warning">Failed to save image to database: ' . $file_name . '</div>';
                             }
+                        } else {
+                            echo '<div class="alert alert-warning">Failed to move uploaded file: ' . $file_name . '</div>';
                         }
                     }
                 }
-
-                // Handle video upload
-                if (!empty($_FILES['video']['name'])) {
-                    $video_upload_dir = "../uploads/videos/";
-                    $video_name = uniqid() . '_' . $_FILES['video']['name'];
-                    if (move_uploaded_file($_FILES['video']['tmp_name'], $video_upload_dir . $video_name)) {
-                        $stmt = $conn->prepare("UPDATE properties SET video_path = ? WHERE id = ?");
-                        $stmt->bind_param("si", $video_name, $property_id);
-                        $stmt->execute();
-                    }
-                }
-
-                $success_message = "İş yeri ilanı başarıyla eklendi!";
-                // Clear form data after successful submission
-                $title = $price = $status = $neighborhood = $square_meters = $floor = '';
-                $floor_location = $building_age = $room_count = $heating = $deed_status = $description = '';
             }
-        } catch (Exception $e) {
-            error_log("Error in add-workplace.php: " . $e->getMessage());
-            $error_message = "İlan eklenirken bir hata oluştu. Lütfen tekrar deneyin.";
+
+            // Handle video upload
+            if (!empty($_FILES['video']['name'])) {
+                $video_upload_dir = "../uploads/videos/";
+                $video_name = uniqid() . '_' . $_FILES['video']['name'];
+                echo '<div class="alert alert-info">Uploading video: ' . $video_name . '</div>';
+                
+                if (move_uploaded_file($_FILES['video']['tmp_name'], $video_upload_dir . $video_name)) {
+                    $video_stmt = $conn->prepare("UPDATE properties SET video_path = ? WHERE id = ?");
+                    $video_stmt->bind_param("si", $video_name, $property_id);
+                    
+                    if ($video_stmt->execute()) {
+                        echo '<div class="alert alert-success">Video uploaded and saved to database: ' . $video_name . '</div>';
+                    } else {
+                        echo '<div class="alert alert-warning">Failed to save video to database: ' . $video_name . '</div>';
+                    }
+                } else {
+                    echo '<div class="alert alert-warning">Failed to move uploaded video: ' . $video_name . '</div>';
+                }
+            }
+
+            $success_message = "İş yeri ilanı başarıyla eklendi!";
+            // Clear form data after successful submission
+            $title = $price = $status = $neighborhood = $square_meters = $floor = '';
+            $floor_location = $building_age = $room_count = $heating = $deed_status = $description = '';
+        } else {
+            throw new Exception("SQL Error: " . $stmt->error);
         }
+    } catch (Exception $e) {
+        error_log("Error in add-workplace.php: " . $e->getMessage());
+        echo '<div class="alert alert-danger">Hata Detayı: ' . $e->getMessage() . '</div>';
+        $error_message = "İlan eklenirken bir hata oluştu. Lütfen tekrar deneyin.";
     }
 }
 ?>
