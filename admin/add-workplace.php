@@ -163,8 +163,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <option value="">Seçiniz...</option>
                                         <?php
                                         $neighborhoods = [
-                                            "Altınkum", "Efeler", "Çamlık", "Yeni Mahalle", "Mavişehir",
-                                            "Hisar", "Cumhuriyet", "Yalı", "Akbük"
+                                            "Ak-yeniköy Mah.", "Akbük Mah.", "Akköy Mah.", "Altınkum Mah.",
+                                            "Balat Mah.", "Batıköy Mah.", "Cumhuriyet Mah.", "Çamlık Mah.",
+                                            "Denizköy Mah.", "Efeler Mah.", "Fevzipaşa Mah.", "Hisar Mah.",
+                                            "Mavişehir Mah.", "Mersindere Mah.", "Yalıköy Mah.", "Yeni Mah."
                                         ];
                                         foreach ($neighborhoods as $n) {
                                             $selected = ($neighborhood === $n) ? 'selected' : '';
