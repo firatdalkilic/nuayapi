@@ -9,6 +9,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Debug log dosyası
+$debug_log = fopen("workplace_debug.log", "a");
+
 // Initialize variables
 $title = $price = $status = $neighborhood = $square_meters = $floor = $floor_location = '';
 $building_age = $room_count = $heating = $credit_eligible = $deed_status = $description = '';
@@ -16,10 +19,13 @@ $success_message = $error_message = '';
 
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    fwrite($debug_log, "\n\n" . date('Y-m-d H:i:s') . " - YENİ İŞ YERİ FORM GÖNDERİMİ\n");
+    fwrite($debug_log, "POST Verileri: " . print_r($_POST, true) . "\n");
+    
     try {
         // Get form data
         $title = sanitize_input($_POST['title'] ?? '');
-        $price = str_replace('.', '', sanitize_input($_POST['price'] ?? '')); // Remove thousand separators
+        $price = str_replace('.', '', sanitize_input($_POST['price'] ?? '')); 
         $status = sanitize_input($_POST['status'] ?? '');
         $neighborhood = sanitize_input($_POST['neighborhood'] ?? '');
         $square_meters = sanitize_input($_POST['square_meters'] ?? '');
@@ -32,6 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deed_status = sanitize_input($_POST['deed_status'] ?? '');
         $description = sanitize_input($_POST['description'] ?? '');
 
+        fwrite($debug_log, "Temizlenmiş veriler:\n");
+        fwrite($debug_log, "square_meters: $square_meters\n");
+        fwrite($debug_log, "property_type: İş Yeri\n");
+
         // Validate required fields
         if (empty($title) || empty($price) || empty($status) || empty($neighborhood)) {
             throw new Exception("Lütfen zorunlu alanları doldurun.");
@@ -43,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // SQL sorgusunu hazırla
         $sql = "INSERT INTO properties (
             title, price, status, location, neighborhood, property_type,
-            net_area, floor, floor_location, building_age,
-            room_count, heating, credit_eligible, deed_status,
+            square_meters, floor, floor_location, building_age,
+            room_count, heating, eligible_for_credit, deed_status,
             description, agent_id, created_at
         ) VALUES (
             ?, ?, ?, 'Didim', ?, 'İş Yeri',
@@ -52,6 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?, ?, ?, ?,
             ?, ?, NOW()
         )";
+
+        fwrite($debug_log, "SQL Sorgusu: $sql\n");
 
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
@@ -61,44 +73,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $agent_id = $_SESSION['agent_id'] ?? null;
 
         // Parametre bağlama
-        $cleaned_title = $title;
-        $cleaned_price = $price;
-        $cleaned_status = $status;
-        $cleaned_neighborhood = $neighborhood;
-        $cleaned_square_meters = $square_meters;
-        $cleaned_floor = $floor;
-        $cleaned_floor_location = $floor_location;
-        $cleaned_building_age = $building_age;
-        $cleaned_room_count = $room_count;
-        $cleaned_heating = $heating;
-        $cleaned_credit_eligible = $credit_eligible;
-        $cleaned_deed_status = $deed_status;
-        $cleaned_description = $description;
-
-        if (!$stmt->bind_param(
+        $stmt->bind_param(
             "sssssssssssssi",
-            $cleaned_title,
-            $cleaned_price,
-            $cleaned_status,
-            $cleaned_neighborhood,
-            $cleaned_square_meters,  // This will be used for net_area
-            $cleaned_floor,
-            $cleaned_floor_location,
-            $cleaned_building_age,
-            $cleaned_room_count,
-            $cleaned_heating,
-            $cleaned_credit_eligible,
-            $cleaned_deed_status,
-            $cleaned_description,
+            $title,
+            $price,
+            $status,
+            $neighborhood,
+            $square_meters,
+            $floor,
+            $floor_location,
+            $building_age,
+            $room_count,
+            $heating,
+            $credit_eligible,
+            $deed_status,
+            $description,
             $agent_id
-        )) {
-            throw new Exception("Bind hatası: " . $stmt->error);
-        }
-        
+        );
+
+        fwrite($debug_log, "Bağlanan parametreler:\n");
+        fwrite($debug_log, "title: $title\n");
+        fwrite($debug_log, "price: $price\n");
+        fwrite($debug_log, "status: $status\n");
+        fwrite($debug_log, "neighborhood: $neighborhood\n");
+        fwrite($debug_log, "square_meters: $square_meters\n");
+        fwrite($debug_log, "floor: $floor\n");
+        fwrite($debug_log, "floor_location: $floor_location\n");
+        fwrite($debug_log, "building_age: $building_age\n");
+        fwrite($debug_log, "room_count: $room_count\n");
+        fwrite($debug_log, "heating: $heating\n");
+        fwrite($debug_log, "credit_eligible: $credit_eligible\n");
+        fwrite($debug_log, "deed_status: $deed_status\n");
+        fwrite($debug_log, "agent_id: $agent_id\n");
+
         // Execute sorgusu
         if (!$stmt->execute()) {
             throw new Exception("Execute hatası: " . $stmt->error);
         }
+
+        fwrite($debug_log, "Sorgu başarıyla çalıştı. Son eklenen ID: " . $conn->insert_id . "\n");
 
         $property_id = $conn->insert_id;
 
