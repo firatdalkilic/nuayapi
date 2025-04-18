@@ -509,6 +509,27 @@ try {
       font-size: 1.1rem;
     }
 
+    .btn-other-listings {
+      display: block;
+      text-align: center;
+      color: #002e5c;
+      text-decoration: none;
+      padding: 10px;
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .btn-other-listings:hover {
+      color: #0056b3;
+      background: #f8f9fa;
+    }
+
+    .btn-other-listings i {
+      margin-left: 5px;
+    }
+
     .back-button {
       position: fixed;
       top: 100px;
@@ -722,32 +743,6 @@ try {
 
     .contact-link:hover {
         color: #2563eb;
-    }
-
-    .btn-whatsapp {
-        background-color: #25d366;
-        color: white;
-        border: none;
-        padding: 0.75rem 1rem;
-        border-radius: 6px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-    }
-
-    .btn-whatsapp:hover {
-        background-color: #128c7e;
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    .btn-whatsapp i {
-        font-size: 1.1rem;
     }
 
     .agent-photo {
@@ -1310,6 +1305,12 @@ try {
                                 <i class="bi bi-whatsapp"></i>WhatsApp'tan Mesaj Gönder
                             </a>
                         </div>
+
+                        <?php if (!empty($property['agent_id'])): ?>
+                        <a href="agents-portfolio.php?id=<?php echo $property['agent_id']; ?>#properties" class="btn-other-listings">
+                            Danışmanın Diğer İlanları <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
