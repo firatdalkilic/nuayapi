@@ -762,19 +762,45 @@ try {
     .platform-icons {
       display: flex;
       justify-content: center;
-      margin-top: 1rem;
+      gap: 10px;
+      margin: 15px 0;
     }
 
     .social-icon {
-      width: 30px;
-      height: 30px;
-      margin: 0 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #f8f9fa;
+      color: #002e5c;
+      transition: all 0.3s ease;
+      text-decoration: none;
     }
 
-    .facebook {
-      width: 30px;
-      height: 30px;
-      margin: 0 5px;
+    .social-icon img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .social-icon:hover {
+      background: #002e5c;
+      transform: translateY(-2px);
+    }
+
+    .social-icon.facebook {
+      background: #f8f9fa;
+    }
+
+    .social-icon.facebook:hover {
+      background: #002e5c;
+      color: #fff;
+    }
+
+    .social-icon.facebook i {
+      font-size: 18px;
     }
   </style>
 </head>
@@ -1247,7 +1273,7 @@ try {
                             <?php endif; ?>
                         </div>
                         
-                        <div class="platform-icons mt-3">
+                        <div class="platform-icons">
                             <?php if (!empty($property['sahibinden_link'])): ?>
                                 <a href="<?php echo htmlspecialchars($property['sahibinden_link']); ?>" target="_blank" title="Sahibinden.com Mağazası" class="social-icon">
                                     <img src="assets/img/platforms/sahibinden-icon.png" alt="Sahibinden.com">
