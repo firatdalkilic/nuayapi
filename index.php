@@ -274,6 +274,73 @@ while ($row = $result->fetch_assoc()) {
 
     </section><!-- /Hero Section -->
 
+        <!-- ======= Latest Properties Section ======= -->
+        <section class="latest-properties">
+      <div class="container">
+        <div class="section-header">
+          <h2>Son Eklenen İlanlar</h2>
+          <p>En son eklenen gayrimenkul fırsatlarını keşfedin</p>
+        </div>
+
+        <div class="swiper latest-properties-slider">
+          <div class="swiper-wrapper">
+            <?php foreach ($latest_properties as $property): ?>
+              <div class="swiper-slide">
+                <div class="property-card">
+                  <span class="status-badge <?php echo $property['status'] == 'sale' ? 'satılık' : 'kiralık'; ?>">
+                    <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?>
+                  </span>
+                  <div class="image">
+                    <img src="<?php 
+                      echo !empty($property['image_name']) 
+                        ? 'uploads/' . htmlspecialchars($property['image_name'])
+                        : 'assets/img/property-default.jpg';
+                    ?>" alt="<?php echo htmlspecialchars($property['title']); ?>">
+                  </div>
+                  <div class="content">
+                    <div class="location">
+                      <i class="bi bi-geo-alt"></i>
+                      <?php 
+                        echo htmlspecialchars($property['location']);
+                        if (!empty($property['neighborhood'])) {
+                          echo ', ' . htmlspecialchars($property['neighborhood']);
+                        }
+                      ?>
+                    </div>
+                    <div class="details">
+                      <div class="detail-item">
+                        <i class="bi bi-house-door"></i>
+                        <?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²
+                      </div>
+                      <div class="detail-item">
+                        <i class="bi bi-door-open"></i>
+                        <?php echo $property['room_count']; ?> Oda
+                      </div>
+                      <?php if (!empty($property['living_room'])): ?>
+                        <div class="detail-item">
+                          <i class="bi bi-plus-circle"></i>
+                          <?php echo $property['living_room']; ?> Salon
+                        </div>
+                      <?php endif; ?>
+                    </div>
+                    <p class="price">
+                      <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
+                      <?php if ($property['status'] == 'rent'): ?>
+                        <small>/ay</small>
+                      <?php endif; ?>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+    </section><!-- End Latest Properties Section -->
+
     <!-- Testimonials Section -->
     <section id="testimonials" class="testimonials section">
 
@@ -401,72 +468,7 @@ while ($row = $result->fetch_assoc()) {
 
     </section><!-- /Testimonials Section -->
 
-    <!-- ======= Latest Properties Section ======= -->
-    <section class="latest-properties">
-      <div class="container">
-        <div class="section-header">
-          <h2>Son Eklenen İlanlar</h2>
-          <p>En son eklenen gayrimenkul fırsatlarını keşfedin</p>
-        </div>
 
-        <div class="swiper latest-properties-slider">
-          <div class="swiper-wrapper">
-            <?php foreach ($latest_properties as $property): ?>
-              <div class="swiper-slide">
-                <div class="property-card">
-                  <span class="status-badge <?php echo $property['status'] == 'sale' ? 'satılık' : 'kiralık'; ?>">
-                    <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?>
-                  </span>
-                  <div class="image">
-                    <img src="<?php 
-                      echo !empty($property['image_name']) 
-                        ? 'uploads/' . htmlspecialchars($property['image_name'])
-                        : 'assets/img/property-default.jpg';
-                    ?>" alt="<?php echo htmlspecialchars($property['title']); ?>">
-                  </div>
-                  <div class="content">
-                    <div class="location">
-                      <i class="bi bi-geo-alt"></i>
-                      <?php 
-                        echo htmlspecialchars($property['location']);
-                        if (!empty($property['neighborhood'])) {
-                          echo ', ' . htmlspecialchars($property['neighborhood']);
-                        }
-                      ?>
-                    </div>
-                    <div class="details">
-                      <div class="detail-item">
-                        <i class="bi bi-house-door"></i>
-                        <?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²
-                      </div>
-                      <div class="detail-item">
-                        <i class="bi bi-door-open"></i>
-                        <?php echo $property['room_count']; ?> Oda
-                      </div>
-                      <?php if (!empty($property['living_room'])): ?>
-                        <div class="detail-item">
-                          <i class="bi bi-plus-circle"></i>
-                          <?php echo $property['living_room']; ?> Salon
-                        </div>
-                      <?php endif; ?>
-                    </div>
-                    <p class="price">
-                      <?php echo number_format($property['price'], 0, ',', '.'); ?> TL
-                      <?php if ($property['status'] == 'rent'): ?>
-                        <small>/ay</small>
-                      <?php endif; ?>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          </div>
-          <div class="swiper-pagination"></div>
-          <div class="swiper-button-next"></div>
-          <div class="swiper-button-prev"></div>
-        </div>
-      </div>
-    </section><!-- End Latest Properties Section -->
 
   </main>
 
