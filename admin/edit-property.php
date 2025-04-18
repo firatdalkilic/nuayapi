@@ -805,6 +805,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
 
         // String formatındaki fiyatı sayıya çevirme
         function parseFormattedPrice(formattedPrice) {
+            if (!formattedPrice) return 0;
             return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
         }
 
@@ -819,7 +820,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             console.log('Original price:', priceInput.value);
             console.log('Cleaned price:', cleanPrice);
             
-            // Fiyat değerini temizle ve sayıya çevir
+            // Fiyat değerini temizle
             priceInput.value = cleanPrice;
             
             // Form verilerini kontrol et
@@ -828,7 +829,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                 console.log(pair[0] + ': ' + pair[1]);
             }
 
-            // Formu manuel olarak gönder
+            // Formu gönder
             this.submit();
         });
 
@@ -839,11 +840,8 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             
             // Sayıyı formatla
             if (value !== '') {
-                value = formatPrice(parseInt(value));
+                this.value = formatPrice(parseInt(value));
             }
-            
-            // Input değerini güncelle
-            this.value = value;
         });
 
         // Emlak tipine göre form alanlarını göster/gizle
@@ -852,9 +850,6 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             const landFields = document.getElementById('landFields');
             const residentialFields = document.getElementById('residentialFields');
             const zoningStatus = document.getElementById('zoning_status');
-
-            console.log('Property type:', propertyType);
-            console.log('Land fields display before:', landFields.style.display);
 
             if (propertyType === 'Arsa') {
                 landFields.style.display = 'block';
@@ -883,30 +878,19 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                 if (zoningStatus) {
                     zoningStatus.required = false;
                 }
-                
-                // Konut için zorunlu alanları etkinleştir
-                const roomCount = document.getElementById('room_count');
-                const livingRoom = document.getElementById('living_room');
-                const bathroomCount = document.getElementById('bathroom_count');
-                const heating = document.getElementById('heating');
-                
-                if (roomCount) roomCount.required = true;
-                if (livingRoom) livingRoom.required = true;
-                if (bathroomCount) bathroomCount.required = true;
-                if (heating) heating.required = true;
             }
-
-            console.log('Land fields display after:', landFields.style.display);
         }
 
-        // Sayfa yüklendiğinde ve emlak tipi değiştiğinde form alanlarını düzenle
+        // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded');
-            // İlk yüklemede mevcut property_type değerine göre alanları ayarla
+            // Emlak tipine göre alanları düzenle
             togglePropertyFields();
             
-            // Property type değiştiğinde alanları güncelle
-            document.getElementById('property_type').addEventListener('change', togglePropertyFields);
+            // Fiyat alanını formatla
+            const priceInput = document.getElementById('price');
+            if (priceInput.value) {
+                priceInput.value = formatPrice(parseFloat(priceInput.value.replace(/\./g, '')));
+            }
         });
     </script>
 </body>
