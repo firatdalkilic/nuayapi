@@ -1,29 +1,39 @@
 <?php
-require_once 'admin/config.php';
+require_once '../admin/config.php';
+
+// Hata raporlamayı aktifleştir
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 try {
-    // Agents tablosuna platform alanlarını ekle
-    $alter_queries = [
-        "ALTER TABLE agents ADD COLUMN IF NOT EXISTS sahibinden_store VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE agents ADD COLUMN IF NOT EXISTS emlakjet_profile VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE agents ADD COLUMN IF NOT EXISTS facebook_username VARCHAR(255) DEFAULT NULL",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS room_count VARCHAR(50) DEFAULT NULL AFTER net_area",
-        "ALTER TABLE properties ADD COLUMN IF NOT EXISTS living_room_count VARCHAR(50) DEFAULT NULL AFTER room_count"
+    // properties tablosuna yeni sütunlar ekleniyor
+    $alterQueries = [
+        "ALTER TABLE properties 
+        ADD COLUMN IF NOT EXISTS square_meters VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS floor VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS floor_location VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS building_age VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS room_count VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS heating VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS credit_eligible VARCHAR(10) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS deed_status VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS property_type VARCHAR(50) DEFAULT 'Konut';"
     ];
 
-    foreach ($alter_queries as $query) {
-        try {
-            if ($conn->query($query)) {
-                echo "Sorgu başarıyla çalıştırıldı: " . $query . "<br>";
-            }
-        } catch (Exception $e) {
-            echo "Sorgu hatası (" . $query . "): " . $e->getMessage() . "<br>";
-            error_log("SQL Error: " . $e->getMessage() . " - Query: " . $query);
+    // Sorguları çalıştır
+    foreach ($alterQueries as $query) {
+        if ($conn->query($query) === TRUE) {
+            echo "Tablo başarıyla güncellendi: " . $query . "<br>";
+        } else {
+            throw new Exception("Tablo güncellenirken hata oluştu: " . $conn->error);
         }
     }
+
+    echo "Tüm tablo güncellemeleri başarıyla tamamlandı.";
+
 } catch (Exception $e) {
-    echo "Genel hata: " . $e->getMessage() . "<br>";
-    error_log("General Error: " . $e->getMessage());
+    echo "Hata: " . $e->getMessage();
 }
 
 $conn->close();
