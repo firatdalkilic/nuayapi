@@ -1,46 +1,58 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
+// Hata ayıklama
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+// Config dosyasını dahil et
 require_once __DIR__ . '/../admin/config.php';
 
 try {
-    // Önce foreign key'leri kontrol et
-    $checkForeignKeySQL = "SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS 
-                          WHERE TABLE_NAME = 'properties' 
-                          AND CONSTRAINT_TYPE = 'FOREIGN KEY'";
-    $result = $conn->query($checkForeignKeySQL);
-    
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $dropForeignKeySQL = "ALTER TABLE properties DROP FOREIGN KEY " . $row['CONSTRAINT_NAME'];
-            if ($conn->query($dropForeignKeySQL)) {
-                echo "Foreign key kaldırıldı: " . $row['CONSTRAINT_NAME'] . "\n";
-            }
-        }
+    // Properties tablosunda video_url sütununu kontrol et ve ekle
+    $check_video_url = $conn->query("SHOW COLUMNS FROM properties LIKE 'video_url'");
+    if ($check_video_url->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN video_url VARCHAR(255) DEFAULT NULL AFTER description");
+        echo "video_url sütunu eklendi.\n";
     }
 
-    // agent_id alanını NULL değer kabul edecek şekilde güncelle
-    $alterColumnSQL = "ALTER TABLE properties MODIFY agent_id INT NULL";
-    if ($conn->query($alterColumnSQL)) {
-        echo "agent_id alanı NULL değer kabul edecek şekilde güncellendi.\n";
-    } else {
-        throw new Exception($conn->error);
+    // Properties tablosunda property_type sütununu kontrol et ve ekle
+    $check_property_type = $conn->query("SHOW COLUMNS FROM properties LIKE 'property_type'");
+    if ($check_property_type->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN property_type VARCHAR(50) NOT NULL DEFAULT 'Konut' AFTER status");
+        echo "property_type sütunu eklendi.\n";
     }
 
-    // Yeni foreign key'i ekle
-    $addForeignKeySQL = "ALTER TABLE properties ADD CONSTRAINT properties_agent_fk FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE SET NULL";
-    if ($conn->query($addForeignKeySQL)) {
-        echo "Yeni foreign key başarıyla eklendi.\n";
-    } else {
-        throw new Exception($conn->error);
+    // Properties tablosunda floor_location sütununu kontrol et ve ekle
+    $check_floor_location = $conn->query("SHOW COLUMNS FROM properties LIKE 'floor_location'");
+    if ($check_floor_location->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN floor_location VARCHAR(50) DEFAULT NULL AFTER floor");
+        echo "floor_location sütunu eklendi.\n";
     }
 
-    $conn->close();
-    echo "Veritabanı güncellemesi başarıyla tamamlandı.\n";
+    // Properties tablosunda credit_eligible sütununu kontrol et ve ekle
+    $check_credit_eligible = $conn->query("SHOW COLUMNS FROM properties LIKE 'credit_eligible'");
+    if ($check_credit_eligible->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN credit_eligible VARCHAR(10) DEFAULT 'Evet' AFTER heating");
+        echo "credit_eligible sütunu eklendi.\n";
+    }
+
+    // Properties tablosunda deed_status sütununu kontrol et ve ekle
+    $check_deed_status = $conn->query("SHOW COLUMNS FROM properties LIKE 'deed_status'");
+    if ($check_deed_status->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN deed_status VARCHAR(50) DEFAULT NULL AFTER credit_eligible");
+        echo "deed_status sütunu eklendi.\n";
+    }
+
+    // Properties tablosunda neighborhood sütununu kontrol et ve ekle
+    $check_neighborhood = $conn->query("SHOW COLUMNS FROM properties LIKE 'neighborhood'");
+    if ($check_neighborhood->num_rows === 0) {
+        $conn->query("ALTER TABLE properties ADD COLUMN neighborhood VARCHAR(100) NOT NULL AFTER location");
+        echo "neighborhood sütunu eklendi.\n";
+    }
+
+    echo "Tüm sütun kontrolleri ve eklemeleri tamamlandı.\n";
 
 } catch (Exception $e) {
-    echo "Hata: " . $e->getMessage() . "\n";
+    echo "Hata oluştu: " . $e->getMessage() . "\n";
 }
 ?> 
