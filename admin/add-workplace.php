@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Veritabanı işlemlerini başlat
         $conn->begin_transaction();
 
-        // SQL sorgusunu debug et
+        // SQL sorgusunu hazırla
         $sql = "INSERT INTO properties (
             title, price, status, location, neighborhood, property_type,
             square_meters, floor, floor_location, building_age,
@@ -82,8 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?, ?, ?, ?,
             ?, ?, NOW()
         )";
-        echo "SQL Sorgusu:<br>";
-        echo $sql . "<br>";
 
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
@@ -91,10 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $agent_id = $_SESSION['agent_id'] ?? null;
-        echo "Agent ID: " . ($agent_id ?? 'NULL') . "<br>";
 
-        // Bind parametrelerini debug et
-        echo "Bind Parametreleri:<br>";
+        // Parametre bağlama
         $bind_params = [
             "sdsssisssssssi",
             $title, $price, $status, $neighborhood,
@@ -102,35 +98,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $room_count, $heating, $credit_eligible, $deed_status,
             $description, $agent_id
         ];
-        debug($bind_params);
-
-        // Parametre bağlama
         $stmt->bind_param(...$bind_params);
         
-        // Execute sorgusunu debug et
+        // Execute sorgusu
         if (!$stmt->execute()) {
             throw new Exception("Execute hatası: " . $stmt->error);
         }
 
         $property_id = $conn->insert_id;
-        echo "Eklenen İlan ID: " . $property_id . "<br>";
 
-        // Resim yükleme işlemlerini optimize et
+        // Resim yükleme işlemleri
         if (!empty($_FILES['images']['name'][0])) {
             $upload_dir = dirname(__DIR__) . "/uploads/properties/";
-            echo "Upload Dizini: " . $upload_dir . "<br>";
             
             // Klasör yoksa oluştur
             if (!file_exists($upload_dir)) {
-                echo "Upload dizini bulunamadı, oluşturuluyor...<br>";
-                if (mkdir($upload_dir, 0777, true)) {
-                    echo "Upload dizini başarıyla oluşturuldu.<br>";
-                } else {
-                    echo "Upload dizini oluşturulamadı! Hata: " . error_get_last()['message'] . "<br>";
+                if (!mkdir($upload_dir, 0777, true)) {
+                    throw new Exception("Upload dizini oluşturulamadı.");
                 }
-            } else {
-                echo "Upload dizini mevcut.<br>";
-                echo "Dizin yazma izinleri: " . substr(sprintf('%o', fileperms($upload_dir)), -4) . "<br>";
             }
             
             $image_values = [];
@@ -143,50 +128,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
                 if ($_FILES['images']['error'][$key] === 0 && 
                     in_array($_FILES['images']['type'][$key], $image_types) && 
-                    $_FILES['images']['size'][$key] < 5000000) { // 5MB limit
+                    $_FILES['images']['size'][$key] < 5000000) {
                     
                     $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
                     $upload_path = $upload_dir . $file_name;
                     
-                    echo "Resim yükleniyor: " . $file_name . "<br>";
-                    echo "Geçici dosya: " . $tmp_name . "<br>";
-                    echo "Hedef yol: " . $upload_path . "<br>";
-                    
                     if (move_uploaded_file($tmp_name, $upload_path)) {
-                        echo "Resim başarıyla yüklendi: " . $file_name . "<br>";
                         if (!$first) {
                             $image_sql .= ",";
                         }
                         $image_sql .= "($property_id, '" . $conn->real_escape_string($file_name) . "')";
                         $first = false;
                     } else {
-                        echo "Resim yüklenemedi! Hata: " . error_get_last()['message'] . "<br>";
-                        echo "Geçici dosya var mı: " . (file_exists($tmp_name) ? 'Evet' : 'Hayır') . "<br>";
-                        echo "Hedef dizin yazılabilir mi: " . (is_writable($upload_dir) ? 'Evet' : 'Hayır') . "<br>";
+                        throw new Exception("Resim yüklenemedi: " . $file_name);
                     }
-                } else {
-                    echo "Resim hatası: " . $_FILES['images']['error'][$key] . "<br>";
-                    echo "Resim tipi: " . $_FILES['images']['type'][$key] . "<br>";
-                    echo "Resim boyutu: " . $_FILES['images']['size'][$key] . "<br>";
                 }
             }
 
             // Tüm resimleri tek sorguda ekle
-            if (!$first) {
-                echo "Resim SQL sorgusu: " . $image_sql . "<br>";
-                if ($conn->query($image_sql)) {
-                    echo "Resimler veritabanına eklendi.<br>";
-                } else {
-                    echo "Resimler veritabanına eklenemedi! Hata: " . $conn->error . "<br>";
-                }
+            if (!$first && !$conn->query($image_sql)) {
+                throw new Exception("Resimler veritabanına eklenemedi: " . $conn->error);
             }
         }
 
-        // Video yükleme işlemini optimize et
+        // Video yükleme işlemi
         if (!empty($_FILES['video']['name']) && $_FILES['video']['error'] === 0) {
             $video_upload_dir = dirname(__DIR__) . "/uploads/videos/";
             
-            // Klasör yoksa oluştur
             if (!file_exists($video_upload_dir)) {
                 mkdir($video_upload_dir, 0777, true);
             }
@@ -195,30 +163,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $video_types = ['video/mp4', 'video/webm', 'video/ogg'];
             
             if (in_array($_FILES['video']['type'], $video_types) && 
-                $_FILES['video']['size'] < 50000000) { // 50MB limit
+                $_FILES['video']['size'] < 50000000) {
                 
                 $video_path = $video_upload_dir . $video_name;
-                if (move_uploaded_file($_FILES['video']['tmp_name'], $video_path)) {
-                    $video_stmt = $conn->prepare("UPDATE properties SET video_path = ? WHERE id = ?");
-                    $video_stmt->bind_param("si", $video_name, $property_id);
-                    $video_stmt->execute();
+                if (!move_uploaded_file($_FILES['video']['tmp_name'], $video_path)) {
+                    throw new Exception("Video yüklenemedi.");
+                }
+
+                $video_sql = "UPDATE properties SET video_url = ? WHERE id = ?";
+                $stmt = $conn->prepare($video_sql);
+                $stmt->bind_param("si", $video_name, $property_id);
+                if (!$stmt->execute()) {
+                    throw new Exception("Video bilgisi veritabanına eklenemedi.");
                 }
             }
         }
 
         // İşlemleri onayla
         $conn->commit();
-        $success_message = "İş yeri ilanı başarıyla eklendi!";
         
-        // Form verilerini temizle
-        $title = $price = $status = $neighborhood = $square_meters = $floor = '';
-        $floor_location = $building_age = $room_count = $heating = $deed_status = $description = '';
+        // Başarılı mesajı set et ve yönlendir
+        $_SESSION['success_message'] = "İlan başarıyla eklendi.";
+        header("Location: workplaces.php");
+        exit();
 
     } catch (Exception $e) {
         // Hata durumunda işlemleri geri al
         $conn->rollback();
-        $error_message = "İlan eklenirken bir hata oluştu. Lütfen tekrar deneyin.";
+        $error_message = $e->getMessage();
     }
+}
+
+// Form başında hata ve başarı mesajlarını göster
+if (isset($_SESSION['success_message'])) {
+    $success_message = $_SESSION['success_message'];
+    unset($_SESSION['success_message']);
 }
 ?>
 
