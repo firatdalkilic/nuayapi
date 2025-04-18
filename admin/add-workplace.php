@@ -207,20 +207,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 <div class="col-md-6">
                                     <label for="floor_location" class="form-label">Bulunduğu Kat</label>
-                                    <input type="text" class="form-control" id="floor_location" name="floor_location" value="<?php echo htmlspecialchars($floor_location); ?>">
+                                    <select class="form-select" id="floor_location" name="floor_location">
+                                        <option value="">Seçiniz...</option>
+                                        <?php
+                                        $floor_options = [
+                                            'Bodrum KAT', 'Yarı Bodrum KAT', 'Zemin KAT', 'Bahçe KAT', 'Yüksek Giriş',
+                                            '1. KAT', '2. KAT', '3. KAT', '4. KAT', '5. KAT', '6. KAT', '7. KAT', '8. KAT',
+                                            '9. KAT', '10. KAT', '11. KAT', '12. KAT ve üzeri', 'Çatı KAT'
+                                        ];
+                                        foreach ($floor_options as $option) {
+                                            $selected = ($floor_location === $option) ? 'selected' : '';
+                                            echo "<option value=\"$option\" $selected>$option</option>";
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="building_age" class="form-label">Bina Yaşı</label>
                                     <select class="form-select" id="building_age" name="building_age">
                                         <option value="">Seçiniz...</option>
-                                        <?php
-                                        $ages = ["0-1", "1-5", "5-10", "10-15", "15-20", "20+"];
-                                        foreach ($ages as $age) {
-                                            $selected = ($building_age === $age) ? 'selected' : '';
-                                            echo "<option value=\"$age\" $selected>$age</option>";
-                                        }
-                                        ?>
+                                        <option value="0" <?php echo ($building_age === '0') ? 'selected' : ''; ?>>0 (Yeni)</option>
+                                        <option value="1" <?php echo ($building_age === '1') ? 'selected' : ''; ?>>1</option>
+                                        <option value="2" <?php echo ($building_age === '2') ? 'selected' : ''; ?>>2</option>
+                                        <option value="3" <?php echo ($building_age === '3') ? 'selected' : ''; ?>>3</option>
+                                        <option value="4" <?php echo ($building_age === '4') ? 'selected' : ''; ?>>4</option>
+                                        <option value="5" <?php echo ($building_age === '5') ? 'selected' : ''; ?>>5</option>
+                                        <option value="6" <?php echo ($building_age === '6') ? 'selected' : ''; ?>>6</option>
+                                        <option value="7" <?php echo ($building_age === '7') ? 'selected' : ''; ?>>7</option>
+                                        <option value="8" <?php echo ($building_age === '8') ? 'selected' : ''; ?>>8</option>
+                                        <option value="9" <?php echo ($building_age === '9') ? 'selected' : ''; ?>>9</option>
+                                        <option value="10" <?php echo ($building_age === '10') ? 'selected' : ''; ?>>10</option>
+                                        <option value="11-15" <?php echo ($building_age === '11-15') ? 'selected' : ''; ?>>11-15</option>
+                                        <option value="16-20" <?php echo ($building_age === '16-20') ? 'selected' : ''; ?>>16-20</option>
+                                        <option value="21-25" <?php echo ($building_age === '21-25') ? 'selected' : ''; ?>>21-25</option>
+                                        <option value="26+" <?php echo ($building_age === '26+') ? 'selected' : ''; ?>>26+</option>
                                     </select>
                                 </div>
 
@@ -244,17 +265,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="form-check mt-4">
-                                        <input class="form-check-input" type="checkbox" id="credit_eligible" name="credit_eligible" <?php echo $credit_eligible ? 'checked' : ''; ?>>
-                                        <label class="form-check-label" for="credit_eligible">
-                                            Krediye Uygun
-                                        </label>
-                                    </div>
+                                    <label for="credit_eligible" class="form-label">Krediye Uygun</label>
+                                    <select class="form-select" id="credit_eligible" name="credit_eligible">
+                                        <option value="Evet" <?php echo ($credit_eligible === 'Evet') ? 'selected' : ''; ?>>Evet</option>
+                                        <option value="Hayır" <?php echo ($credit_eligible === 'Hayır') ? 'selected' : ''; ?>>Hayır</option>
+                                    </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="deed_status" class="form-label">Tapu Durumu</label>
-                                    <input type="text" class="form-control" id="deed_status" name="deed_status" value="<?php echo htmlspecialchars($deed_status); ?>">
+                                    <select class="form-select" id="deed_status" name="deed_status">
+                                        <option value="">Seçiniz...</option>
+                                        <option value="Kat Mülkiyetli" <?php echo ($deed_status === 'Kat Mülkiyetli') ? 'selected' : ''; ?>>Kat Mülkiyetli</option>
+                                        <option value="Kat İrtifaklı" <?php echo ($deed_status === 'Kat İrtifaklı') ? 'selected' : ''; ?>>Kat İrtifaklı</option>
+                                        <option value="Müstakil Tapulu" <?php echo ($deed_status === 'Müstakil Tapulu') ? 'selected' : ''; ?>>Müstakil Tapulu</option>
+                                        <option value="Hisseli Tapulu" <?php echo ($deed_status === 'Hisseli Tapulu') ? 'selected' : ''; ?>>Hisseli Tapulu</option>
+                                    </select>
                                 </div>
 
                                 <div class="col-12">
@@ -286,13 +312,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Price input formatting
+        // Fiyat input formatlaması
         const priceInput = document.getElementById('price');
         priceInput.addEventListener('input', function(e) {
+            // Sadece sayıları al
             let value = this.value.replace(/\D/g, '');
-            if (value === '') return;
-            value = parseInt(value).toLocaleString('tr-TR');
-            this.value = value;
+            
+            // Sayıyı formatla
+            if (value !== '') {
+                this.value = new Intl.NumberFormat('tr-TR').format(parseInt(value));
+            }
         });
 
         // Form validation
@@ -301,6 +330,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!form.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();
+            } else {
+                // Form gönderilmeden önce fiyat alanındaki noktalama işaretlerini kaldır
+                const priceInput = document.getElementById('price');
+                priceInput.value = priceInput.value.replace(/\./g, '');
             }
             form.classList.add('was-validated');
         });
