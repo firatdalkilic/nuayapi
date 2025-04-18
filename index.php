@@ -293,7 +293,9 @@ while ($row = $result->fetch_assoc()) {
                   <div class="image">
                     <img src="<?php 
                       echo !empty($property['image_name']) 
-                        ? 'uploads/' . htmlspecialchars($property['image_name'])
+                        ? (strpos($property['image_name'], 'assets/') === 0 
+                           ? $property['image_name'] 
+                           : 'uploads/' . htmlspecialchars($property['image_name']))
                         : 'assets/img/property-default.jpg';
                     ?>" alt="<?php echo htmlspecialchars($property['title']); ?>">
                   </div>

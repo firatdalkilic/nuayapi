@@ -934,13 +934,28 @@ try {
           <!-- Sol Kolon - Fotoğraf Galerisi -->
           <div class="col-lg-5">
             <div class="property-gallery">
-              <div class="gallery-main">
-                <?php if (!empty($images)): ?>
-                  <img src="uploads/<?php echo htmlspecialchars($images[0]['image_name']); ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" onclick="changeImage(1)">
-                  <div class="gallery-counter">
-                    <span id="currentImageIndex">1</span>/<span id="totalImages"><?php echo count($images); ?></span>
-                  </div>
-                <?php endif; ?>
+              <!-- Main Image -->
+              <div class="main-image-container mb-3">
+                  <img src="<?php 
+                      echo !empty($images[0]['image_name']) 
+                          ? (strpos($images[0]['image_name'], 'assets/') === 0 
+                             ? $images[0]['image_name'] 
+                             : 'uploads/' . htmlspecialchars($images[0]['image_name']))
+                          : 'assets/img/property-default.jpg';
+                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" onclick="changeImage(1)">
+              </div>
+
+              <!-- Thumbnail Images -->
+              <div class="thumbnail-container">
+                  <?php foreach ($images as $index => $image): ?>
+                      <img src="<?php 
+                          echo !empty($image['image_name']) 
+                              ? (strpos($image['image_name'], 'assets/') === 0 
+                                 ? $image['image_name'] 
+                                 : 'uploads/' . htmlspecialchars($image['image_name']))
+                              : 'assets/img/property-default.jpg';
+                      ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" class="thumbnail" onclick="changeImage(<?php echo $index + 1; ?>)">
+                  <?php endforeach; ?>
               </div>
 
               <div class="gallery-actions">

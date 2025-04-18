@@ -738,13 +738,17 @@ if (!file_exists('uploads')) {
               <div class="property-card mb-4">
                 <div class="row g-0">
                   <div class="col-md-4 position-relative">
-                    <?php
-                    if (!empty($ilan['image_name'])) {
-                        echo '<img src="uploads/' . htmlspecialchars($ilan['image_name']) . '" class="img-fluid w-100" style="height: 250px; object-fit: contain; background-color: #ffffff;" alt="' . htmlspecialchars($ilan['title']) . '">';
-                    } else {
-                        echo '<img src="assets/img/no-image.jpg" class="img-fluid w-100" style="height: 250px; object-fit: contain; background-color: #ffffff;" alt="' . htmlspecialchars($ilan['title']) . '">';
-                    }
-                    ?>
+                    <div class="property-image">
+                        <?php
+                        echo '<img src="' . 
+                            (!empty($ilan['image_name']) 
+                                ? (strpos($ilan['image_name'], 'assets/') === 0 
+                                   ? $ilan['image_name'] 
+                                   : 'uploads/' . htmlspecialchars($ilan['image_name']))
+                                : 'assets/img/property-default.jpg') 
+                            . '" class="img-fluid w-100" style="height: 250px; object-fit: contain; background-color: #ffffff;" alt="' . htmlspecialchars($ilan['title']) . '">';
+                        ?>
+                    </div>
                     <div class="position-absolute top-0 end-0 m-2">
                       <span class="badge bg-primary"><?php echo htmlspecialchars($ilan['status']); ?></span>
                     </div>
