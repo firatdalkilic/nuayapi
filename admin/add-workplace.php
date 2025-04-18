@@ -85,7 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Resim yükleme işlemlerini optimize et
             if (!empty($_FILES['images']['name'][0])) {
-                $upload_dir = "../uploads/properties/";
+                $upload_dir = dirname(__DIR__) . "/uploads/properties/";
+                
+                // Klasör yoksa oluştur
+                if (!file_exists($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+                
                 $image_values = [];
                 $image_types = ['image/jpeg', 'image/png', 'image/gif'];
                 
@@ -99,8 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_FILES['images']['size'][$key] < 5000000) { // 5MB limit
                         
                         $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
+                        $upload_path = $upload_dir . $file_name;
                         
-                        if (move_uploaded_file($tmp_name, $upload_dir . $file_name)) {
+                        if (move_uploaded_file($tmp_name, $upload_path)) {
                             if (!$first) {
                                 $image_sql .= ",";
                             }
@@ -118,14 +125,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Video yükleme işlemini optimize et
             if (!empty($_FILES['video']['name']) && $_FILES['video']['error'] === 0) {
-                $video_upload_dir = "../uploads/videos/";
+                $video_upload_dir = dirname(__DIR__) . "/uploads/videos/";
+                
+                // Klasör yoksa oluştur
+                if (!file_exists($video_upload_dir)) {
+                    mkdir($video_upload_dir, 0777, true);
+                }
+                
                 $video_name = uniqid() . '_' . $_FILES['video']['name'];
                 $video_types = ['video/mp4', 'video/webm', 'video/ogg'];
                 
                 if (in_array($_FILES['video']['type'], $video_types) && 
                     $_FILES['video']['size'] < 50000000) { // 50MB limit
                     
-                    if (move_uploaded_file($_FILES['video']['tmp_name'], $video_upload_dir . $video_name)) {
+                    $video_path = $video_upload_dir . $video_name;
+                    if (move_uploaded_file($_FILES['video']['tmp_name'], $video_path)) {
                         $video_stmt = $conn->prepare("UPDATE properties SET video_path = ? WHERE id = ?");
                         $video_stmt->bind_param("si", $video_name, $property_id);
                         $video_stmt->execute();
