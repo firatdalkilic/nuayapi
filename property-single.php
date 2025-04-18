@@ -218,6 +218,25 @@ try {
       position: relative;
     }
 
+    .main-image-container {
+      margin-bottom: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      max-height: 500px;
+      height: auto;
+    }
+
+    .main-image-container img {
+      width: 100%;
+      height: auto;
+      max-height: 500px;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
+
     .gallery-main {
       margin-bottom: 10px;
       border-radius: 8px;
@@ -886,12 +905,12 @@ try {
     /* Thumbnail Container Styles */
     .thumbnail-container {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       gap: 10px;
       margin-top: 10px;
     }
 
-    .thumbnail-container img.thumbnail {
+    .thumbnail {
       width: 100%;
       height: 100px;
       object-fit: cover;
@@ -901,7 +920,7 @@ try {
       transition: all 0.3s ease;
     }
 
-    .thumbnail-container img.thumbnail:hover {
+    .thumbnail:hover {
       border-color: #2563eb;
       transform: translateY(-2px);
     }
