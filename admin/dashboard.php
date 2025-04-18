@@ -35,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
 // İlanları getir
 if (isAgent()) {
     // Danışman sadece kendi ilanlarını görür
-    $sql = "SELECT p.*, a.agent_name, pi.image_name,
+    $sql = "SELECT p.*, a.agent_name,
+            (SELECT image_name FROM property_images WHERE property_id = p.id AND is_featured = 1 LIMIT 1) as image_name,
             CONCAT(
                 CASE 
                     WHEN p.room_count > 0 THEN p.room_count
@@ -52,7 +53,6 @@ if (isAgent()) {
             ) as room_display
             FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
-            LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1
             WHERE p.agent_id = ? 
             ORDER BY p.created_at DESC";
     $stmt = $conn->prepare($sql);
@@ -60,7 +60,8 @@ if (isAgent()) {
     $stmt->bind_param("i", $agent_id);
 } else {
     // Admin tüm ilanları görür
-    $sql = "SELECT p.*, a.agent_name, pi.image_name,
+    $sql = "SELECT p.*, a.agent_name,
+            (SELECT image_name FROM property_images WHERE property_id = p.id AND is_featured = 1 LIMIT 1) as image_name,
             CONCAT(
                 CASE 
                     WHEN p.room_count > 0 THEN p.room_count
@@ -77,7 +78,6 @@ if (isAgent()) {
             ) as room_display
             FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
-            LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1
             ORDER BY p.created_at DESC";
     $stmt = $conn->prepare($sql);
 }
