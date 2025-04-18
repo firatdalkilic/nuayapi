@@ -194,23 +194,21 @@ try {
       background-color: #f8f9fa;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      width: 100%;
     }
 
     .property-description h3 {
       font-size: 1.25rem;
-      font-weight: 600;
       color: #2c3e50;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 1rem;
+      width: 100%;
     }
 
     .property-description p {
-      line-height: 1.8;
       color: #4b5563;
+      line-height: 1.6;
       margin-bottom: 0;
-      font-size: 1rem;
-      white-space: pre-line;
+      width: 100%;
     }
 
     .property-gallery {
@@ -1289,23 +1287,6 @@ try {
                     </div>
                 <?php endif; ?>
             </div>
-
-            <?php if (!empty($property['description'])): ?>
-            <div class="property-description mt-4">
-                <h4>İlan Açıklaması</h4>
-                <p><?php echo nl2br(htmlspecialchars($property['description'])); ?></p>
-            </div>
-            <?php endif; ?>
-
-            <?php if (!empty($property['video_file'])): ?>
-            <div class="property-video mt-4">
-                <h4>Video</h4>
-                <video controls class="w-100">
-                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
-                    Tarayıcınız video oynatmayı desteklemiyor.
-                </video>
-            </div>
-            <?php endif; ?>
           </div>
 
           <!-- Sağ Kolon - İlan ve Danışman Bilgileri -->
@@ -1409,6 +1390,31 @@ try {
             </div>
           </div>
         </div>
+
+        <?php if (!empty($property['description'])): ?>
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="property-description">
+                <h4>İlan Açıklaması</h4>
+                <p><?php echo nl2br(htmlspecialchars($property['description'])); ?></p>
+            </div>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (!empty($property['video_file'])): ?>
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="property-video">
+                <h4>Video</h4>
+                <video controls class="w-100">
+                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
+                    Tarayıcınız video oynatmayı desteklemiyor.
+                </video>
+            </div>
+          </div>
+        </div>
+        <?php endif; ?>
       </div>
     </section>
   </main>
