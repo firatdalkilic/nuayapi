@@ -55,6 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deed_status = sanitize_input($_POST['deed_status'] ?? '');
         $description = sanitize_input($_POST['description'] ?? '');
 
+        // Debug temizlenmiş değişkenleri
+        echo "Temizlenmiş ve İşlenmiş Değişkenler:<br>";
+        $debug_vars = compact('title', 'price', 'status', 'neighborhood', 'square_meters', 'floor', 
+                            'floor_location', 'building_age', 'room_count', 'heating', 'credit_eligible', 
+                            'deed_status', 'description');
+        debug($debug_vars);
+
         // Validate required fields
         if (empty($title) || empty($price) || empty($status) || empty($neighborhood)) {
             throw new Exception("Lütfen zorunlu alanları doldurun.");
@@ -63,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Veritabanı işlemlerini başlat
         $conn->begin_transaction();
 
-        // Ana ilan bilgilerini ekle
-        $stmt = $conn->prepare("INSERT INTO properties (
+        // SQL sorgusunu debug et
+        $sql = "INSERT INTO properties (
             title, price, status, location, neighborhood, property_type,
             square_meters, floor, floor_location, building_age,
             room_count, heating, credit_eligible, deed_status,
@@ -74,107 +81,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?, ?, ?, ?,
             ?, ?, ?, ?,
             ?, ?, NOW()
-        )");
+        )";
+        echo "SQL Sorgusu:<br>";
+        echo $sql . "<br>";
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Prepare hatası: " . $conn->error);
+        }
 
         $agent_id = $_SESSION['agent_id'] ?? null;
+        echo "Agent ID: " . ($agent_id ?? 'NULL') . "<br>";
 
-        // Parametre tiplerini ve değerlerini düzenliyorum
-        // s: string, d: double, i: integer
-        $stmt->bind_param("sdsssisssssssi",
-            $title,             // s: string (title)
-            $price,            // d: double (price)
-            $status,           // s: string (status)
-            $neighborhood,     // s: string (neighborhood)
-            $square_meters,    // s: string (square_meters)
-            $floor,           // i: integer (floor)
-            $floor_location,   // s: string (floor_location)
-            $building_age,     // s: string (building_age)
-            $room_count,      // s: string (room_count)
-            $heating,         // s: string (heating)
-            $credit_eligible, // s: string (credit_eligible)
-            $deed_status,     // s: string (deed_status)
-            $description,     // s: string (description)
-            $agent_id        // i: integer (agent_id)
-        );
+        // Bind parametrelerini debug et
+        echo "Bind Parametreleri:<br>";
+        $bind_params = [
+            "sdsssisssssssi",
+            $title, $price, $status, $neighborhood,
+            $square_meters, $floor, $floor_location, $building_age,
+            $room_count, $heating, $credit_eligible, $deed_status,
+            $description, $agent_id
+        ];
+        debug($bind_params);
 
-        if ($stmt->execute()) {
-            $property_id = $conn->insert_id;
-
-            // Resim yükleme işlemlerini optimize et
-            if (!empty($_FILES['images']['name'][0])) {
-                $upload_dir = dirname(__DIR__) . "/uploads/properties/";
-                
-                // Klasör yoksa oluştur
-                if (!file_exists($upload_dir)) {
-                    mkdir($upload_dir, 0777, true);
-                }
-                
-                $image_values = [];
-                $image_types = ['image/jpeg', 'image/png', 'image/gif'];
-                
-                // Toplu resim ekleme için SQL hazırla
-                $image_sql = "INSERT INTO property_images (property_id, image_name) VALUES ";
-                $first = true;
-
-                foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-                    if ($_FILES['images']['error'][$key] === 0 && 
-                        in_array($_FILES['images']['type'][$key], $image_types) && 
-                        $_FILES['images']['size'][$key] < 5000000) { // 5MB limit
-                        
-                        $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
-                        $upload_path = $upload_dir . $file_name;
-                        
-                        if (move_uploaded_file($tmp_name, $upload_path)) {
-                            if (!$first) {
-                                $image_sql .= ",";
-                            }
-                            $image_sql .= "($property_id, '" . $conn->real_escape_string($file_name) . "')";
-                            $first = false;
-                        }
-                    }
-                }
-
-                // Tüm resimleri tek sorguda ekle
-                if (!$first) {
-                    $conn->query($image_sql);
-                }
-            }
-
-            // Video yükleme işlemini optimize et
-            if (!empty($_FILES['video']['name']) && $_FILES['video']['error'] === 0) {
-                $video_upload_dir = dirname(__DIR__) . "/uploads/videos/";
-                
-                // Klasör yoksa oluştur
-                if (!file_exists($video_upload_dir)) {
-                    mkdir($video_upload_dir, 0777, true);
-                }
-                
-                $video_name = uniqid() . '_' . $_FILES['video']['name'];
-                $video_types = ['video/mp4', 'video/webm', 'video/ogg'];
-                
-                if (in_array($_FILES['video']['type'], $video_types) && 
-                    $_FILES['video']['size'] < 50000000) { // 50MB limit
-                    
-                    $video_path = $video_upload_dir . $video_name;
-                    if (move_uploaded_file($_FILES['video']['tmp_name'], $video_path)) {
-                        $video_stmt = $conn->prepare("UPDATE properties SET video_path = ? WHERE id = ?");
-                        $video_stmt->bind_param("si", $video_name, $property_id);
-                        $video_stmt->execute();
-                    }
-                }
-            }
-
-            // İşlemleri onayla
-            $conn->commit();
-            $success_message = "İş yeri ilanı başarıyla eklendi!";
-            
-            // Form verilerini temizle
-            $title = $price = $status = $neighborhood = $square_meters = $floor = '';
-            $floor_location = $building_age = $room_count = $heating = $deed_status = $description = '';
-
-        } else {
-            throw new Exception("SQL Error: " . $stmt->error);
+        // Parametre bağlama
+        $stmt->bind_param(...$bind_params);
+        
+        // Execute sorgusunu debug et
+        if (!$stmt->execute()) {
+            throw new Exception("Execute hatası: " . $stmt->error);
         }
+
+        $property_id = $conn->insert_id;
+        echo "Eklenen İlan ID: " . $property_id . "<br>";
+
+        // Resim yükleme işlemlerini optimize et
+        if (!empty($_FILES['images']['name'][0])) {
+            $upload_dir = dirname(__DIR__) . "/uploads/properties/";
+            
+            // Klasör yoksa oluştur
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            
+            $image_values = [];
+            $image_types = ['image/jpeg', 'image/png', 'image/gif'];
+            
+            // Toplu resim ekleme için SQL hazırla
+            $image_sql = "INSERT INTO property_images (property_id, image_name) VALUES ";
+            $first = true;
+
+            foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['images']['error'][$key] === 0 && 
+                    in_array($_FILES['images']['type'][$key], $image_types) && 
+                    $_FILES['images']['size'][$key] < 5000000) { // 5MB limit
+                    
+                    $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
+                    $upload_path = $upload_dir . $file_name;
+                    
+                    if (move_uploaded_file($tmp_name, $upload_path)) {
+                        if (!$first) {
+                            $image_sql .= ",";
+                        }
+                        $image_sql .= "($property_id, '" . $conn->real_escape_string($file_name) . "')";
+                        $first = false;
+                    }
+                }
+            }
+
+            // Tüm resimleri tek sorguda ekle
+            if (!$first) {
+                $conn->query($image_sql);
+            }
+        }
+
+        // Video yükleme işlemini optimize et
+        if (!empty($_FILES['video']['name']) && $_FILES['video']['error'] === 0) {
+            $video_upload_dir = dirname(__DIR__) . "/uploads/videos/";
+            
+            // Klasör yoksa oluştur
+            if (!file_exists($video_upload_dir)) {
+                mkdir($video_upload_dir, 0777, true);
+            }
+            
+            $video_name = uniqid() . '_' . $_FILES['video']['name'];
+            $video_types = ['video/mp4', 'video/webm', 'video/ogg'];
+            
+            if (in_array($_FILES['video']['type'], $video_types) && 
+                $_FILES['video']['size'] < 50000000) { // 50MB limit
+                
+                $video_path = $video_upload_dir . $video_name;
+                if (move_uploaded_file($_FILES['video']['tmp_name'], $video_path)) {
+                    $video_stmt = $conn->prepare("UPDATE properties SET video_path = ? WHERE id = ?");
+                    $video_stmt->bind_param("si", $video_name, $property_id);
+                    $video_stmt->execute();
+                }
+            }
+        }
+
+        // İşlemleri onayla
+        $conn->commit();
+        $success_message = "İş yeri ilanı başarıyla eklendi!";
+        
+        // Form verilerini temizle
+        $title = $price = $status = $neighborhood = $square_meters = $floor = '';
+        $floor_location = $building_age = $room_count = $heating = $deed_status = $description = '';
+
     } catch (Exception $e) {
         // Hata durumunda işlemleri geri al
         $conn->rollback();
