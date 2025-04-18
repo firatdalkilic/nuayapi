@@ -197,6 +197,9 @@ while ($row = $result->fetch_assoc()) {
                     <a href="add-land.php" class="btn btn-success me-2">
                         <i class="fas fa-plus"></i> Arsa İlanı Ekle
                     </a>
+                    <a href="add-workplace.php" class="btn btn-info me-2">
+                        <i class="fas fa-plus"></i> İş Yeri İlanı Ekle
+                    </a>
                 </div>
             </div>
 
