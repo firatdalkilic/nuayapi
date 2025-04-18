@@ -73,7 +73,7 @@ if (isset($_POST['generate'])) {
     ];
 
     // Mevcut danışmanları al
-    $agent_query = "SELECT id FROM agents WHERE status = 1";
+    $agent_query = "SELECT id FROM agents";
     $agent_result = $conn->query($agent_query);
     $agent_ids = [];
     while ($row = $agent_result->fetch_assoc()) {
