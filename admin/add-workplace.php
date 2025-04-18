@@ -4,6 +4,7 @@ require_once 'config.php';
 require_once 'check_login.php';
 require_once '../includes/functions.php';
 
+// Hata ayıklama ayarları
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -13,6 +14,22 @@ function debug($data) {
     echo '<pre>';
     var_dump($data);
     echo '</pre>';
+}
+
+// POST verilerini debug et
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "POST Verileri:<br>";
+    debug($_POST);
+    
+    echo "Temizlenmiş Veriler:<br>";
+    $clean_data = array_map('sanitize_input', $_POST);
+    debug($clean_data);
+}
+
+// Dosya yükleme bilgilerini debug et
+if (!empty($_FILES)) {
+    echo "Dosya Yükleme Bilgileri:<br>";
+    debug($_FILES);
 }
 
 // Initialize variables
