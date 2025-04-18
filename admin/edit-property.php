@@ -915,40 +915,131 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             return parseFloat(formattedPrice.replace(/\./g, '').replace(',', '.'));
         }
 
+        // Form doğrulama fonksiyonu
+        function validateForm(formData) {
+            let errors = [];
+            
+            // Zorunlu alanları kontrol et
+            if (!formData.get('title').trim()) errors.push('İlan başlığı zorunludur');
+            if (!formData.get('price').trim()) errors.push('Fiyat zorunludur');
+            if (!formData.get('property_type').trim()) errors.push('Emlak tipi zorunludur');
+            if (!formData.get('status').trim()) errors.push('Durum zorunludur');
+            if (!formData.get('neighborhood').trim()) errors.push('Mahalle zorunludur');
+            
+            // Emlak tipine göre özel kontroller
+            const propertyType = formData.get('property_type');
+            if (propertyType === 'Arsa') {
+                if (!formData.get('zoning_status').trim()) errors.push('İmar durumu zorunludur');
+            } else if (propertyType === 'İş Yeri') {
+                if (!formData.get('square_meters').trim()) errors.push('Alan (m²) zorunludur');
+            }
+            
+            return errors;
+        }
+
+        // Loading spinner göster/gizle
+        function toggleLoading(show) {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if (show) {
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Kaydediliyor...';
+                submitBtn.disabled = true;
+            } else {
+                submitBtn.innerHTML = 'Değişiklikleri Kaydet';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Hata mesajlarını göster
+        function showErrors(errors) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+            alertDiv.innerHTML = `
+                <strong>Lütfen aşağıdaki hataları düzeltin:</strong>
+                <ul class="mb-0 mt-2">
+                    ${errors.map(error => `<li>${error}</li>`).join('')}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const form = document.querySelector('form');
+            form.insertBefore(alertDiv, form.firstChild);
+        }
+
+        // Başarı mesajı göster
+        function showSuccess(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const form = document.querySelector('form');
+            form.insertBefore(alertDiv, form.firstChild);
+        }
+
         // Form submit olayını dinle
         document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Formun normal submit işlemini engelle
+            
+            // Önceki hata mesajlarını temizle
+            document.querySelectorAll('.alert').forEach(alert => alert.remove());
+            
             try {
                 console.log('Form submit event triggered');
                 
+                // Form verilerini al
+                const formData = new FormData(this);
+                
+                // Fiyat alanını temizle
                 let priceInput = document.getElementById('price');
                 if (priceInput) {
                     let cleanPrice = priceInput.value.replace(/\./g, '');
-                    console.log('Original price:', priceInput.value);
-                    console.log('Cleaned price:', cleanPrice);
-                    priceInput.value = cleanPrice;
+                    formData.set('price', cleanPrice);
                 }
                 
-                // Form verilerini kontrol et
-                let formData = new FormData(this);
-                for (let pair of formData.entries()) {
-                    console.log(pair[0] + ': ' + pair[1]);
+                // Form verilerini doğrula
+                const errors = validateForm(formData);
+                if (errors.length > 0) {
+                    showErrors(errors);
+                    return false;
                 }
-
-                return true; // Form gönderimini devam ettir
+                
+                // Loading spinner'ı göster
+                toggleLoading(true);
+                
+                // AJAX ile form verilerini gönder
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('success')) {
+                        showSuccess('İlan başarıyla güncellendi');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.php';
+                        }, 2000);
+                    } else {
+                        // Server tarafından gelen hata mesajını göster
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const errorMsg = doc.querySelector('.alert-danger')?.textContent || 'Bir hata oluştu';
+                        showErrors([errorMsg]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Form submit error:', error);
+                    showErrors(['Bir hata oluştu. Lütfen tekrar deneyin.']);
+                })
+                .finally(() => {
+                    toggleLoading(false);
+                });
+                
             } catch (error) {
                 console.error('Form submit error:', error);
-                return false; // Hata durumunda gönderimi engelle
-            }
-        });
-
-        // Fiyat formatla
-        document.getElementById('price').addEventListener('input', function(e) {
-            // Sadece sayıları al
-            let value = this.value.replace(/\D/g, '');
-            
-            // Sayıyı formatla
-            if (value !== '') {
-                this.value = formatPrice(parseInt(value));
+                showErrors(['Bir hata oluştu. Lütfen tekrar deneyin.']);
+                toggleLoading(false);
             }
         });
 
