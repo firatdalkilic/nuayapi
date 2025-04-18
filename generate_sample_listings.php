@@ -6,6 +6,21 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// İlanları silme işlemi
+if (isset($_POST['delete'])) {
+    // Önce property_images tablosundaki ilişkili kayıtları sil
+    $sql = "DELETE FROM property_images WHERE property_id IN (SELECT id FROM properties)";
+    $conn->query($sql);
+    
+    // Sonra properties tablosundaki tüm kayıtları sil
+    $sql = "DELETE FROM properties";
+    if ($conn->query($sql)) {
+        $delete_message = "Tüm ilanlar başarıyla silindi!";
+    } else {
+        $delete_message = "İlanlar silinirken bir hata oluştu: " . $conn->error;
+    }
+}
+
 // Form gönderildi mi kontrol et
 if (isset($_POST['generate'])) {
     // Didim'deki mahalleler
@@ -251,12 +266,33 @@ if (isset($_POST['generate'])) {
             cursor: pointer;
             font-size: 16px;
             width: 100%;
+            margin-bottom: 10px;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
         }
         .btn-generate:hover {
             background-color: #001f3f;
         }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
         .alert {
             margin-top: 20px;
+        }
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+        }
+        .button-wrapper {
+            flex: 1;
         }
     </style>
 </head>
@@ -273,15 +309,32 @@ if (isset($_POST['generate'])) {
             - sample_arsa_1.jpg - sample_arsa_5.jpg
         </p>
         
-        <form method="post" action="">
-            <button type="submit" name="generate" class="btn-generate">
-                Örnek İlanları Oluştur
-            </button>
-        </form>
+        <div class="buttons-container">
+            <div class="button-wrapper">
+                <form method="post" action="">
+                    <button type="submit" name="generate" class="btn-generate">
+                        Örnek İlanları Oluştur
+                    </button>
+                </form>
+            </div>
+            <div class="button-wrapper">
+                <form method="post" action="" onsubmit="return confirm('Tüm ilanlar silinecek. Emin misiniz?');">
+                    <button type="submit" name="delete" class="btn-delete">
+                        Tüm İlanları Sil
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <?php if (isset($success_message)): ?>
             <div class="alert alert-success text-center mt-4">
                 <?php echo $success_message; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($delete_message)): ?>
+            <div class="alert <?php echo strpos($delete_message, 'hata') ? 'alert-danger' : 'alert-success'; ?> text-center mt-4">
+                <?php echo $delete_message; ?>
             </div>
         <?php endif; ?>
     </div>
