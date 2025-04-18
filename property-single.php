@@ -1007,18 +1007,18 @@ try {
                 <?php if ($property['property_type'] == 'Arsa'): ?>
                     <!-- Arsa özellikleri -->
                     <div class="row g-2">
-                        <div class="col-md-6">
-                            <div class="detail-item">
+                        <div class="col-6 col-md-4">
+                            <div class="detail-box">
                                 <i class="bi bi-rulers"></i>
-                                <span>Alan:</span>
+                                <span>Alan</span>
                                 <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
                             </div>
                         </div>
                         <?php if (!empty($property['zoning_status'])): ?>
-                        <div class="col-md-6">
-                            <div class="detail-item">
+                        <div class="col-6 col-md-4">
+                            <div class="detail-box">
                                 <i class="bi bi-clipboard-check"></i>
-                                <span>İmar Durumu:</span>
+                                <span>İmar Durumu</span>
                                 <strong><?php echo htmlspecialchars($property['zoning_status']); ?></strong>
                             </div>
                         </div>
@@ -1027,10 +1027,30 @@ try {
                 <?php elseif ($property['property_type'] == 'İş Yeri'): ?>
                     <!-- İş Yeri özellikleri -->
                     <div class="row g-2">
-                        <?php if (!empty($property['square_meters'])): ?>
+                        <?php if (!empty($property['status'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-bookmark"></i>
+                                <span>Durum:</span>
+                                <strong><?php echo htmlspecialchars($property['status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['property_type'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-building"></i>
+                                <span>Emlak Tipi:</span>
+                                <strong><?php echo htmlspecialchars($property['property_type']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['square_meters'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-rulers"></i>
                                 <span>Alan:</span>
                                 <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
                             </div>
@@ -1041,7 +1061,7 @@ try {
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-door-open"></i>
-                                <span>Bölüm Sayısı:</span>
+                                <span>Bölüm & Oda Sayısı:</span>
                                 <strong><?php echo htmlspecialchars($property['room_count']); ?></strong>
                             </div>
                         </div>
@@ -1076,6 +1096,26 @@ try {
                             </div>
                         </div>
                         <?php endif; ?>
+
+                        <?php if (!empty($property['location'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Konum:</span>
+                                <strong><?php echo htmlspecialchars($property['location']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['neighborhood'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-houses"></i>
+                                <span>Mahalle:</span>
+                                <strong><?php echo htmlspecialchars($property['neighborhood']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                         
                         <?php if (!empty($property['credit_eligible'])): ?>
                         <div class="col-md-6">
@@ -1103,6 +1143,16 @@ try {
                                 <i class="bi bi-house-gear"></i>
                                 <span>Kullanım Durumu:</span>
                                 <strong><?php echo htmlspecialchars($property['usage_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['video_call_available'])): ?>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="bi bi-camera-video"></i>
+                                <span>Görüntülü Arama:</span>
+                                <strong><?php echo htmlspecialchars($property['video_call_available']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -1180,7 +1230,7 @@ try {
                                 <strong><?php echo htmlspecialchars($floor); ?></strong>
                             </div>
                         </div>
-                        <?php if (!empty($property['room_count'])): ?>
+                        <?php if (!empty($property['living_room']) && $property['living_room'] > 0): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-door-closed"></i>
@@ -1272,15 +1322,6 @@ try {
                                 <i class="bi bi-building-check"></i>
                                 <span>Site Adı:</span>
                                 <strong><?php echo htmlspecialchars($property['site_name']); ?></strong>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                        <?php if (!empty($property['video_call_available'])): ?>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <i class="bi bi-camera-video"></i>
-                                <span>Görüntülü Arama:</span>
-                                <strong><?php echo htmlspecialchars($property['video_call_available']); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -1391,27 +1432,28 @@ try {
           </div>
         </div>
 
-        <!-- Açıklama ve Video Bölümü -->
+        <?php if (!empty($property['description'])): ?>
         <div class="row mt-4">
-            <div class="col-12">
-                <div class="property-description">
-                    <h4>İlan Açıklaması</h4>
-                    <p><?php echo nl2br(htmlspecialchars($property['description'])); ?></p>
-                </div>
+          <div class="col-12">
+            <div class="property-description">
+                <h4>İlan Açıklaması</h4>
+                <p><?php echo nl2br(htmlspecialchars($property['description'])); ?></p>
             </div>
+          </div>
         </div>
+        <?php endif; ?>
 
         <?php if (!empty($property['video_file'])): ?>
         <div class="row mt-4">
-            <div class="col-12">
-                <div class="property-video">
-                    <h4>Video</h4>
-                    <video controls class="w-100">
-                        <source src="<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
-                        Tarayıcınız video etiketini desteklemiyor.
-                    </video>
-                </div>
+          <div class="col-12">
+            <div class="property-video">
+                <h4>Video</h4>
+                <video controls class="w-100">
+                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
+                    Tarayıcınız video oynatmayı desteklemiyor.
+                </video>
             </div>
+          </div>
         </div>
         <?php endif; ?>
       </div>
