@@ -845,6 +845,43 @@ try {
     .share-email {
       background-color: #666;
     }
+
+    .breadcrumbs {
+      background: #002e5c;
+      padding: 30px 0;
+      margin-top: 90px;
+      color: #fff;
+    }
+
+    .breadcrumbs ol {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .breadcrumbs ol li + li {
+      padding-left: 10px;
+    }
+
+    .breadcrumbs ol li + li::before {
+      display: inline-block;
+      padding-right: 10px;
+      color: #fff;
+      content: "/";
+    }
+
+    .breadcrumbs ol li a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+    }
+
+    .breadcrumbs ol li.current {
+      color: #fff;
+      font-weight: 600;
+    }
   </style>
 </head>
 
