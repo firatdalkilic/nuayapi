@@ -584,10 +584,6 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                             <div id="workplaceFields" style="display: <?php echo $property['property_type'] === 'İş Yeri' ? 'block' : 'none'; ?>">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label for="square_meters" class="form-label">Alan (m²)</label>
-                                        <input type="number" class="form-control" id="square_meters" name="square_meters" value="<?php echo htmlspecialchars($property['square_meters']); ?>" step="0.01">
-                                    </div>
-                                    <div class="col-md-6">
                                         <label for="room_count" class="form-label">Bölüm & Oda Sayısı</label>
                                         <input type="number" class="form-control" id="room_count" name="room_count" value="<?php echo htmlspecialchars($property['room_count']); ?>">
                                     </div>
