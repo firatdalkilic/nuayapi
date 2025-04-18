@@ -64,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status = isset($_POST['status']) ? trim($_POST['status']) : '';
     $room_count = isset($_POST['room_count']) ? (int)trim($_POST['room_count']) : 0;
     $bathroom_count = isset($_POST['bathroom_count']) ? (int)trim($_POST['bathroom_count']) : 0;
+    $square_meters = isset($_POST['square_meters']) ? (float)trim($_POST['square_meters']) : 0;
     $net_area = isset($_POST['net_area']) ? (float)trim($_POST['net_area']) : 0;
     $gross_area = isset($_POST['gross_area']) && trim($_POST['gross_area']) !== '' ? (float)trim($_POST['gross_area']) : null;
     $building_age = isset($_POST['building_age']) && trim($_POST['building_age']) !== '' ? trim($_POST['building_age']) : null;
@@ -151,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 neighborhood = ?, 
                 property_type = ?,
                 status = ?, 
-                net_area = ?, 
+                square_meters = ?, 
                 floor_location = ?, 
                 building_age = ?,
                 room_count = ?, 
@@ -171,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $neighborhood, 
                 $property_type,
                 $status, 
-                $net_area,
+                $square_meters,
                 $floor_location, 
                 $building_age,
                 $room_count, 
@@ -582,6 +583,10 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                             <!-- İş yeri özellikleri -->
                             <div id="workplaceFields" style="display: <?php echo $property['property_type'] === 'İş Yeri' ? 'block' : 'none'; ?>">
                                 <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="square_meters" class="form-label">Alan (m²)</label>
+                                        <input type="number" class="form-control" id="square_meters" name="square_meters" value="<?php echo htmlspecialchars($property['square_meters']); ?>" step="0.01">
+                                    </div>
                                     <div class="col-md-6">
                                         <label for="room_count" class="form-label">Bölüm & Oda Sayısı</label>
                                         <input type="number" class="form-control" id="room_count" name="room_count" value="<?php echo htmlspecialchars($property['room_count']); ?>">
