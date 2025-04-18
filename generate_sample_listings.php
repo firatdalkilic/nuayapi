@@ -218,7 +218,7 @@ if (isset($_POST['generate'])) {
                 $created_count++;
                 
                 // Varsayılan resmi ekle
-                $image_name = "property-default.jpg";
+                $image_name = "assets/img/property-default.jpg";
                 
                 $sql = "INSERT INTO property_images (property_id, image_name, is_featured, created_at) 
                        VALUES (?, ?, 1, NOW())";
