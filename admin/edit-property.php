@@ -917,26 +917,28 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
 
         // Form submit olayını dinle
         document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            console.log('Form submit event triggered');
-            
-            let priceInput = document.getElementById('price');
-            let cleanPrice = priceInput.value.replace(/\./g, '');
-            console.log('Original price:', priceInput.value);
-            console.log('Cleaned price:', cleanPrice);
-            
-            // Fiyat değerini temizle
-            priceInput.value = cleanPrice;
-            
-            // Form verilerini kontrol et
-            let formData = new FormData(this);
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
+            try {
+                console.log('Form submit event triggered');
+                
+                let priceInput = document.getElementById('price');
+                if (priceInput) {
+                    let cleanPrice = priceInput.value.replace(/\./g, '');
+                    console.log('Original price:', priceInput.value);
+                    console.log('Cleaned price:', cleanPrice);
+                    priceInput.value = cleanPrice;
+                }
+                
+                // Form verilerini kontrol et
+                let formData = new FormData(this);
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + pair[1]);
+                }
 
-            // Formu gönder
-            this.submit();
+                return true; // Form gönderimini devam ettir
+            } catch (error) {
+                console.error('Form submit error:', error);
+                return false; // Hata durumunda gönderimi engelle
+            }
         });
 
         // Fiyat formatla
@@ -985,7 +987,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             
             // Fiyat alanını formatla
             const priceInput = document.getElementById('price');
-            if (priceInput.value) {
+            if (priceInput && priceInput.value) {
                 priceInput.value = formatPrice(parseFloat(priceInput.value.replace(/\./g, '')));
             }
         });
