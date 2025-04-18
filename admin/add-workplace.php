@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Resim yükleme işlemleri
         if (!empty($_FILES['images']['name'][0])) {
-            $upload_dir = dirname(__DIR__) . "/uploads/properties/";
+            $upload_dir = dirname(__DIR__) . "/uploads/";
             
             // Klasör yoksa oluştur
             if (!file_exists($upload_dir)) {
@@ -88,36 +88,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
-            $image_values = [];
-            $image_types = ['image/jpeg', 'image/png', 'image/gif'];
-            
-            // Toplu resim ekleme için SQL hazırla
-            $image_sql = "INSERT INTO property_images (property_id, image_name) VALUES ";
-            $first = true;
-
+            $first_image = true;
             foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
                 if ($_FILES['images']['error'][$key] === 0 && 
-                    in_array($_FILES['images']['type'][$key], $image_types) && 
+                    in_array($_FILES['images']['type'][$key], ['image/jpeg', 'image/png', 'image/gif']) && 
                     $_FILES['images']['size'][$key] < 5000000) {
                     
                     $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
                     $upload_path = $upload_dir . $file_name;
                     
                     if (move_uploaded_file($tmp_name, $upload_path)) {
-                        if (!$first) {
-                            $image_sql .= ",";
+                        $is_featured = $first_image ? 1 : 0;
+                        $image_sql = "INSERT INTO property_images (property_id, image_name, is_featured) VALUES (?, ?, ?)";
+                        $img_stmt = $conn->prepare($image_sql);
+                        $img_stmt->bind_param("isi", $property_id, $file_name, $is_featured);
+                        if (!$img_stmt->execute()) {
+                            throw new Exception("Resim veritabanına eklenemedi: " . $img_stmt->error);
                         }
-                        $image_sql .= "($property_id, '" . $conn->real_escape_string($file_name) . "')";
-                        $first = false;
+                        $first_image = false;
                     } else {
                         throw new Exception("Resim yüklenemedi: " . $file_name);
                     }
                 }
-            }
-
-            // Tüm resimleri tek sorguda ekle
-            if (!$first && !$conn->query($image_sql)) {
-                throw new Exception("Resimler veritabanına eklenemedi: " . $conn->error);
             }
         }
 
@@ -154,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Başarılı mesajı set et ve yönlendir
         $_SESSION['success_message'] = "İlan başarıyla eklendi.";
-        header("Location: workplaces.php");
+        header("Location: dashboard.php");
         exit();
 
     } catch (Exception $e) {
@@ -218,7 +210,7 @@ if (isset($_SESSION['success_message'])) {
                             <div class="alert alert-danger"><?php echo $error_message; ?></div>
                         <?php endif; ?>
 
-                        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <form method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label for="title" class="form-label">İlan Başlığı *</label>
