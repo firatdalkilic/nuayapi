@@ -910,35 +910,65 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
         const form = document.querySelector('form');
         console.log('Form elementi:', form);
         
+        // Emlak tipine göre form alanlarını göster/gizle
+        function togglePropertyFields() {
+            const propertyType = document.getElementById('property_type').value;
+            const landFields = document.getElementById('landFields');
+            const residentialFields = document.getElementById('residentialFields');
+            const workplaceFields = document.getElementById('workplaceFields');
+            const zoningStatus = document.getElementById('zoning_status');
+
+            console.log('Seçilen emlak tipi:', propertyType);
+
+            // Tüm alanları gizle
+            if (residentialFields) residentialFields.style.display = 'none';
+            if (landFields) landFields.style.display = 'none';
+            if (workplaceFields) workplaceFields.style.display = 'none';
+
+            // Seçilen tipe göre ilgili alanları göster
+            if (propertyType === 'Arsa') {
+                if (landFields) landFields.style.display = 'block';
+                if (zoningStatus) zoningStatus.required = true;
+            } else {
+                if (zoningStatus) zoningStatus.required = false;
+                if (propertyType === 'İş Yeri') {
+                    if (workplaceFields) workplaceFields.style.display = 'block';
+                } else {
+                    if (residentialFields) residentialFields.style.display = 'block';
+                }
+            }
+
+            // Gizli alanların required özelliğini kaldır
+            if (landFields && landFields.style.display === 'none') {
+                landFields.querySelectorAll('[required]').forEach(el => el.required = false);
+            }
+            if (workplaceFields && workplaceFields.style.display === 'none') {
+                workplaceFields.querySelectorAll('[required]').forEach(el => el.required = false);
+            }
+            if (residentialFields && residentialFields.style.display === 'none') {
+                residentialFields.querySelectorAll('[required]').forEach(el => el.required = false);
+            }
+        }
+
         if (form) {
             // Submit olayını dinle
             form.addEventListener('submit', function(e) {
                 console.log('Form submit olayı tetiklendi');
-                e.preventDefault();
                 
                 // Form verilerini al
                 const formData = new FormData(this);
+                
+                // Fiyat alanını temizle
+                let priceInput = document.getElementById('price');
+                if (priceInput) {
+                    let cleanPrice = priceInput.value.replace(/\./g, '');
+                    formData.set('price', cleanPrice);
+                }
                 
                 // Form verilerini konsola yazdır
                 for (let [key, value] of formData.entries()) {
                     console.log(key + ': ' + value);
                 }
-                
-                // AJAX isteği gönder
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    console.log('Sunucu yanıtı:', response);
-                    return response.text();
-                })
-                .then(data => {
-                    console.log('Sunucudan gelen veri:', data);
-                })
-                .catch(error => {
-                    console.error('Hata:', error);
-                });
             });
         } else {
             console.error('Form elementi bulunamadı');
@@ -958,35 +988,10 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                     this.value = formatPrice(parseInt(value));
                 }
             });
-        }
 
-        // Emlak tipine göre form alanlarını göster/gizle
-        function togglePropertyFields() {
-            const propertyType = document.getElementById('property_type').value;
-            const landFields = document.getElementById('landFields');
-            const residentialFields = document.getElementById('residentialFields');
-            const workplaceFields = document.getElementById('workplaceFields');
-            const zoningStatus = document.getElementById('zoning_status');
-
-            console.log('Seçilen emlak tipi:', propertyType);
-
-            // Tüm alanları gizle
-            if (residentialFields) residentialFields.style.display = 'none';
-            if (landFields) landFields.style.display = 'none';
-            if (workplaceFields) workplaceFields.style.display = 'none';
-
-            // Seçilen tipe göre ilgili alanları göster
-            if (propertyType === 'Arsa') {
-                if (landFields) landFields.style.display = 'block';
-            } else if (propertyType === 'İş Yeri') {
-                if (workplaceFields) workplaceFields.style.display = 'block';
-            } else {
-                if (residentialFields) residentialFields.style.display = 'block';
-            }
-
-            // Arsa için zorunlu alanları etkinleştir
-            if (propertyType === 'Arsa' && zoningStatus) {
-                zoningStatus.required = true;
+            // Sayfa yüklendiğinde fiyatı formatla
+            if (priceInput.value) {
+                priceInput.value = formatPrice(parseInt(priceInput.value.replace(/\./g, '')));
             }
         }
 
