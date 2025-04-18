@@ -118,10 +118,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Resim yükleme işlemlerini optimize et
         if (!empty($_FILES['images']['name'][0])) {
             $upload_dir = dirname(__DIR__) . "/uploads/properties/";
+            echo "Upload Dizini: " . $upload_dir . "<br>";
             
             // Klasör yoksa oluştur
             if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
+                echo "Upload dizini bulunamadı, oluşturuluyor...<br>";
+                if (mkdir($upload_dir, 0777, true)) {
+                    echo "Upload dizini başarıyla oluşturuldu.<br>";
+                } else {
+                    echo "Upload dizini oluşturulamadı! Hata: " . error_get_last()['message'] . "<br>";
+                }
+            } else {
+                echo "Upload dizini mevcut.<br>";
+                echo "Dizin yazma izinleri: " . substr(sprintf('%o', fileperms($upload_dir)), -4) . "<br>";
             }
             
             $image_values = [];
@@ -139,19 +148,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $file_name = uniqid() . '_' . $_FILES['images']['name'][$key];
                     $upload_path = $upload_dir . $file_name;
                     
+                    echo "Resim yükleniyor: " . $file_name . "<br>";
+                    echo "Geçici dosya: " . $tmp_name . "<br>";
+                    echo "Hedef yol: " . $upload_path . "<br>";
+                    
                     if (move_uploaded_file($tmp_name, $upload_path)) {
+                        echo "Resim başarıyla yüklendi: " . $file_name . "<br>";
                         if (!$first) {
                             $image_sql .= ",";
                         }
                         $image_sql .= "($property_id, '" . $conn->real_escape_string($file_name) . "')";
                         $first = false;
+                    } else {
+                        echo "Resim yüklenemedi! Hata: " . error_get_last()['message'] . "<br>";
+                        echo "Geçici dosya var mı: " . (file_exists($tmp_name) ? 'Evet' : 'Hayır') . "<br>";
+                        echo "Hedef dizin yazılabilir mi: " . (is_writable($upload_dir) ? 'Evet' : 'Hayır') . "<br>";
                     }
+                } else {
+                    echo "Resim hatası: " . $_FILES['images']['error'][$key] . "<br>";
+                    echo "Resim tipi: " . $_FILES['images']['type'][$key] . "<br>";
+                    echo "Resim boyutu: " . $_FILES['images']['size'][$key] . "<br>";
                 }
             }
 
             // Tüm resimleri tek sorguda ekle
             if (!$first) {
-                $conn->query($image_sql);
+                echo "Resim SQL sorgusu: " . $image_sql . "<br>";
+                if ($conn->query($image_sql)) {
+                    echo "Resimler veritabanına eklendi.<br>";
+                } else {
+                    echo "Resimler veritabanına eklenemedi! Hata: " . $conn->error . "<br>";
+                }
             }
         }
 
