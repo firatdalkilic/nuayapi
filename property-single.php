@@ -1097,26 +1097,6 @@ try {
                         </div>
                         <?php endif; ?>
 
-                        <?php if (!empty($property['location'])): ?>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Konum:</span>
-                                <strong><?php echo htmlspecialchars($property['location']); ?></strong>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-
-                        <?php if (!empty($property['neighborhood'])): ?>
-                        <div class="col-md-6">
-                            <div class="detail-item">
-                                <i class="bi bi-houses"></i>
-                                <span>Mahalle:</span>
-                                <strong><?php echo htmlspecialchars($property['neighborhood']); ?></strong>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                        
                         <?php if (!empty($property['credit_eligible'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
