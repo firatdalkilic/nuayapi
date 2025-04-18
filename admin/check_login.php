@@ -1,5 +1,6 @@
 <?php
 require_once 'session_manager.php';
+require_once '../includes/functions.php';
 
 error_log("Check Login: Başlatılıyor");
 error_log("Session Status: " . session_status());

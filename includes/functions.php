@@ -10,17 +10,46 @@ function sanitize_input($data) {
 }
 
 /**
- * Kullanıcının agent olup olmadığını kontrol eden fonksiyon
+ * Oturum kontrolü fonksiyonu
+ */
+function checkLogin() {
+    error_log("checkLogin fonksiyonu çağrıldı");
+    error_log("SESSION içeriği: " . print_r($_SESSION, true));
+    
+    // Admin kontrolü
+    if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+        return true;
+    }
+    
+    // Danışman kontrolü
+    if (isset($_SESSION['agent_logged_in']) && $_SESSION['agent_logged_in'] === true) {
+        return true;
+    }
+
+    // Giriş yapılmamış, login sayfasına yönlendir
+    header("Location: login.php");
+    exit;
+}
+
+/**
+ * Admin kontrolü fonksiyonu
+ */
+function isAdmin() {
+    return isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+}
+
+/**
+ * Danışman kontrolü fonksiyonu
  */
 function isAgent() {
-    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'agent';
+    return isset($_SESSION['agent_logged_in']) && $_SESSION['agent_logged_in'] === true;
 }
 
 /**
  * Agent ID'sini döndüren fonksiyon
  */
 function getAgentId() {
-    return $_SESSION['agent_id'] ?? null;
+    return isset($_SESSION['agent_id']) ? $_SESSION['agent_id'] : null;
 }
 
 /**
