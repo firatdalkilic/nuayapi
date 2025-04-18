@@ -32,22 +32,6 @@ try {
         if ($result->num_rows > 0) {
             $property = $result->fetch_assoc();
             
-            // Debug bilgisi ekranın en üstünde gösterilsin
-            echo '<div style="background-color: #f8d7da; padding: 10px; margin: 10px; border-radius: 5px;">';
-            echo '<h4>Debug Bilgileri:</h4>';
-            echo '<pre>';
-            echo "İlan ID: " . $property['id'] . "\n";
-            echo "Emlak Tipi: " . $property['property_type'] . "\n";
-            echo "square_meters: " . ($property['square_meters'] ?? 'NULL') . "\n";
-            echo "net_area: " . ($property['net_area'] ?? 'NULL') . "\n";
-            echo '</pre>';
-            echo '</div>';
-            
-            fwrite($debug_log, "Veritabanından gelen veriler:\n");
-            fwrite($debug_log, "property_type: " . $property['property_type'] . "\n");
-            fwrite($debug_log, "square_meters: " . ($property['square_meters'] ?? 'NULL') . "\n");
-            fwrite($debug_log, "net_area: " . ($property['net_area'] ?? 'NULL') . "\n");
-            
             // Tüm resimleri al
             $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
             $images_stmt = $conn->prepare($images_sql);
