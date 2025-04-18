@@ -237,40 +237,33 @@ try {
       display: block;
     }
 
-    .gallery-main {
-      margin-bottom: 10px;
-      border-radius: 8px;
-      overflow: hidden;
-      background-color: #f8f9fa;
-      border: 1px solid #e5e7eb;
-      height: 0;
-      padding-bottom: 75%; /* 4:3 oranı için */
-      position: relative;
-      cursor: pointer;
+    .gallery-thumbnails {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .gallery-main img {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .gallery-thumbnail {
+      height: 100px;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+
+    .gallery-thumbnail.active {
+      border-color: #2563eb;
+    }
+
+    .gallery-thumbnail img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center;
       display: block;
-    }
-
-    .gallery-counter {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 14px;
-      z-index: 10;
     }
 
     .gallery-actions {
@@ -317,41 +310,6 @@ try {
       color: #6c757d;
       cursor: not-allowed;
       opacity: 0.8;
-    }
-
-    .gallery-thumbnails-container {
-      position: relative;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    .gallery-thumbnails {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 100px);
-      gap: 10px;
-    }
-
-    .gallery-thumbnail {
-      height: 100px;
-      border-radius: 4px;
-      overflow: hidden;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.3s ease;
-      background-color: #f8f9fa;
-    }
-
-    .gallery-thumbnail.active {
-      border-color: #2563eb;
-    }
-
-    .gallery-thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
     }
 
     .gallery-pagination {
@@ -976,7 +934,7 @@ try {
           <!-- Sol Kolon - Fotoğraf Galerisi -->
           <div class="col-lg-5">
             <div class="property-gallery">
-              <!-- Main Image -->
+              <!-- Ana Resim -->
               <div class="main-image-container mb-3" style="max-height: 500px; height: auto; padding-bottom: 0;">
                   <img src="<?php 
                       echo !empty($images[0]['image_name']) 
@@ -984,19 +942,22 @@ try {
                              ? $images[0]['image_name'] 
                              : 'uploads/' . htmlspecialchars($images[0]['image_name']))
                           : 'assets/img/property-default.jpg';
-                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" onclick="changeImage(1)" style="max-height: 500px; width: 100%; object-fit: contain;">
+                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" style="max-height: 500px; width: 100%; object-fit: contain;">
               </div>
 
-              <!-- Thumbnail Images -->
-              <div class="thumbnail-container">
+              <!-- Galeri Küçük Resimler -->
+              <div class="gallery-thumbnails">
                   <?php foreach ($images as $index => $image): ?>
-                      <img src="<?php 
-                          echo !empty($image['image_name']) 
-                              ? (strpos($image['image_name'], 'assets/') === 0 
-                                 ? $image['image_name'] 
-                                 : 'uploads/' . htmlspecialchars($image['image_name']))
-                              : 'assets/img/property-default.jpg';
-                      ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" class="thumbnail" onclick="changeImage(<?php echo $index + 1; ?>)">
+                      <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
+                           onclick="selectImage(<?php echo $index; ?>)">
+                          <img src="<?php 
+                              echo !empty($image['image_name']) 
+                                  ? (strpos($image['image_name'], 'assets/') === 0 
+                                     ? $image['image_name'] 
+                                     : 'uploads/' . htmlspecialchars($image['image_name']))
+                                  : 'assets/img/property-default.jpg';
+                          ?>" alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
+                      </div>
                   <?php endforeach; ?>
               </div>
 
@@ -1010,37 +971,6 @@ try {
                     <i class="bi bi-play-circle"></i> Video
                   </a>
                 </div>
-              </div>
-
-              <div class="gallery-thumbnails-container">
-                <div class="gallery-thumbnails" id="galleryThumbnails">
-                  <?php foreach ($currentPageImages as $index => $image): ?>
-                    <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
-                         onclick="selectImage(<?php echo $index; ?>)">
-                      <img src="uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
-                           alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
-                    </div>
-                  <?php endforeach; ?>
-                </div>
-                
-                <?php if (count($images) > $imagesPerPage): ?>
-                <div class="gallery-pagination">
-                  <button class="gallery-pagination-btn prev-page" onclick="changePage(-1)">
-                    <i class="bi bi-chevron-left"></i>
-                  </button>
-                  
-                  <div class="gallery-pagination-dots">
-                    <?php for ($i = 0; $i < $totalPages; $i++): ?>
-                      <div class="gallery-pagination-dot <?php echo $i === $currentPage ? 'active' : ''; ?>" 
-                           onclick="goToPage(<?php echo $i; ?>)"></div>
-                    <?php endfor; ?>
-                  </div>
-                  
-                  <button class="gallery-pagination-btn next-page" onclick="changePage(1)">
-                    <i class="bi bi-chevron-right"></i>
-                  </button>
-                </div>
-                <?php endif; ?>
               </div>
             </div>
           </div>
@@ -1622,153 +1552,76 @@ try {
   <script>
     let currentImageIndex = 0;
     const images = <?php echo json_encode(array_map(function($img) { 
-        return 'uploads/' . $img['image_name']; 
+        return strpos($img['image_name'], 'assets/') === 0 
+            ? $img['image_name'] 
+            : 'uploads/' . $img['image_name']; 
     }, $images)); ?>;
-    const totalImages = images.length;
-    const allImages = <?php echo json_encode(array_map(function($img) {
-        return ['image_path' => 'uploads/' . $img['image_name']];
-    }, $images)); ?>;
-    const imagesPerPage = <?php echo $imagesPerPage; ?>;
-    const totalPages = <?php echo $totalPages; ?>;
-    let currentPage = <?php echo $currentPage; ?>;
-
-    function changeImage(direction) {
-      currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
-      updateImage();
-      syncPageWithImage();
-    }
 
     function selectImage(index) {
-      currentImageIndex = index;
-      updateImage();
-      syncPageWithImage();
+        currentImageIndex = index;
+        updateMainImage();
+        updateThumbnailsActiveState();
     }
 
-    function updateImage() {
-      const mainImage = document.getElementById('mainImage');
-      const counter = document.getElementById('currentImageIndex');
-      
-      mainImage.src = images[currentImageIndex];
-      counter.textContent = currentImageIndex + 1;
-
-      // Tüm thumbnail'ları güncelle
-      updateThumbnailsActiveState();
+    function updateMainImage() {
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = images[currentImageIndex];
     }
 
     function updateThumbnailsActiveState() {
-      document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
-        const absoluteIndex = currentPage * imagesPerPage + i;
-        thumb.classList.toggle('active', absoluteIndex === currentImageIndex);
-      });
-    }
-
-    function syncPageWithImage() {
-      const targetPage = Math.floor(currentImageIndex / imagesPerPage);
-      if (targetPage !== currentPage) {
-        goToPage(targetPage);
-      }
+        document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === currentImageIndex);
+        });
     }
 
     function openFullscreen() {
-      const modal = document.getElementById('photoModal');
-      const modalImage = document.getElementById('modalImage');
-      modalImage.src = images[currentImageIndex];
-      modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+        const modal = document.getElementById('photoModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = images[currentImageIndex];
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
-      const modal = document.getElementById('photoModal');
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
+        const modal = document.getElementById('photoModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
     function closeModalFromOverlay(event) {
-      if (event.target.className === 'photo-modal') {
-        closeModal();
-      }
+        if (event.target.className === 'photo-modal') {
+            closeModal();
+        }
     }
 
     function changeModalImage(direction) {
-      event.stopPropagation();
-      currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
-      const modalImage = document.getElementById('modalImage');
-      modalImage.src = images[currentImageIndex];
-      updateImage();
-      syncPageWithImage();
+        event.stopPropagation();
+        currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = images[currentImageIndex];
+        updateMainImage();
+        updateThumbnailsActiveState();
     }
 
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeModal();
-      } else if (e.key === 'ArrowLeft') {
-        if (document.getElementById('photoModal').style.display === 'block') {
-          changeModalImage(-1);
-          e.preventDefault();
-        } else {
-          changeImage(-1);
+        if (e.key === 'Escape') {
+            closeModal();
+        } else if (e.key === 'ArrowLeft') {
+            if (document.getElementById('photoModal').style.display === 'block') {
+                changeModalImage(-1);
+                e.preventDefault();
+            } else {
+                changeModalImage(-1);
+            }
+        } else if (e.key === 'ArrowRight') {
+            if (document.getElementById('photoModal').style.display === 'block') {
+                changeModalImage(1);
+                e.preventDefault();
+            } else {
+                changeModalImage(1);
+            }
         }
-      } else if (e.key === 'ArrowRight') {
-        if (document.getElementById('photoModal').style.display === 'block') {
-          changeModalImage(1);
-          e.preventDefault();
-        } else {
-          changeImage(1);
-        }
-      }
-    });
-
-    function changePage(direction) {
-      const newPage = currentPage + direction;
-      if (newPage >= 0 && newPage < totalPages) {
-        goToPage(newPage);
-      }
-    }
-
-    function goToPage(pageNumber) {
-      if (pageNumber >= 0 && pageNumber < totalPages) {
-        currentPage = pageNumber;
-        const startIndex = currentPage * imagesPerPage;
-        const endIndex = Math.min(startIndex + imagesPerPage, totalImages);
-        const pageImages = allImages.slice(startIndex, endIndex);
-        
-        // Update thumbnails
-        const thumbnailsContainer = document.getElementById('galleryThumbnails');
-        thumbnailsContainer.innerHTML = '';
-        
-        pageImages.forEach((image, index) => {
-          const absoluteIndex = startIndex + index;
-          const thumbnail = document.createElement('div');
-          thumbnail.className = `gallery-thumbnail ${absoluteIndex === currentImageIndex ? 'active' : ''}`;
-          thumbnail.onclick = () => selectImage(absoluteIndex);
-          
-          const img = document.createElement('img');
-          img.src = image.image_path;
-          img.alt = `${document.querySelector('#mainImage').alt} - Resim ${absoluteIndex + 1}`;
-          
-          thumbnail.appendChild(img);
-          thumbnailsContainer.appendChild(thumbnail);
-        });
-
-        // Update pagination dots
-        document.querySelectorAll('.gallery-pagination-dot').forEach((dot, index) => {
-          dot.classList.toggle('active', index === currentPage);
-        });
-
-        // Update navigation buttons visibility and state
-        const prevButton = document.querySelector('.prev-page');
-        const nextButton = document.querySelector('.next-page');
-        
-        prevButton.style.visibility = currentPage === 0 ? 'hidden' : 'visible';
-        nextButton.style.visibility = currentPage === totalPages - 1 ? 'hidden' : 'visible';
-      }
-    }
-
-    // Initialize pagination
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize first page
-      goToPage(0);
     });
 
     function openVideoModal() {
