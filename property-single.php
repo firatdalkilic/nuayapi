@@ -1423,20 +1423,6 @@ try {
           </div>
         </div>
 
-        <?php if (!empty($property['video_file'])): ?>
-        <div class="row mt-4">
-          <div class="col-12">
-            <div class="property-video">
-                <h4>Video</h4>
-                <video controls class="w-100">
-                    <source src="uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
-                    Tarayıcınız video oynatmayı desteklemiyor.
-                </video>
-            </div>
-          </div>
-        </div>
-        <?php endif; ?>
-
         <div class="row mt-4">
           <div class="col-12">
             <div class="property-description">
