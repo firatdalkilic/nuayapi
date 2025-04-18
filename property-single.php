@@ -1051,8 +1051,8 @@ try {
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
-                                <span>Alan:</span>
-                                <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
+                                <span>Alan (m²):</span>
+                                <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -1097,12 +1097,12 @@ try {
                         </div>
                         <?php endif; ?>
 
-                        <?php if (!empty($property['credit_eligible'])): ?>
+                        <?php if (isset($property['credit_eligible'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-credit-card"></i>
                                 <span>Krediye Uygun:</span>
-                                <strong><?php echo htmlspecialchars($property['credit_eligible']); ?></strong>
+                                <strong><?php echo $property['credit_eligible'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
