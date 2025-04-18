@@ -524,12 +524,6 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                                         <option value="İş Yeri" <?php echo $property['property_type'] == 'İş Yeri' ? 'selected' : ''; ?>>İş Yeri</option>
                                     </select>
                                 </div>
-                                <?php if ($property['property_type'] !== 'Arsa'): ?>
-                                <div class="col-md-6">
-                                    <label for="gross_area" class="form-label">Alan (m²) (Brüt)</label>
-                                    <input type="number" class="form-control" id="gross_area" name="gross_area" value="<?php echo htmlspecialchars($property['gross_area']); ?>">
-                                </div>
-                                <?php endif; ?>
                             </div>
 
                             <!-- Arsa özellikleri -->
@@ -588,10 +582,6 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                             <!-- İş yeri özellikleri -->
                             <div id="workplaceFields" style="display: <?php echo $property['property_type'] === 'İş Yeri' ? 'block' : 'none'; ?>">
                                 <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="net_area" class="form-label">m²</label>
-                                        <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($property['net_area']); ?>" required>
-                                    </div>
                                     <div class="col-md-6">
                                         <label for="room_count" class="form-label">Bölüm & Oda Sayısı</label>
                                         <input type="number" class="form-control" id="room_count" name="room_count" value="<?php echo htmlspecialchars($property['room_count']); ?>">
