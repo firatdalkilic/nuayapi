@@ -217,8 +217,19 @@ if (isset($_POST['generate'])) {
                 $property_id = $stmt->insert_id;
                 $created_count++;
                 
-                // Varsayılan resmi ekle
-                $image_name = isset($images[$i]) ? $images[$i] : "uploads/sample_konut_1.jpg";
+                // Tip'e göre örnek resim seç
+                $image_number = ($i % 5) + 1; // 1'den 5'e kadar döngüsel sayı
+                switch ($type) {
+                    case 'Konut':
+                        $image_name = "uploads/sample_konut_" . $image_number . ".jpg";
+                        break;
+                    case 'İş Yeri':
+                        $image_name = "uploads/sample_is_yeri_" . $image_number . ".jpg";
+                        break;
+                    case 'Arsa':
+                        $image_name = "uploads/sample_arsa_" . $image_number . ".jpg";
+                        break;
+                }
                 
                 $sql = "INSERT INTO property_images (property_id, image_name, is_featured, created_at) 
                        VALUES (?, ?, 1, NOW())";
