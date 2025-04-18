@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // SQL sorgusunu hazırla
         $sql = "INSERT INTO properties (
             title, price, status, location, neighborhood, property_type,
-            square_meters, floor, floor_location, building_age,
+            net_area, floor, floor_location, building_age,
             room_count, heating, credit_eligible, deed_status,
             description, agent_id, created_at
         ) VALUES (
@@ -61,14 +61,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $agent_id = $_SESSION['agent_id'] ?? null;
 
         // Parametre bağlama
-        $bind_params = [
-            "sdsssisssssssi",
-            $title, $price, $status, $neighborhood,
-            $square_meters, $floor, $floor_location, $building_age,
-            $room_count, $heating, $credit_eligible, $deed_status,
-            $description, $agent_id
-        ];
-        $stmt->bind_param(...$bind_params);
+        $cleaned_title = $title;
+        $cleaned_price = $price;
+        $cleaned_status = $status;
+        $cleaned_neighborhood = $neighborhood;
+        $cleaned_square_meters = $square_meters;
+        $cleaned_floor = $floor;
+        $cleaned_floor_location = $floor_location;
+        $cleaned_building_age = $building_age;
+        $cleaned_room_count = $room_count;
+        $cleaned_heating = $heating;
+        $cleaned_credit_eligible = $credit_eligible;
+        $cleaned_deed_status = $deed_status;
+        $cleaned_description = $description;
+
+        if (!$stmt->bind_param(
+            "sssssssssssss",
+            $cleaned_title,
+            $cleaned_price,
+            $cleaned_status,
+            $cleaned_neighborhood,
+            $cleaned_square_meters,  // This will be used for net_area
+            $cleaned_floor,
+            $cleaned_floor_location,
+            $cleaned_building_age,
+            $cleaned_room_count,
+            $cleaned_heating,
+            $cleaned_credit_eligible,
+            $cleaned_deed_status,
+            $cleaned_description
+        )) {
+            throw new Exception("Bind hatası: " . $stmt->error);
+        }
         
         // Execute sorgusu
         if (!$stmt->execute()) {
