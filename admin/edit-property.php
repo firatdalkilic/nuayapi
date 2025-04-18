@@ -377,6 +377,9 @@ if (!empty($floor_location) && !in_array($floor_location, $floor_options, true))
 
 error_log('Floor Location (Kaydetmeden önce): ' . $floor_location);
 error_log('Floor Location Tipi: ' . gettype($floor_location));
+
+// Hosting URL'sini tanımla
+define('HOSTING_URL', 'https://nuayapi.com.tr');
 ?>
 
 <!DOCTYPE html>
@@ -832,7 +835,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                                     <?php foreach ($images as $image): ?>
                                     <div class="col-md-3 mb-2">
                                         <div class="position-relative">
-                                            <img src="../uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
+                                            <img src="<?php echo HOSTING_URL; ?>/uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
                                                  class="img-thumbnail" 
                                                  alt="Property Image">
                                             <div class="d-flex position-absolute top-0 end-0">
@@ -873,7 +876,7 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                                     <label class="form-label">Mevcut Video</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <video width="320" height="240" controls>
-                                            <source src="../uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
+                                            <source src="<?php echo HOSTING_URL; ?>/uploads/videos/<?php echo htmlspecialchars($property['video_file']); ?>" type="video/mp4">
                                             Tarayıcınız video oynatmayı desteklemiyor.
                                         </video>
                                         <div class="form-check">
