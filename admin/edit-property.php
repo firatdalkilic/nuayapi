@@ -141,6 +141,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $deed_status, 
                 $id
             );
+        } else if ($property_type === 'İş Yeri') {
+            // İş yeri ilanı güncelleme sorgusu
+            $sql = "UPDATE properties SET 
+                title = ?, 
+                description = ?, 
+                price = ?, 
+                location = ?, 
+                neighborhood = ?, 
+                property_type = ?,
+                status = ?, 
+                net_area = ?, 
+                floor_location = ?, 
+                building_age = ?,
+                room_count = ?, 
+                heating = ?, 
+                eligible_for_credit = ?, 
+                deed_status = ?,
+                updated_at = NOW()
+                WHERE id = ?";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param(
+                "ssdsssssssisssi",
+                $title, 
+                $description, 
+                $price, 
+                $location,
+                $neighborhood, 
+                $property_type,
+                $status, 
+                $net_area,
+                $floor_location, 
+                $building_age,
+                $room_count, 
+                $heating,
+                $eligible_for_credit, 
+                $deed_status,
+                $id
+            );
         } else {
             // Diğer ilan tipleri için mevcut güncelleme sorgusu
             if (isAgent()) {
@@ -546,6 +585,82 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
                                 </div>
                             </div>
 
+                            <!-- İş yeri özellikleri -->
+                            <div id="workplaceFields" style="display: <?php echo $property['property_type'] === 'İş Yeri' ? 'block' : 'none'; ?>">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="net_area" class="form-label">m²</label>
+                                        <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($property['net_area']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="room_count" class="form-label">Bölüm & Oda Sayısı</label>
+                                        <input type="number" class="form-control" id="room_count" name="room_count" value="<?php echo htmlspecialchars($property['room_count']); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="floor_location" class="form-label">Bulunduğu Kat</label>
+                                        <select class="form-select" id="floor_location" name="floor_location">
+                                            <option value="">Seçiniz...</option>
+                                            <?php
+                                            foreach ($floor_options as $option) {
+                                                $selected = isset($property['floor_location']) && trim($property['floor_location']) === $option ? 'selected' : '';
+                                                echo '<option value="' . htmlspecialchars($option) . '" ' . $selected . '>' . htmlspecialchars($option) . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="building_age" class="form-label">Bina Yaşı</label>
+                                        <select class="form-select" id="building_age" name="building_age">
+                                            <option value="">Seçiniz...</option>
+                                            <option value="0" <?php echo ($property['building_age'] === '0') ? 'selected' : ''; ?>>0 (Yeni)</option>
+                                            <option value="1" <?php echo ($property['building_age'] === '1') ? 'selected' : ''; ?>>1</option>
+                                            <option value="2" <?php echo ($property['building_age'] === '2') ? 'selected' : ''; ?>>2</option>
+                                            <option value="3" <?php echo ($property['building_age'] === '3') ? 'selected' : ''; ?>>3</option>
+                                            <option value="4" <?php echo ($property['building_age'] === '4') ? 'selected' : ''; ?>>4</option>
+                                            <option value="5" <?php echo ($property['building_age'] === '5') ? 'selected' : ''; ?>>5</option>
+                                            <option value="6" <?php echo ($property['building_age'] === '6') ? 'selected' : ''; ?>>6</option>
+                                            <option value="7" <?php echo ($property['building_age'] === '7') ? 'selected' : ''; ?>>7</option>
+                                            <option value="8" <?php echo ($property['building_age'] === '8') ? 'selected' : ''; ?>>8</option>
+                                            <option value="9" <?php echo ($property['building_age'] === '9') ? 'selected' : ''; ?>>9</option>
+                                            <option value="10" <?php echo ($property['building_age'] === '10') ? 'selected' : ''; ?>>10</option>
+                                            <option value="11-15" <?php echo ($property['building_age'] === '11-15') ? 'selected' : ''; ?>>11-15</option>
+                                            <option value="16-20" <?php echo ($property['building_age'] === '16-20') ? 'selected' : ''; ?>>16-20</option>
+                                            <option value="21-25" <?php echo ($property['building_age'] === '21-25') ? 'selected' : ''; ?>>21-25</option>
+                                            <option value="26+" <?php echo ($property['building_age'] === '26+') ? 'selected' : ''; ?>>26+</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="heating" class="form-label">Isıtma</label>
+                                        <select class="form-select" id="heating" name="heating">
+                                            <option value="">Seçiniz...</option>
+                                            <?php
+                                            $heating_types = ["Doğalgaz", "Merkezi", "Klima", "Soba", "Yok"];
+                                            foreach ($heating_types as $type) {
+                                                $selected = ($property['heating'] === $type) ? 'selected' : '';
+                                                echo "<option value=\"$type\" $selected>$type</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="deed_status" class="form-label">Tapu Durumu</label>
+                                        <select class="form-select" id="deed_status" name="deed_status">
+                                            <option value="">Seçiniz...</option>
+                                            <option value="Kat Mülkiyetli" <?php echo ($property['deed_status'] === 'Kat Mülkiyetli') ? 'selected' : ''; ?>>Kat Mülkiyetli</option>
+                                            <option value="Kat İrtifaklı" <?php echo ($property['deed_status'] === 'Kat İrtifaklı') ? 'selected' : ''; ?>>Kat İrtifaklı</option>
+                                            <option value="Müstakil Tapulu" <?php echo ($property['deed_status'] === 'Müstakil Tapulu') ? 'selected' : ''; ?>>Müstakil Tapulu</option>
+                                            <option value="Hisseli Tapulu" <?php echo ($property['deed_status'] === 'Hisseli Tapulu') ? 'selected' : ''; ?>>Hisseli Tapulu</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Konut özellikleri -->
                             <div id="residentialFields">
                                 <div class="row mb-3">
@@ -849,42 +964,33 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
             const propertyType = document.getElementById('property_type').value;
             const landFields = document.getElementById('landFields');
             const residentialFields = document.getElementById('residentialFields');
+            const workplaceFields = document.getElementById('workplaceFields');
             const zoningStatus = document.getElementById('zoning_status');
 
+            // Tüm alanları gizle
+            if (residentialFields) residentialFields.style.display = 'none';
+            if (landFields) landFields.style.display = 'none';
+            if (workplaceFields) workplaceFields.style.display = 'none';
+
+            // Seçilen tipe göre ilgili alanları göster
             if (propertyType === 'Arsa') {
-                landFields.style.display = 'block';
-                residentialFields.style.display = 'none';
-                
-                // Arsa için zorunlu alanları etkinleştir
-                if (zoningStatus) {
-                    zoningStatus.required = true;
-                }
-                
-                // Konut alanlarının required özelliğini kaldır
-                const roomCount = document.getElementById('room_count');
-                const livingRoom = document.getElementById('living_room');
-                const bathroomCount = document.getElementById('bathroom_count');
-                const heating = document.getElementById('heating');
-                
-                if (roomCount) roomCount.required = false;
-                if (livingRoom) livingRoom.required = false;
-                if (bathroomCount) bathroomCount.required = false;
-                if (heating) heating.required = false;
+                if (landFields) landFields.style.display = 'block';
+            } else if (propertyType === 'İş Yeri') {
+                if (workplaceFields) workplaceFields.style.display = 'block';
             } else {
-                landFields.style.display = 'none';
-                residentialFields.style.display = 'block';
-                
-                // Arsa alanlarının required özelliğini kaldır
-                if (zoningStatus) {
-                    zoningStatus.required = false;
-                }
+                if (residentialFields) residentialFields.style.display = 'block';
+            }
+
+            // Arsa için zorunlu alanları etkinleştir
+            if (propertyType === 'Arsa' && zoningStatus) {
+                zoningStatus.required = true;
             }
         }
 
-        // Sayfa yüklendiğinde
+        // Sayfa yüklendiğinde ve property_type değeri değiştiğinde çalıştır
         document.addEventListener('DOMContentLoaded', function() {
-            // Emlak tipine göre alanları düzenle
             togglePropertyFields();
+            document.getElementById('property_type').addEventListener('change', togglePropertyFields);
             
             // Fiyat alanını formatla
             const priceInput = document.getElementById('price');
