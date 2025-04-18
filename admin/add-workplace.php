@@ -9,29 +9,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Debug fonksiyonu
-function debug($data) {
-    echo '<pre>';
-    var_dump($data);
-    echo '</pre>';
-}
-
-// POST verilerini debug et
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "POST Verileri:<br>";
-    debug($_POST);
-    
-    echo "Temizlenmiş Veriler:<br>";
-    $clean_data = array_map('sanitize_input', $_POST);
-    debug($clean_data);
-}
-
-// Dosya yükleme bilgilerini debug et
-if (!empty($_FILES)) {
-    echo "Dosya Yükleme Bilgileri:<br>";
-    debug($_FILES);
-}
-
 // Initialize variables
 $title = $price = $status = $neighborhood = $square_meters = $floor = $floor_location = '';
 $building_age = $room_count = $heating = $credit_eligible = $deed_status = $description = '';
@@ -54,13 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $credit_eligible = sanitize_input($_POST['credit_eligible'] ?? '');
         $deed_status = sanitize_input($_POST['deed_status'] ?? '');
         $description = sanitize_input($_POST['description'] ?? '');
-
-        // Debug temizlenmiş değişkenleri
-        echo "Temizlenmiş ve İşlenmiş Değişkenler:<br>";
-        $debug_vars = compact('title', 'price', 'status', 'neighborhood', 'square_meters', 'floor', 
-                            'floor_location', 'building_age', 'room_count', 'heating', 'credit_eligible', 
-                            'deed_status', 'description');
-        debug($debug_vars);
 
         // Validate required fields
         if (empty($title) || empty($price) || empty($status) || empty($neighborhood)) {
