@@ -6,12 +6,19 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../admin/config.php';
 
 try {
-    // Önce mevcut foreign key'i kaldır
-    $dropForeignKeySQL = "ALTER TABLE properties DROP FOREIGN KEY IF EXISTS properties_ibfk_1";
-    if ($conn->query($dropForeignKeySQL)) {
-        echo "Eski foreign key başarıyla kaldırıldı.\n";
-    } else {
-        echo "Foreign key zaten kaldırılmış veya mevcut değil.\n";
+    // Önce foreign key'leri kontrol et
+    $checkForeignKeySQL = "SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS 
+                          WHERE TABLE_NAME = 'properties' 
+                          AND CONSTRAINT_TYPE = 'FOREIGN KEY'";
+    $result = $conn->query($checkForeignKeySQL);
+    
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $dropForeignKeySQL = "ALTER TABLE properties DROP FOREIGN KEY " . $row['CONSTRAINT_NAME'];
+            if ($conn->query($dropForeignKeySQL)) {
+                echo "Foreign key kaldırıldı: " . $row['CONSTRAINT_NAME'] . "\n";
+            }
+        }
     }
 
     // agent_id alanını NULL değer kabul edecek şekilde güncelle
