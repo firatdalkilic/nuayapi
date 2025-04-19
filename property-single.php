@@ -1578,14 +1578,17 @@ try {
 
     function selectImage(index) {
         currentImageIndex = index;
-        updateMainImage();
-        updateGalleryPage();
-        updatePhotoCounter();
-
-        // Eğer seçilen fotoğraf mevcut sayfada değilse, ilgili sayfaya geç
         const newPage = Math.floor(index / imagesPerPage);
+        
+        // Önce ana resmi güncelle
+        updateMainImage();
+        updatePhotoCounter();
+        
+        // Sonra sayfa değişimi gerekiyorsa yap
         if (newPage !== currentPage) {
-            goToPage(newPage);
+            goToPage(newPage, false);
+        } else {
+            updateGalleryPage();
         }
     }
 
@@ -1628,18 +1631,21 @@ try {
     function changePage(direction) {
         const newPage = currentPage + direction;
         if (newPage >= 0 && newPage < totalPages) {
-            goToPage(newPage);
+            goToPage(newPage, true);
         }
     }
 
-    function goToPage(pageNumber) {
+    function goToPage(pageNumber, selectFirstImage = true) {
         currentPage = pageNumber;
-        const startIndex = currentPage * imagesPerPage;
         updateGalleryPage();
         
-        // Eğer mevcut fotoğraf yeni sayfada değilse, sayfadaki ilk fotoğrafı seç
-        if (currentImageIndex < startIndex || currentImageIndex >= startIndex + imagesPerPage) {
-            selectImage(startIndex);
+        // Eğer selectFirstImage true ise ve mevcut fotoğraf bu sayfada değilse
+        // sayfadaki ilk fotoğrafı seç
+        if (selectFirstImage) {
+            const startIndex = currentPage * imagesPerPage;
+            if (currentImageIndex < startIndex || currentImageIndex >= startIndex + imagesPerPage) {
+                selectImage(startIndex);
+            }
         }
     }
 
@@ -1666,13 +1672,6 @@ try {
     function changeModalImage(direction) {
         event.stopPropagation();
         const newIndex = (currentImageIndex + direction + images.length) % images.length;
-        
-        // Eğer yeni index farklı bir sayfada ise, o sayfaya geç
-        const newPage = Math.floor(newIndex / imagesPerPage);
-        if (newPage !== currentPage) {
-            goToPage(newPage);
-        }
-        
         selectImage(newIndex);
     }
 
