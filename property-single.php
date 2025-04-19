@@ -1536,10 +1536,10 @@ try {
         <i class="bi bi-x-lg"></i>
       </button>
       <img id="modalImage" class="modal-image" src="" alt="">
-      <a href="#" class="modal-nav modal-prev" onclick="changeModalImage(-1); return false;">
+      <a href="#" class="modal-nav modal-prev" onclick="changeModalImage(-1, true); return false;">
         <i class="bi bi-chevron-left"></i>
       </a>
-      <a href="#" class="modal-nav modal-next" onclick="changeModalImage(1); return false;">
+      <a href="#" class="modal-nav modal-next" onclick="changeModalImage(1, true); return false;">
         <i class="bi bi-chevron-right"></i>
       </a>
     </div>
@@ -1621,8 +1621,15 @@ try {
 
         const prevBtn = document.querySelector('.gallery-pagination-btn:first-child');
         const nextBtn = document.querySelector('.gallery-pagination-btn:last-child');
-        prevBtn.classList.toggle('hidden', currentPage === 0);
-        nextBtn.classList.toggle('hidden', currentPage === totalPages - 1);
+        
+        // Sayfa sayısı 1'den fazla değilse okları gizle
+        if (totalPages <= 1) {
+            prevBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+        } else {
+            prevBtn.classList.toggle('hidden', currentPage === 0);
+            nextBtn.classList.toggle('hidden', currentPage === totalPages - 1);
+        }
 
         const pageInfo = document.querySelector('.gallery-page-info');
         pageInfo.textContent = `${currentPage + 1}/${totalPages} Fotoğraf`;
@@ -1655,35 +1662,48 @@ try {
         modalImage.src = images[currentImageIndex];
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
+        updateModalNavigation();
     }
 
-    function closeModal() {
-        const modal = document.getElementById('photoModal');
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    function closeModalFromOverlay(event) {
-        if (event.target.className === 'photo-modal') {
-            closeModal();
+    function updateModalNavigation() {
+        const modalPrev = document.querySelector('.modal-prev');
+        const modalNext = document.querySelector('.modal-next');
+        
+        if (modalPrev && modalNext) {
+            modalPrev.style.display = currentImageIndex === 0 ? 'none' : 'flex';
+            modalNext.style.display = currentImageIndex === images.length - 1 ? 'none' : 'flex';
         }
     }
 
-    function changeModalImage(direction) {
-        event.stopPropagation();
+    function changeModalImage(direction, fromModal = false) {
+        if (!fromModal) {
+            event.stopPropagation();
+        }
         const newIndex = (currentImageIndex + direction + images.length) % images.length;
         selectImage(newIndex);
+        
+        // Eğer modal açıksa, modal resmini de güncelle
+        const modalImage = document.getElementById('modalImage');
+        if (modalImage && modalImage.parentElement.style.display === 'block') {
+            modalImage.src = images[newIndex];
+            updateModalNavigation();
+        }
     }
 
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
     document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('photoModal');
+        const isModalOpen = modal && modal.style.display === 'block';
+        
         if (e.key === 'Escape') {
-            closeModal();
+            if (isModalOpen) {
+                closeModal();
+            }
         } else if (e.key === 'ArrowLeft') {
-            changeModalImage(-1);
+            changeModalImage(-1, isModalOpen);
             e.preventDefault();
         } else if (e.key === 'ArrowRight') {
-            changeModalImage(1);
+            changeModalImage(1, isModalOpen);
             e.preventDefault();
         }
     });
