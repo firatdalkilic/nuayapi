@@ -1053,7 +1053,10 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>Alan</span>
-                                <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
+                                <strong><?php 
+                                    $square_meters = !empty($property['square_meters']) ? (float)$property['square_meters'] : 0;
+                                    echo number_format($square_meters, 0, ',', '.') . ' m²'; 
+                                ?></strong>
                             </div>
                         </div>
 
