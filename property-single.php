@@ -219,13 +219,13 @@ try {
     }
 
     .main-image-container {
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       border-radius: 8px;
       overflow: hidden;
       background-color: #f8f9fa;
       border: 1px solid #e5e7eb;
       width: 100%;
-      height: 500px;
+      height: 400px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -234,21 +234,20 @@ try {
     .main-image-container img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
     }
 
     .gallery-thumbnails {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 100px);
-      gap: 10px;
-      margin-top: 10px;
-      overflow: hidden;
+      grid-template-rows: repeat(2, 120px);
+      gap: 8px;
+      margin-top: 15px;
     }
 
     .gallery-thumbnail {
-      height: 100px;
+      height: 120px;
       border-radius: 4px;
       overflow: hidden;
       cursor: pointer;
@@ -369,11 +368,16 @@ try {
     @media (max-width: 768px) {
       .gallery-thumbnails {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 100px);
+        grid-auto-rows: 100px;
+        gap: 5px;
       }
 
       .main-image-container {
-        height: 350px;
+        height: 300px;
+      }
+
+      .gallery-thumbnail {
+        height: 100px;
       }
     }
 
@@ -516,15 +520,16 @@ try {
 
     .modal-content {
       position: relative;
-      width: 80%;
-      height: 90%;
-      margin: 2% auto;
+      width: 90%;
+      height: 80vh;
+      margin: 5vh auto;
     }
 
     .modal-image {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      background: #000;
     }
 
     .modal-close {
