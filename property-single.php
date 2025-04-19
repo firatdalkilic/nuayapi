@@ -241,25 +241,21 @@ try {
     .gallery-thumbnails {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 120px);
+      grid-template-rows: repeat(2, 80px);
       gap: 8px;
       margin-top: 15px;
       overflow: hidden;
-      max-height: 248px;
+      max-height: 168px;
     }
 
     .gallery-thumbnail {
-      height: 120px;
+      height: 80px;
       border-radius: 4px;
       overflow: hidden;
       cursor: pointer;
       border: 2px solid transparent;
       transition: all 0.3s ease;
       background-color: #f8f9fa;
-    }
-
-    .gallery-thumbnail.active {
-      border-color: #2563eb;
     }
 
     .gallery-thumbnail img {
@@ -371,9 +367,9 @@ try {
     @media (max-width: 768px) {
       .gallery-thumbnails {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 100px);
+        grid-template-rows: repeat(2, 60px);
         gap: 5px;
-        max-height: 205px;
+        max-height: 125px;
       }
 
       .main-image-container {
@@ -381,7 +377,7 @@ try {
       }
 
       .gallery-thumbnail {
-        height: 100px;
+        height: 60px;
       }
     }
 
@@ -913,6 +909,19 @@ try {
                   ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
               </div>
 
+              <!-- Galeri Aksiyonları -->
+              <div class="gallery-actions">
+                <div class="action-links">
+                  <a href="#" class="gallery-link" onclick="openFullscreen(); return false;">
+                    <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
+                  </a>
+                  <a href="#" class="gallery-link <?php echo empty($property['video_file']) ? 'disabled' : ''; ?>" 
+                     onclick="<?php echo !empty($property['video_file']) ? 'openVideoModal(); return false;' : 'return false;'; ?>">
+                    <i class="bi bi-play-circle"></i> Video
+                  </a>
+                </div>
+              </div>
+
               <!-- Galeri Küçük Resimler -->
               <div class="gallery-thumbnails">
                   <?php foreach ($images as $index => $image): ?>
@@ -927,18 +936,6 @@ try {
                           ?>" alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
                       </div>
                   <?php endforeach; ?>
-              </div>
-
-              <div class="gallery-actions">
-                <div class="action-links">
-                  <a href="#" class="gallery-link" onclick="openFullscreen(); return false;">
-                    <i class="bi bi-arrows-fullscreen"></i> Büyük Fotoğraf
-                  </a>
-                  <a href="#" class="gallery-link <?php echo empty($property['video_file']) ? 'disabled' : ''; ?>" 
-                     onclick="<?php echo !empty($property['video_file']) ? 'openVideoModal(); return false;' : 'return false;'; ?>">
-                    <i class="bi bi-play-circle"></i> Video
-                  </a>
-                </div>
               </div>
             </div>
           </div>
