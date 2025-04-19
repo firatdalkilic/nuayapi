@@ -14,13 +14,16 @@ try {
         fwrite($debug_log, "\n\n" . date('Y-m-d H:i:s') . " - İLAN DETAY SAYFASI\n");
         fwrite($debug_log, "İlan ID: $property_id\n");
         
-        // İlan detaylarını ve öne çıkan resmi al
+        // İlan detaylarını, öne çıkan resmi ve tüm resimleri tek sorguda al
         $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
-                a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link 
+                a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link,
+                GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC, pi2.display_order) as all_images
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id
-                WHERE p.id = ?";
+                LEFT JOIN property_images pi2 ON p.id = pi2.property_id
+                WHERE p.id = ?
+                GROUP BY p.id";
         
         fwrite($debug_log, "SQL Sorgusu: $sql\n");
         
@@ -32,16 +35,13 @@ try {
         if ($result->num_rows > 0) {
             $property = $result->fetch_assoc();
             
-            // Tüm resimleri al
-            $images_sql = "SELECT * FROM property_images WHERE property_id = ? ORDER BY is_featured DESC";
-            $images_stmt = $conn->prepare($images_sql);
-            $images_stmt->bind_param("i", $property_id);
-            $images_stmt->execute();
-            $images_result = $images_stmt->get_result();
-            
+            // Tüm resimleri diziye dönüştür
             $images = [];
-            while ($image = $images_result->fetch_assoc()) {
-                $images[] = $image;
+            $all_images = explode(',', $property['all_images']);
+            foreach ($all_images as $image) {
+                if (!empty($image)) {
+                    $images[] = ['image_name' => $image];
+                }
             }
 
             // Tüm resimleri aldıktan sonra, floor_options tanımlanıyor

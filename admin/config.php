@@ -26,7 +26,7 @@ if ($jawsdb_url) {
 }
 
 // Veritabanı bağlantısı
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli("p:" . $servername, $username, $password, $dbname);
 
 // Bağlantı kontrolü
 if ($conn->connect_error) {
@@ -34,14 +34,8 @@ if ($conn->connect_error) {
     die("Bağlantı hatası: " . $conn->connect_error);
 }
 
-// Türkçe karakter desteği
+// Türkçe karakter desteği için tek bir ayar yeterli
 $conn->set_charset("utf8mb4");
-mysqli_set_charset($conn, "utf8mb4");
-
-// Karakter seti kontrolü
-$conn->query("SET NAMES utf8mb4");
-$conn->query("SET CHARACTER SET utf8mb4");
-$conn->query("SET COLLATION_CONNECTION = 'utf8mb4_unicode_ci'");
 
 // Test query to check if tables exist
 $test_query = "SHOW TABLES LIKE 'properties'";
