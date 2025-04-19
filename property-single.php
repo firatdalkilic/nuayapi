@@ -341,15 +341,15 @@ try {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
+      gap: 5px;
       margin-top: 15px;
       padding: 10px 0;
     }
 
     .gallery-pagination-btn {
-      width: 35px;
-      height: 35px;
-      background: #f8f9fa;
+      width: 30px;
+      height: 30px;
+      background: #fff;
       border: 1px solid #e5e7eb;
       border-radius: 50%;
       cursor: pointer;
@@ -358,10 +358,11 @@ try {
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
+      font-size: 14px;
     }
 
     .gallery-pagination-btn:hover:not(:disabled) {
-      background: #e5e7eb;
+      background: #f8f9fa;
       transform: scale(1.05);
     }
 
@@ -372,7 +373,8 @@ try {
 
     .gallery-pagination-dots {
       display: flex;
-      gap: 8px;
+      gap: 5px;
+      margin: 0 10px;
     }
 
     .gallery-pagination-dot {
@@ -387,6 +389,12 @@ try {
     .gallery-pagination-dot.active {
       background: #2563eb;
       transform: scale(1.2);
+    }
+
+    .gallery-page-info {
+      color: #6b7280;
+      font-size: 14px;
+      margin: 0 10px;
     }
 
     @media (max-width: 768px) {
@@ -952,9 +960,9 @@ try {
 
               <!-- Galeri Küçük Resimler -->
               <div class="gallery-thumbnails">
-                  <?php foreach ($images as $index => $image): ?>
-                      <div class="gallery-thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
-                           onclick="selectImage(<?php echo $index; ?>)">
+                  <?php foreach ($currentPageImages as $index => $image): ?>
+                      <div class="gallery-thumbnail <?php echo ($currentPage * $imagesPerPage + $index) === 0 ? 'active' : ''; ?>" 
+                           onclick="selectImage(<?php echo $currentPage * $imagesPerPage + $index; ?>)">
                           <img src="<?php 
                               echo !empty($image['image_name']) 
                                   ? (strpos($image['image_name'], 'assets/') === 0 
@@ -964,6 +972,22 @@ try {
                           ?>" alt="<?php echo htmlspecialchars($property['title']); ?> - Resim <?php echo $index + 1; ?>">
                       </div>
                   <?php endforeach; ?>
+              </div>
+
+              <div class="gallery-pagination">
+                  <button class="gallery-pagination-btn" onclick="changePage(-1)" <?php echo $currentPage === 0 ? 'disabled' : ''; ?>>
+                      <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <div class="gallery-pagination-dots">
+                      <?php for ($i = 0; $i < $totalPages; $i++): ?>
+                          <div class="gallery-pagination-dot <?php echo $i === $currentPage ? 'active' : ''; ?>" 
+                               onclick="goToPage(<?php echo $i; ?>)"></div>
+                      <?php endfor; ?>
+                  </div>
+                  <button class="gallery-pagination-btn" onclick="changePage(1)" <?php echo $currentPage === $totalPages - 1 ? 'disabled' : ''; ?>>
+                      <i class="bi bi-chevron-right"></i>
+                  </button>
+                  <span class="gallery-page-info"><?php echo ($currentPage + 1) . '/' . $totalPages; ?> Fotoğraf</span>
               </div>
             </div>
           </div>
@@ -1558,6 +1582,12 @@ try {
         updateMainImage();
         updateGalleryPage();
         updatePhotoCounter();
+
+        // Eğer seçilen fotoğraf mevcut sayfada değilse, ilgili sayfaya geç
+        const newPage = Math.floor(index / imagesPerPage);
+        if (newPage !== currentPage) {
+            goToPage(newPage);
+        }
     }
 
     function updateMainImage() {
@@ -1583,34 +1613,36 @@ try {
         }
 
         // Sayfalama kontrollerini güncelle
-        if (totalPages > 1) {
-            paginationContainer.innerHTML = `
-                <button class="gallery-pagination-btn" onclick="changePage(-1)" ${currentPage === 0 ? 'disabled' : ''}>
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-                <div class="gallery-pagination-dots">
-                    ${Array.from({length: totalPages}, (_, i) => `
-                        <div class="gallery-pagination-dot ${i === currentPage ? 'active' : ''}" 
-                             onclick="goToPage(${i})"></div>
-                    `).join('')}
-                </div>
-                <button class="gallery-pagination-btn" onclick="changePage(1)" ${currentPage === totalPages - 1 ? 'disabled' : ''}>
-                    <i class="bi bi-chevron-right"></i>
-                </button>
-            `;
-        } else {
-            paginationContainer.innerHTML = '';
-        }
+        const dots = document.querySelectorAll('.gallery-pagination-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentPage);
+        });
+
+        const prevBtn = document.querySelector('.gallery-pagination-btn:first-child');
+        const nextBtn = document.querySelector('.gallery-pagination-btn:last-child');
+        prevBtn.disabled = currentPage === 0;
+        nextBtn.disabled = currentPage === totalPages - 1;
+
+        const pageInfo = document.querySelector('.gallery-page-info');
+        pageInfo.textContent = `${currentPage + 1}/${totalPages} Fotoğraf`;
     }
 
     function changePage(direction) {
-        currentPage = Math.max(0, Math.min(currentPage + direction, totalPages - 1));
-        updateGalleryPage();
+        const newPage = currentPage + direction;
+        if (newPage >= 0 && newPage < totalPages) {
+            goToPage(newPage);
+        }
     }
 
     function goToPage(pageNumber) {
         currentPage = pageNumber;
+        const startIndex = currentPage * imagesPerPage;
         updateGalleryPage();
+        
+        // Eğer mevcut fotoğraf yeni sayfada değilse, sayfadaki ilk fotoğrafı seç
+        if (currentImageIndex < startIndex || currentImageIndex >= startIndex + imagesPerPage) {
+            selectImage(startIndex);
+        }
     }
 
     function openFullscreen() {
@@ -1635,14 +1667,15 @@ try {
 
     function changeModalImage(direction) {
         event.stopPropagation();
-        currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
-        const modalImage = document.getElementById('modalImage');
-        if (modalImage) {
-            modalImage.src = images[currentImageIndex];
+        const newIndex = (currentImageIndex + direction + images.length) % images.length;
+        
+        // Eğer yeni index farklı bir sayfada ise, o sayfaya geç
+        const newPage = Math.floor(newIndex / imagesPerPage);
+        if (newPage !== currentPage) {
+            goToPage(newPage);
         }
-        updateMainImage();
-        updateGalleryPage();
-        updatePhotoCounter();
+        
+        selectImage(newIndex);
     }
 
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
