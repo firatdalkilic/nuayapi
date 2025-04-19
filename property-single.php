@@ -1076,7 +1076,7 @@ try {
                                 <span>Alan</span>
                                 <strong><?php 
                                     $square_meters = !empty($property['square_meters']) ? (float)$property['square_meters'] : 0;
-                                    echo number_format($square_meters, 0, ',', '.'); 
+                                    echo number_format($square_meters, 0, ',', '.') . ' m²'; 
                                 ?></strong>
                             </div>
                         </div>
@@ -1294,7 +1294,7 @@ try {
                             <div class="detail-item">
                                 <i class="bi bi-house"></i>
                                 <span>Durum:</span>
-                                <strong><?php echo htmlspecialchars($property['status']) . ' ' . htmlspecialchars($property['property_type']); ?></strong>
+                                <strong><?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?> <?php echo htmlspecialchars($property['property_type']); ?></strong>
                             </div>
                         </div>
                         <div class="col-md-6">
