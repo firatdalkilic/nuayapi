@@ -361,14 +361,13 @@ try {
       font-size: 14px;
     }
 
-    .gallery-pagination-btn:hover:not(:disabled) {
+    .gallery-pagination-btn:hover {
       background: #f8f9fa;
       transform: scale(1.05);
     }
 
-    .gallery-pagination-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .gallery-pagination-btn.hidden {
+      display: none;
     }
 
     .gallery-pagination-dots {
@@ -975,7 +974,7 @@ try {
               </div>
 
               <div class="gallery-pagination">
-                  <button class="gallery-pagination-btn" onclick="changePage(-1)" <?php echo $currentPage === 0 ? 'disabled' : ''; ?>>
+                  <button class="gallery-pagination-btn <?php echo $currentPage === 0 ? 'hidden' : ''; ?>" onclick="changePage(-1)">
                       <i class="bi bi-chevron-left"></i>
                   </button>
                   <div class="gallery-pagination-dots">
@@ -984,7 +983,7 @@ try {
                                onclick="goToPage(<?php echo $i; ?>)"></div>
                       <?php endfor; ?>
                   </div>
-                  <button class="gallery-pagination-btn" onclick="changePage(1)" <?php echo $currentPage === $totalPages - 1 ? 'disabled' : ''; ?>>
+                  <button class="gallery-pagination-btn <?php echo $currentPage === $totalPages - 1 ? 'hidden' : ''; ?>" onclick="changePage(1)">
                       <i class="bi bi-chevron-right"></i>
                   </button>
                   <span class="gallery-page-info"><?php echo ($currentPage + 1) . '/' . $totalPages; ?> Fotoğraf</span>
@@ -1600,7 +1599,6 @@ try {
         const startIndex = currentPage * imagesPerPage;
         const endIndex = Math.min(startIndex + imagesPerPage, images.length);
         const thumbnailsContainer = document.querySelector('.gallery-thumbnails');
-        const paginationContainer = document.querySelector('.gallery-pagination');
         
         // Thumbnail'leri güncelle
         thumbnailsContainer.innerHTML = '';
@@ -1620,8 +1618,8 @@ try {
 
         const prevBtn = document.querySelector('.gallery-pagination-btn:first-child');
         const nextBtn = document.querySelector('.gallery-pagination-btn:last-child');
-        prevBtn.disabled = currentPage === 0;
-        nextBtn.disabled = currentPage === totalPages - 1;
+        prevBtn.classList.toggle('hidden', currentPage === 0);
+        nextBtn.classList.toggle('hidden', currentPage === totalPages - 1);
 
         const pageInfo = document.querySelector('.gallery-page-info');
         pageInfo.textContent = `${currentPage + 1}/${totalPages} Fotoğraf`;
