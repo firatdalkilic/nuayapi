@@ -504,12 +504,24 @@ define('HOSTING_URL', 'https://nuayapi.com.tr');
                                     <input type="text" class="form-control" id="price" name="price" value="<?php echo number_format($property['price'], 0, ',', '.'); ?>" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="net_area" class="form-label">Alan (m²)</label>
-                                    <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($property['net_area']); ?>" required>
+                                    <label for="net_area" class="form-label">Net Metrekare (m²)</label>
+                                    <input type="number" class="form-control" id="net_area" name="net_area" 
+                                           min="0" step="0.1" required 
+                                           value="<?php echo isset($property['net_area']) && $property['net_area'] > 0 ? number_format((float)$property['net_area'], 1, '.', '') : ''; ?>"
+                                           placeholder="Örn: 85.5">
+                                    <small class="text-muted">Net kullanım alanını giriniz</small>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="gross_area" class="form-label">Brüt Metrekare (m²)</label>
+                                    <input type="number" class="form-control" id="gross_area" name="gross_area" 
+                                           min="0" step="0.1"
+                                           value="<?php echo htmlspecialchars($property['gross_area']); ?>"
+                                           placeholder="Örn: 95.5">
+                                    <small class="text-muted">Brüt alan net alandan büyük olmalıdır</small>
+                                </div>
                                 <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
@@ -517,6 +529,9 @@ define('HOSTING_URL', 'https://nuayapi.com.tr');
                                         <option value="sale" <?php echo $property['status'] == 'sale' ? 'selected' : ''; ?>>Satılık</option>
                                     </select>
                                 </div>
+                            </div>
+
+                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="property_type" class="form-label">Emlak Tipi</label>
                                     <select class="form-select" id="property_type" name="property_type" required onchange="togglePropertyFields()">
