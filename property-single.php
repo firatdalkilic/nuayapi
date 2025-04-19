@@ -1056,12 +1056,103 @@ try {
                                 <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?> m²</strong>
                             </div>
                         </div>
+
+                        <?php if (!empty($property['status'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-tag"></i>
+                                <span>Durum</span>
+                                <strong><?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <?php if (!empty($property['zoning_status'])): ?>
                         <div class="col-6 col-md-4">
                             <div class="detail-item">
                                 <i class="bi bi-clipboard-check"></i>
                                 <span>İmar Durumu</span>
                                 <strong><?php echo htmlspecialchars($property['zoning_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['block_no'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-grid"></i>
+                                <span>Ada No</span>
+                                <strong><?php echo htmlspecialchars($property['block_no']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['parcel_no'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-grid-3x3"></i>
+                                <span>Parsel No</span>
+                                <strong><?php echo htmlspecialchars($property['parcel_no']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['sheet_no'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-file-text"></i>
+                                <span>Pafta No</span>
+                                <strong><?php echo htmlspecialchars($property['sheet_no']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['floor_area_ratio'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-building"></i>
+                                <span>EMSAL</span>
+                                <strong><?php echo htmlspecialchars($property['floor_area_ratio']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['height_limit'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-arrows-vertical"></i>
+                                <span>Yükseklik (h)</span>
+                                <strong><?php echo htmlspecialchars($property['height_limit']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['deed_status'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Tapu Durumu</span>
+                                <strong><?php echo htmlspecialchars($property['deed_status']); ?></strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($property['price_per_sqm'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-calculator"></i>
+                                <span>m² Birim Fiyatı</span>
+                                <strong><?php echo number_format($property['price_per_sqm'], 0, ',', '.'); ?> TL</strong>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($property['eligible_for_credit'])): ?>
+                        <div class="col-6 col-md-4">
+                            <div class="detail-item">
+                                <i class="bi bi-credit-card"></i>
+                                <span>Krediye Uygun</span>
+                                <strong><?php echo $property['eligible_for_credit'] == 'Evet' ? 'Evet' : 'Hayır'; ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>
