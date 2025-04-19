@@ -843,45 +843,31 @@ define('HOSTING_URL', 'https://nuayapi.com.tr');
                             </div>
 
                             <!-- Mevcut Resimler -->
-                            <?php if (!empty($images)): ?>
                             <div class="mb-3">
                                 <label class="form-label">Mevcut Resimler</label>
                                 <div class="row">
                                     <?php foreach ($images as $image): ?>
-                                    <div class="col-md-3 mb-2">
+                                    <div class="col-md-3 mb-2 image-container">
                                         <div class="position-relative">
                                             <img src="<?php echo HOSTING_URL; ?>/uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
                                                  class="img-thumbnail" 
                                                  alt="Property Image">
-                                            <div class="d-flex position-absolute top-0 end-0">
-                                                <a href="delete-image.php?id=<?php echo $image['id']; ?>&property_id=<?php echo $id; ?>" 
-                                                   class="btn btn-danger btn-sm"
-                                                   onclick="return confirm('Bu resmi silmek istediğinizden emin misiniz?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </a>
-                                            </div>
-                                            <div class="mt-1">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" 
-                                                           name="featured_image" 
-                                                           value="<?php echo $image['id']; ?>" 
-                                                           id="featured_<?php echo $image['id']; ?>"
-                                                           <?php echo $image['is_featured'] ? 'checked' : ''; ?>>
-                                                    <label class="form-check-label" for="featured_<?php echo $image['id']; ?>">
-                                                        Vitrin Fotoğrafı
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 delete-image-btn"
+                                                    data-image-id="<?php echo $image['id']; ?>">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
-                            <?php endif; ?>
 
-                            <div class="mb-3">
-                                <label for="images" class="form-label">Yeni Resimler</label>
-                                <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+                            <!-- Yeni Resimler -->
+                            <div class="mb-3 image-upload-container">
+                                <label for="property_images" class="form-label">Yeni Resimler</label>
+                                <input type="file" class="form-control property-image-input" id="property_images" 
+                                       name="property_images[]" accept="image/*" multiple>
+                                <div class="image-preview-container mt-2 d-flex flex-wrap"></div>
                                 <small class="text-muted">Birden fazla resim seçebilirsiniz</small>
                             </div>
 
@@ -921,6 +907,8 @@ define('HOSTING_URL', 'https://nuayapi.com.tr');
     </div>
 
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/image-preview.js"></script>
     <script>
         console.log('JavaScript yüklendi');
         
