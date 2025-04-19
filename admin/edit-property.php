@@ -380,6 +380,12 @@ error_log('Floor Location Tipi: ' . gettype($floor_location));
 
 // Hosting URL'sini tanımla
 define('HOSTING_URL', 'https://nuayapi.com.tr');
+
+// Upload dizinini tanımla
+$uploadDir = dirname(__DIR__) . "/uploads/";
+if (!file_exists($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
 ?>
 
 <!DOCTYPE html>
@@ -849,7 +855,7 @@ define('HOSTING_URL', 'https://nuayapi.com.tr');
                                     <?php foreach ($images as $image): ?>
                                     <div class="col-md-3 mb-2 image-container">
                                         <div class="position-relative">
-                                            <img src="<?php echo HOSTING_URL; ?>/uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
+                                            <img src="../uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
                                                  class="img-thumbnail" 
                                                  alt="Property Image">
                                             <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 delete-image-btn"
@@ -864,9 +870,9 @@ define('HOSTING_URL', 'https://nuayapi.com.tr');
 
                             <!-- Yeni Resimler -->
                             <div class="mb-3 image-upload-container">
-                                <label for="property_images" class="form-label">Yeni Resimler</label>
-                                <input type="file" class="form-control property-image-input" id="property_images" 
-                                       name="property_images[]" accept="image/*" multiple>
+                                <label for="images" class="form-label">Yeni Resimler</label>
+                                <input type="file" class="form-control property-image-input" id="images" 
+                                       name="images[]" accept="image/*" multiple>
                                 <div class="image-preview-container mt-2 d-flex flex-wrap"></div>
                                 <small class="text-muted">Birden fazla resim seçebilirsiniz</small>
                             </div>
