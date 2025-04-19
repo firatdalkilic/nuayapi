@@ -2,7 +2,25 @@
 require_once 'admin/config.php';
 
 // Son eklenen 10 ilanı getir
-$query = "SELECT p.*, pi.image_name 
+$query = "SELECT p.*, pi.image_name,
+          CASE 
+              WHEN p.property_type = 'Arsa' THEN p.net_area 
+              ELSE COALESCE(p.square_meters, p.net_area, 0)
+          END as display_area,
+          CONCAT(
+              CASE 
+                  WHEN p.room_count > 0 THEN p.room_count
+                  ELSE ''
+              END,
+              CASE 
+                  WHEN p.room_count > 0 AND p.living_room > 0 THEN '+'
+                  ELSE ''
+              END,
+              CASE 
+                  WHEN p.living_room > 0 THEN p.living_room
+                  ELSE ''
+              END
+          ) as room_display
           FROM properties p 
           LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
           ORDER BY p.created_at DESC 
@@ -69,8 +87,10 @@ while ($row = $result->fetch_assoc()) {
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      height: 100%;
+      height: 450px; /* Sabit yükseklik */
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .property-card .status-badge {
@@ -96,14 +116,11 @@ while ($row = $result->fetch_assoc()) {
 
     .property-card .image {
       position: relative;
-      padding-top: 60%;
+      height: 250px; /* Sabit yükseklik */
       overflow: hidden;
     }
 
     .property-card .image img {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -116,6 +133,20 @@ while ($row = $result->fetch_assoc()) {
 
     .property-card .content {
       padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .property-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #002e5c;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .property-card .location {
@@ -133,7 +164,8 @@ while ($row = $result->fetch_assoc()) {
 
     .property-card .details {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 15px;
     }
 
@@ -142,6 +174,9 @@ while ($row = $result->fetch_assoc()) {
       align-items: center;
       color: #6c757d;
       font-size: 14px;
+      background: #f8f9fa;
+      padding: 5px 10px;
+      border-radius: 4px;
     }
 
     .property-card .detail-item i {
@@ -150,10 +185,10 @@ while ($row = $result->fetch_assoc()) {
     }
 
     .property-card .price {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       color: #002e5c;
-      margin: 0;
+      margin-top: auto;
     }
 
     .swiper-button-next,
@@ -300,37 +335,35 @@ while ($row = $result->fetch_assoc()) {
                     ?>" alt="<?php echo htmlspecialchars($property['title']); ?>">
                   </div>
                   <div class="content">
+                    <h3><?php echo htmlspecialchars($property['title']); ?></h3>
                     <div class="location">
                       <i class="bi bi-geo-alt"></i>
                       <?php 
-                        echo htmlspecialchars($property['location']);
+                        echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim';
                         if (!empty($property['neighborhood'])) {
-                          echo ', ' . htmlspecialchars($property['neighborhood']);
+                            echo ' / ' . htmlspecialchars($property['neighborhood']);
                         }
                       ?>
                     </div>
                     <div class="details">
                       <div class="detail-item">
-                        <i class="bi bi-house-door"></i>
-                        <?php 
-                          $square_meters = !empty($property['square_meters']) ? (float)$property['square_meters'] : 0;
-                          echo $square_meters > 0 ? number_format($square_meters, 0, ',', '.') . ' m²' : 'Belirtilmemiş';
-                        ?>
+                        <i class="bi bi-building"></i>
+                        <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?> <?php echo htmlspecialchars($property['property_type']); ?>
                       </div>
+                      <?php if (!empty($property['display_area'])): ?>
+                      <div class="detail-item">
+                        <i class="bi bi-rulers"></i>
+                        <?php echo number_format($property['display_area'], 0, ',', '.'); ?> m²
+                      </div>
+                      <?php endif; ?>
+                      <?php if (!empty($property['room_display'])): ?>
                       <div class="detail-item">
                         <i class="bi bi-door-open"></i>
-                        <?php 
-                          echo !empty($property['room_count']) ? $property['room_count'] . ' Oda' : 'Belirtilmemiş';
-                        ?>
+                        <?php echo htmlspecialchars($property['room_display']); ?>
                       </div>
-                      <?php if (!empty($property['living_room'])): ?>
-                        <div class="detail-item">
-                          <i class="bi bi-plus-circle"></i>
-                          <?php echo $property['living_room']; ?> Salon
-                        </div>
                       <?php endif; ?>
                     </div>
-                    <p class="price">
+                    <div class="price">
                       <?php 
                         $price = !empty($property['price']) ? (float)$property['price'] : 0;
                         echo $price > 0 ? number_format($price, 0, ',', '.') . ' TL' : 'Fiyat Sorunuz';
@@ -338,7 +371,7 @@ while ($row = $result->fetch_assoc()) {
                       ?>
                         <small>/ay</small>
                       <?php endif; ?>
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>
