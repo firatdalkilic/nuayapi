@@ -1076,7 +1076,7 @@ try {
                                 <span>Alan</span>
                                 <strong><?php 
                                     $square_meters = !empty($property['square_meters']) ? (float)$property['square_meters'] : 0;
-                                    echo number_format($square_meters, 0, ',', '.') . ' m²'; 
+                                    echo number_format($square_meters, 0, ',', '.'); 
                                 ?></strong>
                             </div>
                         </div>
