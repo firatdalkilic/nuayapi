@@ -224,24 +224,27 @@ try {
       overflow: hidden;
       background-color: #f8f9fa;
       border: 1px solid #e5e7eb;
-      max-height: 500px;
-      height: auto;
+      width: 100%;
+      height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .main-image-container img {
       width: 100%;
-      height: auto;
-      max-height: 500px;
+      height: 100%;
       object-fit: contain;
-      object-position: center;
       display: block;
     }
 
     .gallery-thumbnails {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 100px);
       gap: 10px;
       margin-top: 10px;
+      overflow: hidden;
     }
 
     .gallery-thumbnail {
@@ -317,104 +320,60 @@ try {
       align-items: center;
       justify-content: center;
       gap: 15px;
-      margin-top: 10px;
+      margin-top: 15px;
+      padding: 10px 0;
     }
 
     .gallery-pagination-btn {
-      width: 30px;
-      height: 30px;
-      background: rgba(0, 0, 0, 0.1);
-      border: none;
+      width: 35px;
+      height: 35px;
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
       border-radius: 50%;
       cursor: pointer;
-      color: #0d6efd;
+      color: #2563eb;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gallery-pagination-btn::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: rgba(108, 117, 125, 0.15);
-      border-radius: 50%;
-      z-index: 0;
-    }
-
-    .gallery-pagination-btn i {
-      position: relative;
-      z-index: 1;
-      font-size: 18px;
     }
 
     .gallery-pagination-btn:hover {
-      background: rgba(0, 0, 0, 0.15);
-      color: #0a58ca;
-      transform: scale(1.1);
+      background: #e5e7eb;
+    }
+
+    .gallery-pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .gallery-pagination-dots {
       display: flex;
-      gap: 5px;
+      gap: 8px;
     }
 
     .gallery-pagination-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: #dee2e6;
+      background: #e5e7eb;
       cursor: pointer;
       transition: all 0.3s ease;
-    }
-
-    .gallery-pagination-dot:hover {
-      background: #adb5bd;
     }
 
     .gallery-pagination-dot.active {
-      background: #0d6efd;
+      background: #2563eb;
       transform: scale(1.2);
-    }
-
-    .gallery-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: all 0.3s ease;
-    }
-
-    .gallery-nav:hover {
-      background: white;
-      transform: translateY(-50%) scale(1.1);
-    }
-
-    .gallery-nav.prev {
-      left: 20px;
-    }
-
-    .gallery-nav.next {
-      right: 20px;
     }
 
     @media (max-width: 768px) {
       .gallery-thumbnails {
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 100px);
+      }
+
+      .main-image-container {
+        height: 350px;
       }
     }
 
@@ -935,14 +894,14 @@ try {
           <div class="col-lg-5">
             <div class="property-gallery">
               <!-- Ana Resim -->
-              <div class="main-image-container mb-3" style="max-height: 500px; height: auto; padding-bottom: 0;">
+              <div class="main-image-container">
                   <img src="<?php 
                       echo !empty($images[0]['image_name']) 
                           ? (strpos($images[0]['image_name'], 'assets/') === 0 
                              ? $images[0]['image_name'] 
                              : 'uploads/' . htmlspecialchars($images[0]['image_name']))
                           : 'assets/img/property-default.jpg';
-                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage" style="max-height: 500px; width: 100%; object-fit: contain;">
+                  ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
               </div>
 
               <!-- Galeri Küçük Resimler -->
@@ -1551,16 +1510,19 @@ try {
 
   <script>
     let currentImageIndex = 0;
+    let currentPage = 0;
+    const imagesPerPage = 10;
     const images = <?php echo json_encode(array_map(function($img) { 
         return strpos($img['image_name'], 'assets/') === 0 
             ? $img['image_name'] 
             : 'uploads/' . $img['image_name']; 
     }, $images)); ?>;
+    const totalPages = Math.ceil(images.length / imagesPerPage);
 
     function selectImage(index) {
         currentImageIndex = index;
         updateMainImage();
-        updateThumbnailsActiveState();
+        updateGalleryPage();
     }
 
     function updateMainImage() {
@@ -1568,10 +1530,51 @@ try {
         mainImage.src = images[currentImageIndex];
     }
 
-    function updateThumbnailsActiveState() {
-        document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
-            thumb.classList.toggle('active', i === currentImageIndex);
-        });
+    function updateGalleryPage() {
+        const startIndex = currentPage * imagesPerPage;
+        const endIndex = Math.min(startIndex + imagesPerPage, images.length);
+        const thumbnailsContainer = document.querySelector('.gallery-thumbnails');
+        const paginationContainer = document.querySelector('.gallery-pagination');
+        
+        // Thumbnail'leri güncelle
+        thumbnailsContainer.innerHTML = '';
+        for (let i = startIndex; i < endIndex; i++) {
+            const thumbnail = document.createElement('div');
+            thumbnail.className = `gallery-thumbnail ${i === currentImageIndex ? 'active' : ''}`;
+            thumbnail.onclick = () => selectImage(i);
+            thumbnail.innerHTML = `<img src="${images[i]}" alt="Thumbnail ${i + 1}">`;
+            thumbnailsContainer.appendChild(thumbnail);
+        }
+
+        // Sayfalama kontrollerini güncelle
+        if (totalPages > 1) {
+            paginationContainer.innerHTML = `
+                <button class="gallery-pagination-btn" onclick="changePage(-1)" ${currentPage === 0 ? 'disabled' : ''}>
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <div class="gallery-pagination-dots">
+                    ${Array.from({length: totalPages}, (_, i) => `
+                        <div class="gallery-pagination-dot ${i === currentPage ? 'active' : ''}" 
+                             onclick="goToPage(${i})"></div>
+                    `).join('')}
+                </div>
+                <button class="gallery-pagination-btn" onclick="changePage(1)" ${currentPage === totalPages - 1 ? 'disabled' : ''}>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            `;
+        } else {
+            paginationContainer.innerHTML = '';
+        }
+    }
+
+    function changePage(direction) {
+        currentPage = Math.max(0, Math.min(currentPage + direction, totalPages - 1));
+        updateGalleryPage();
+    }
+
+    function goToPage(pageNumber) {
+        currentPage = pageNumber;
+        updateGalleryPage();
     }
 
     function openFullscreen() {
@@ -1600,7 +1603,7 @@ try {
         const modalImage = document.getElementById('modalImage');
         modalImage.src = images[currentImageIndex];
         updateMainImage();
-        updateThumbnailsActiveState();
+        updateGalleryPage();
     }
 
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
