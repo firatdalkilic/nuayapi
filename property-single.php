@@ -229,13 +229,30 @@ try {
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .main-image-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
       display: block;
+      cursor: pointer;
+    }
+
+    .photo-counter {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      z-index: 2;
     }
 
     .gallery-thumbnails {
@@ -256,14 +273,22 @@ try {
       border: 2px solid transparent;
       transition: all 0.3s ease;
       background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-thumbnail.active {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
     }
 
     .gallery-thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
     }
 
     .gallery-actions {
@@ -899,7 +924,7 @@ try {
           <div class="col-lg-5">
             <div class="property-gallery">
               <!-- Ana Resim -->
-              <div class="main-image-container">
+              <div class="main-image-container" onclick="changeModalImage(1)">
                   <img src="<?php 
                       echo !empty($images[0]['image_name']) 
                           ? (strpos($images[0]['image_name'], 'assets/') === 0 
@@ -907,6 +932,9 @@ try {
                              : 'uploads/' . htmlspecialchars($images[0]['image_name']))
                           : 'assets/img/property-default.jpg';
                   ?>" alt="<?php echo htmlspecialchars($property['title']); ?>" id="mainImage">
+                  <div class="photo-counter">
+                      <span id="currentPhotoIndex">1</span> / <span id="totalPhotos"><?php echo count($images); ?></span>
+                  </div>
               </div>
 
               <!-- Galeri Aksiyonları -->
@@ -1529,11 +1557,13 @@ try {
         currentImageIndex = index;
         updateMainImage();
         updateGalleryPage();
+        updatePhotoCounter();
     }
 
     function updateMainImage() {
         const mainImage = document.getElementById('mainImage');
         mainImage.src = images[currentImageIndex];
+        updatePhotoCounter();
     }
 
     function updateGalleryPage() {
@@ -1607,9 +1637,12 @@ try {
         event.stopPropagation();
         currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
         const modalImage = document.getElementById('modalImage');
-        modalImage.src = images[currentImageIndex];
+        if (modalImage) {
+            modalImage.src = images[currentImageIndex];
+        }
         updateMainImage();
         updateGalleryPage();
+        updatePhotoCounter();
     }
 
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
@@ -1617,21 +1650,18 @@ try {
         if (e.key === 'Escape') {
             closeModal();
         } else if (e.key === 'ArrowLeft') {
-            if (document.getElementById('photoModal').style.display === 'block') {
-                changeModalImage(-1);
-                e.preventDefault();
-            } else {
-                changeModalImage(-1);
-            }
+            changeModalImage(-1);
+            e.preventDefault();
         } else if (e.key === 'ArrowRight') {
-            if (document.getElementById('photoModal').style.display === 'block') {
-                changeModalImage(1);
-                e.preventDefault();
-            } else {
-                changeModalImage(1);
-            }
+            changeModalImage(1);
+            e.preventDefault();
         }
     });
+
+    function updatePhotoCounter() {
+        document.getElementById('currentPhotoIndex').textContent = currentImageIndex + 1;
+        document.getElementById('totalPhotos').textContent = images.length;
+    }
 
     function openVideoModal() {
       const modal = document.getElementById('videoModal');
@@ -1769,6 +1799,8 @@ try {
         if (typeof PureCounter !== 'undefined') {
             new PureCounter();
         }
+
+        updatePhotoCounter();
     });
   </script>
 
