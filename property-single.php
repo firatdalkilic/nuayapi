@@ -1532,14 +1532,14 @@ try {
   <!-- Modal -->
   <div id="photoModal" class="photo-modal" onclick="closeModalFromOverlay(event)">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">
+      <button type="button" class="modal-close" onclick="closeModal()">
         <i class="bi bi-x-lg"></i>
       </button>
       <img id="modalImage" class="modal-image" src="" alt="">
-      <a href="#" class="modal-nav modal-prev" onclick="changeModalImage(-1, true); return false;">
+      <a href="#" class="modal-nav modal-prev" onclick="event.preventDefault(); event.stopPropagation(); changeModalImage(-1, true);">
         <i class="bi bi-chevron-left"></i>
       </a>
-      <a href="#" class="modal-nav modal-next" onclick="changeModalImage(1, true); return false;">
+      <a href="#" class="modal-nav modal-next" onclick="event.preventDefault(); event.stopPropagation(); changeModalImage(1, true);">
         <i class="bi bi-chevron-right"></i>
       </a>
     </div>
@@ -1659,10 +1659,12 @@ try {
     function openFullscreen() {
         const modal = document.getElementById('photoModal');
         const modalImage = document.getElementById('modalImage');
-        modalImage.src = images[currentImageIndex];
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        updateModalNavigation();
+        if (modal && modalImage) {
+            modalImage.src = images[currentImageIndex];
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            updateModalNavigation();
+        }
     }
 
     function updateModalNavigation() {
@@ -1693,45 +1695,13 @@ try {
         }
     }
 
-    // Modal içindeki ok tuşlarına tıklama işleyicileri
-    document.addEventListener('DOMContentLoaded', function() {
-        const modalPrev = document.querySelector('.modal-prev');
-        const modalNext = document.querySelector('.modal-next');
-        const modalClose = document.querySelector('.modal-close');
-        
-        if (modalPrev) {
-            modalPrev.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                changeModalImage(-1, true);
-            });
-        }
-        
-        if (modalNext) {
-            modalNext.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                changeModalImage(1, true);
-            });
-        }
-        
-        if (modalClose) {
-            modalClose.addEventListener('click', function(e) {
-                e.preventDefault();
-                closeModal();
-            });
-        }
-    });
-
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
     document.addEventListener('keydown', function(e) {
         const modal = document.getElementById('photoModal');
         const isModalOpen = modal && modal.style.display === 'block';
         
-        if (e.key === 'Escape') {
-            if (isModalOpen) {
-                closeModal();
-            }
+        if (e.key === 'Escape' && isModalOpen) {
+            closeModal();
         } else if (isModalOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
             e.preventDefault();
             changeModalImage(e.key === 'ArrowLeft' ? -1 : 1, true);
@@ -1811,76 +1781,45 @@ try {
     }
 
     function closeVideoModalFromOverlay(event) {
-      if (event.target.className === 'photo-modal') {
+      if (event.target.classList.contains('photo-modal')) {
         closeVideoModal();
       }
     }
 
-    // ESC tuşu ile video modalını kapatma
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        if (document.getElementById('videoModal').style.display === 'block') {
-          closeVideoModal();
-        }
+    function closeModal() {
+      const modal = document.getElementById('photoModal');
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
       }
-    });
+    }
 
-    // Video kontrollerini klavye ile yönetme
-    document.addEventListener('keydown', function(e) {
-      const video = document.getElementById('propertyVideo');
-      const videoModal = document.getElementById('videoModal');
-      
-      if (videoModal.style.display === 'block') {
-        switch(e.key) {
-          case 'Escape':
-            closeVideoModal();
-            break;
-          case ' ':
-            // Boşluk tuşu ile oynat/duraklat
-            e.preventDefault();
-            if (video.paused) {
-              video.play();
-            } else {
-              video.pause();
-            }
-            break;
-          case 'ArrowLeft':
-            // 5 saniye geri
-            e.preventDefault();
-            video.currentTime = Math.max(0, video.currentTime - 5);
-            break;
-          case 'ArrowRight':
-            // 5 saniye ileri
-            e.preventDefault();
-            video.currentTime = Math.min(video.duration, video.currentTime + 5);
-            break;
-        }
+    function closeModalFromOverlay(event) {
+      if (event.target.classList.contains('photo-modal')) {
+        closeModal();
       }
-    });
+    }
 
-    // Video yükleme durumunu izle
-    document.getElementById('propertyVideo').addEventListener('waiting', function() {
-      document.getElementById('videoLoader').style.display = 'block';
-    });
-
-    document.getElementById('propertyVideo').addEventListener('playing', function() {
-      document.getElementById('videoLoader').style.display = 'none';
-    });
-
+    // Sayfa yüklendiğinde event listener'ları ekle
     document.addEventListener('DOMContentLoaded', function() {
-        // Elementlerin varlığını kontrol et
-        function goToPage(url) {
-            if (url) {
-                window.location.href = url;
-            }
-        }
+      // Modal kapatma butonuna tıklama
+      const modalClose = document.querySelector('.modal-close');
+      if (modalClose) {
+        modalClose.onclick = function(e) {
+          e.preventDefault();
+          closeModal();
+        };
+      }
 
-        // PureCounter'ı koşullu olarak başlat
-        if (typeof PureCounter !== 'undefined') {
-            new PureCounter();
-        }
-
-        updatePhotoCounter();
+      // Modal dışına tıklama
+      const modal = document.getElementById('photoModal');
+      if (modal) {
+        modal.onclick = function(e) {
+          if (e.target === this) {
+            closeModal();
+          }
+        };
+      }
     });
   </script>
 
