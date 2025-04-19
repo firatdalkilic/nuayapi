@@ -29,7 +29,10 @@ try {
         $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
                 a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link,
                 GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC) as all_images,
-                COALESCE(p.square_meters, 0) as square_meters
+                CASE 
+                    WHEN p.property_type = 'Arsa' THEN p.net_area 
+                    ELSE COALESCE(p.square_meters, p.net_area, 0)
+                END as display_area
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id
@@ -77,7 +80,11 @@ try {
 
             // Alan değeri için özel kontrol
             if ($property['property_type'] == 'Arsa') {
-                echo "<!-- Debug: Square Meters Value: " . var_export($property['square_meters'], true) . " -->";
+                fwrite($debug_log, "\nArsa Detay Debug:\n");
+                fwrite($debug_log, "net_area: " . var_export($property['net_area'], true) . "\n");
+                fwrite($debug_log, "display_area: " . var_export($property['display_area'], true) . "\n");
+                fwrite($debug_log, "SQL Query Result:\n");
+                fwrite($debug_log, print_r($property, true) . "\n");
             }
         } else {
             header("Location: index.html");
@@ -1068,6 +1075,12 @@ try {
 
             <div class="property-details">
                 <?php if ($property['property_type'] == 'Arsa'): ?>
+                    <!-- Debug output -->
+                    <!-- 
+                    net_area: <?php echo var_export($property['net_area'], true); ?>
+                    display_area: <?php echo var_export($property['display_area'], true); ?>
+                    -->
+                    
                     <!-- Arsa özellikleri -->
                     <div class="row g-2">
                         <div class="col-6 col-md-4">
@@ -1075,8 +1088,8 @@ try {
                                 <i class="bi bi-rulers"></i>
                                 <span>Alan</span>
                                 <strong><?php 
-                                    $square_meters = !empty($property['square_meters']) ? (float)$property['square_meters'] : 0;
-                                    echo number_format($square_meters, 0, ',', '.') . ' m²'; 
+                                    $area = !empty($property['display_area']) ? (float)$property['display_area'] : 0;
+                                    echo number_format($area, 0, ',', '.') . ' m²'; 
                                 ?></strong>
                             </div>
                         </div>
