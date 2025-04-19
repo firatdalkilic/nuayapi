@@ -322,57 +322,59 @@ while ($row = $result->fetch_assoc()) {
             <?php foreach ($latest_properties as $property): ?>
               <div class="swiper-slide">
                 <div class="property-card">
-                  <span class="status-badge <?php echo $property['status'] == 'sale' ? 'satılık' : 'kiralık'; ?>">
-                    <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?>
-                  </span>
-                  <div class="image">
-                    <img src="<?php 
-                      echo !empty($property['image_name']) 
-                        ? (strpos($property['image_name'], 'assets/') === 0 
-                           ? $property['image_name'] 
-                           : 'uploads/' . htmlspecialchars($property['image_name']))
-                        : 'assets/img/property-default.jpg';
-                    ?>" alt="<?php echo htmlspecialchars($property['title']); ?>">
-                  </div>
-                  <div class="content">
-                    <h3><?php echo htmlspecialchars($property['title']); ?></h3>
-                    <div class="location">
-                      <i class="bi bi-geo-alt"></i>
-                      <?php 
-                        echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim';
-                        if (!empty($property['neighborhood'])) {
-                            echo ' / ' . htmlspecialchars($property['neighborhood']);
-                        }
-                      ?>
+                  <a href="property-single.php?id=<?php echo $property['id']; ?>" class="text-decoration-none">
+                    <span class="status-badge <?php echo $property['status'] == 'sale' ? 'satılık' : 'kiralık'; ?>">
+                      <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?>
+                    </span>
+                    <div class="image">
+                      <img src="<?php 
+                        echo !empty($property['image_name']) 
+                          ? (strpos($property['image_name'], 'assets/') === 0 
+                             ? $property['image_name'] 
+                             : 'uploads/' . htmlspecialchars($property['image_name']))
+                          : 'assets/img/property-default.jpg';
+                      ?>" alt="<?php echo htmlspecialchars($property['title']); ?>">
                     </div>
-                    <div class="details">
-                      <div class="detail-item">
-                        <i class="bi bi-building"></i>
-                        <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?> <?php echo htmlspecialchars($property['property_type']); ?>
+                    <div class="content">
+                      <h3><?php echo htmlspecialchars($property['title']); ?></h3>
+                      <div class="location">
+                        <i class="bi bi-geo-alt"></i>
+                        <?php 
+                          echo !empty($property['location']) ? htmlspecialchars($property['location']) : 'Didim';
+                          if (!empty($property['neighborhood'])) {
+                              echo ' / ' . htmlspecialchars($property['neighborhood']);
+                          }
+                        ?>
                       </div>
-                      <?php if (!empty($property['display_area'])): ?>
-                      <div class="detail-item">
-                        <i class="bi bi-rulers"></i>
-                        <?php echo number_format($property['display_area'], 0, ',', '.'); ?> m²
+                      <div class="details">
+                        <div class="detail-item">
+                          <i class="bi bi-building"></i>
+                          <?php echo $property['status'] == 'sale' ? 'Satılık' : 'Kiralık'; ?> <?php echo htmlspecialchars($property['property_type']); ?>
+                        </div>
+                        <?php if (!empty($property['display_area'])): ?>
+                        <div class="detail-item">
+                          <i class="bi bi-rulers"></i>
+                          <?php echo number_format($property['display_area'], 0, ',', '.'); ?> m²
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($property['room_display'])): ?>
+                        <div class="detail-item">
+                          <i class="bi bi-door-open"></i>
+                          <?php echo htmlspecialchars($property['room_display']); ?>
+                        </div>
+                        <?php endif; ?>
                       </div>
-                      <?php endif; ?>
-                      <?php if (!empty($property['room_display'])): ?>
-                      <div class="detail-item">
-                        <i class="bi bi-door-open"></i>
-                        <?php echo htmlspecialchars($property['room_display']); ?>
+                      <div class="price">
+                        <?php 
+                          $price = !empty($property['price']) ? (float)$property['price'] : 0;
+                          echo $price > 0 ? number_format($price, 0, ',', '.') . ' TL' : 'Fiyat Sorunuz';
+                          if ($property['status'] == 'rent' && $price > 0): 
+                        ?>
+                          <small>/ay</small>
+                        <?php endif; ?>
                       </div>
-                      <?php endif; ?>
                     </div>
-                    <div class="price">
-                      <?php 
-                        $price = !empty($property['price']) ? (float)$property['price'] : 0;
-                        echo $price > 0 ? number_format($price, 0, ',', '.') . ' TL' : 'Fiyat Sorunuz';
-                        if ($property['status'] == 'rent' && $price > 0): 
-                      ?>
-                        <small>/ay</small>
-                      <?php endif; ?>
-                    </div>
-                  </div>
+                  </a>
                 </div>
               </div>
             <?php endforeach; ?>
