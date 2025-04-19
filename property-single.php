@@ -17,7 +17,7 @@ try {
         // İlan detaylarını, öne çıkan resmi ve tüm resimleri tek sorguda al
         $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
                 a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link,
-                GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC, pi2.display_order) as all_images
+                GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC) as all_images
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id
