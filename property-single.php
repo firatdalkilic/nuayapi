@@ -1677,18 +1677,51 @@ try {
 
     function changeModalImage(direction, fromModal = false) {
         if (!fromModal) {
-            event.stopPropagation();
+            event?.stopPropagation();
         }
         const newIndex = (currentImageIndex + direction + images.length) % images.length;
-        selectImage(newIndex);
         
-        // Eğer modal açıksa, modal resmini de güncelle
-        const modalImage = document.getElementById('modalImage');
-        if (modalImage && modalImage.parentElement.style.display === 'block') {
-            modalImage.src = images[newIndex];
+        // Modal içindeyken sadece modal resmini güncelle
+        if (fromModal) {
+            currentImageIndex = newIndex;
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = images[currentImageIndex];
             updateModalNavigation();
+            updatePhotoCounter();
+        } else {
+            selectImage(newIndex);
         }
     }
+
+    // Modal içindeki ok tuşlarına tıklama işleyicileri
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalPrev = document.querySelector('.modal-prev');
+        const modalNext = document.querySelector('.modal-next');
+        const modalClose = document.querySelector('.modal-close');
+        
+        if (modalPrev) {
+            modalPrev.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                changeModalImage(-1, true);
+            });
+        }
+        
+        if (modalNext) {
+            modalNext.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                changeModalImage(1, true);
+            });
+        }
+        
+        if (modalClose) {
+            modalClose.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeModal();
+            });
+        }
+    });
 
     // ESC tuşu ile modalı kapatma ve ok tuşları ile gezinme
     document.addEventListener('keydown', function(e) {
@@ -1699,12 +1732,9 @@ try {
             if (isModalOpen) {
                 closeModal();
             }
-        } else if (e.key === 'ArrowLeft') {
-            changeModalImage(-1, isModalOpen);
+        } else if (isModalOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
             e.preventDefault();
-        } else if (e.key === 'ArrowRight') {
-            changeModalImage(1, isModalOpen);
-            e.preventDefault();
+            changeModalImage(e.key === 'ArrowLeft' ? -1 : 1, true);
         }
     });
 
