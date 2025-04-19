@@ -285,7 +285,7 @@ while ($row = $result->fetch_assoc()) {
         </div><!-- End Carousel Item -->
 
         <div class="carousel-item">
-          <img src="https://images.unsplash.com/photo-1628745277866-c0334c0c167f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Modern Daire">
+          <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Modern Villa">
           <div class="carousel-container">
             <div>
               <h2>Mutluluğunuz İçin</h2>
