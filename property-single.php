@@ -14,10 +14,22 @@ try {
         fwrite($debug_log, "\n\n" . date('Y-m-d H:i:s') . " - İLAN DETAY SAYFASI\n");
         fwrite($debug_log, "İlan ID: $property_id\n");
         
+        // Debug için property verilerini yazdır
+        $debug_sql = "SELECT * FROM properties WHERE id = ?";
+        $debug_stmt = $conn->prepare($debug_sql);
+        $debug_stmt->bind_param("i", $property_id);
+        $debug_stmt->execute();
+        $debug_result = $debug_stmt->get_result();
+        $debug_property = $debug_result->fetch_assoc();
+        
+        fwrite($debug_log, "Property Debug Data:\n");
+        fwrite($debug_log, print_r($debug_property, true));
+        
         // İlan detaylarını, öne çıkan resmi ve tüm resimleri tek sorguda al
         $sql = "SELECT p.*, pi.image_name, a.agent_name, a.phone as agent_phone, a.email as agent_email, 
                 a.image as agent_image, a.sahibinden_link, a.emlakjet_link, a.facebook_link,
-                GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC) as all_images
+                GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC) as all_images,
+                COALESCE(p.square_meters, 0) as square_meters
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 
                 LEFT JOIN agents a ON p.agent_id = a.id
@@ -34,6 +46,10 @@ try {
         
         if ($result->num_rows > 0) {
             $property = $result->fetch_assoc();
+            
+            // Debug için property verilerini yazdır
+            fwrite($debug_log, "Final Property Data:\n");
+            fwrite($debug_log, print_r($property, true));
             
             // Tüm resimleri diziye dönüştür
             $images = [];
@@ -58,6 +74,11 @@ try {
             $floor = !empty($floor_location) && in_array($floor_location, $floor_options, true) 
                 ? $floor_location 
                 : '-';
+
+            // Alan değeri için özel kontrol
+            if ($property['property_type'] == 'Arsa') {
+                echo "<!-- Debug: Square Meters Value: " . var_export($property['square_meters'], true) . " -->";
+            }
         } else {
             header("Location: index.html");
             exit;
