@@ -244,6 +244,8 @@ try {
       grid-template-rows: repeat(2, 120px);
       gap: 8px;
       margin-top: 15px;
+      overflow: hidden;
+      max-height: 248px;
     }
 
     .gallery-thumbnail {
@@ -337,8 +339,9 @@ try {
       transition: all 0.3s ease;
     }
 
-    .gallery-pagination-btn:hover {
+    .gallery-pagination-btn:hover:not(:disabled) {
       background: #e5e7eb;
+      transform: scale(1.05);
     }
 
     .gallery-pagination-btn:disabled {
@@ -352,8 +355,8 @@ try {
     }
 
     .gallery-pagination-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: #e5e7eb;
       cursor: pointer;
@@ -368,8 +371,9 @@ try {
     @media (max-width: 768px) {
       .gallery-thumbnails {
         grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: 100px;
+        grid-template-rows: repeat(2, 100px);
         gap: 5px;
+        max-height: 205px;
       }
 
       .main-image-container {
