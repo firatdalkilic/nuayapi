@@ -263,7 +263,7 @@ while ($row = $result->fetch_assoc()) {
       <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
 
         <div class="carousel-item active">
-          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Modern Villa">
+          <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Modern Emlak Ofisi">
           <div class="carousel-container">
             <div>
               <h2>Hayalinizdeki Eve</h2>
@@ -274,7 +274,7 @@ while ($row = $result->fetch_assoc()) {
         </div><!-- End Carousel Item -->
 
         <div class="carousel-item">
-          <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Lüks Daire">
+          <img src="https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Lüks Villa">
           <div class="carousel-container">
             <div>
               <h2>Güvenilir Yatırımın Adresi</h2>
@@ -285,7 +285,7 @@ while ($row = $result->fetch_assoc()) {
         </div><!-- End Carousel Item -->
 
         <div class="carousel-item">
-          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Deniz Manzaralı Villa">
+          <img src="https://images.unsplash.com/photo-1628745277866-c0334c0c167f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Modern Daire">
           <div class="carousel-container">
             <div>
               <h2>Mutluluğunuz İçin</h2>
