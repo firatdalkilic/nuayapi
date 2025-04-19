@@ -858,10 +858,20 @@ if (!file_exists($uploadDir)) {
                                             <img src="../uploads/<?php echo htmlspecialchars($image['image_name']); ?>" 
                                                  class="img-thumbnail" 
                                                  alt="Property Image">
-                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 delete-image-btn"
-                                                    data-image-id="<?php echo $image['id']; ?>">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <div class="position-absolute top-0 end-0 d-flex gap-1">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="featured_image" 
+                                                           value="<?php echo $image['id']; ?>" 
+                                                           <?php echo $image['is_featured'] ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label small text-white">
+                                                        Vitrin
+                                                    </label>
+                                                </div>
+                                                <button type="button" class="btn btn-danger btn-sm delete-image-btn"
+                                                        data-image-id="<?php echo $image['id']; ?>">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <?php endforeach; ?>
