@@ -243,7 +243,7 @@ while ($row = $result->fetch_assoc()) {
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html" class="active">Anasayfa</a></li>
-          <li><a href="about.php">Hakkımızda</a></li>
+          <li><a href="about.html">Hakkımızda</a></li>
           <li><a href="services.html">Hizmetlerimiz</a></li>
           <li><a href="properties.php">İlanlar</a></li>
           <li><a href="agents.php">Danışmanlarımız</a></li>
@@ -279,7 +279,7 @@ while ($row = $result->fetch_assoc()) {
             <div>
               <h2>Güvenilir Yatırımın Adresi</h2>
               <p>20 Yıllık Tecrübemizle Yanınızdayız</p>
-              <a href="about.php" class="btn-get-started">Bizi Tanıyın</a>
+              <a href="about.html" class="btn-get-started">Bizi Tanıyın</a>
             </div>
           </div>
         </div><!-- End Carousel Item -->

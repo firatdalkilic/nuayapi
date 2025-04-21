@@ -512,7 +512,7 @@ if (!file_exists('uploads')) {
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Anasayfa</a></li>
-          <li><a href="about.php">Hakkımızda</a></li>
+          <li><a href="about.html">Hakkımızda</a></li>
           <li><a href="services.html">Hizmetlerimiz</a></li>
           <li><a href="properties.php" class="active">İlanlar</a></li>
           <li><a href="agents.php">Danışmanlarımız</a></li>
