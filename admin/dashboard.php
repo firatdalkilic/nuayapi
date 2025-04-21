@@ -32,8 +32,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
     exit;
 }
 
+// Sayfalama için değişkenler
+$items_per_page = 9; // Her sayfada gösterilecek ilan sayısı
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $items_per_page;
+
 // İlanları getir
 if (isAgent()) {
+    // Toplam ilan sayısını al
+    $count_sql = "SELECT COUNT(*) as total FROM properties WHERE agent_id = ?";
+    $count_stmt = $conn->prepare($count_sql);
+    $agent_id = getAgentId();
+    $count_stmt->bind_param("i", $agent_id);
+    $count_stmt->execute();
+    $total_items = $count_stmt->get_result()->fetch_assoc()['total'];
+
     // Danışman sadece kendi ilanlarını görür
     $sql = "SELECT p.*, a.agent_name,
             (SELECT image_name FROM property_images WHERE property_id = p.id AND is_featured = 1 LIMIT 1) as image_name,
@@ -54,11 +67,17 @@ if (isAgent()) {
             FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
             WHERE p.agent_id = ? 
-            ORDER BY p.created_at DESC";
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
-    $agent_id = getAgentId();
-    $stmt->bind_param("i", $agent_id);
+    $stmt->bind_param("iii", $agent_id, $items_per_page, $offset);
 } else {
+    // Toplam ilan sayısını al
+    $count_sql = "SELECT COUNT(*) as total FROM properties";
+    $count_stmt = $conn->prepare($count_sql);
+    $count_stmt->execute();
+    $total_items = $count_stmt->get_result()->fetch_assoc()['total'];
+
     // Admin tüm ilanları görür
     $sql = "SELECT p.*, a.agent_name,
             (SELECT image_name FROM property_images WHERE property_id = p.id AND is_featured = 1 LIMIT 1) as image_name,
@@ -78,8 +97,10 @@ if (isAgent()) {
             ) as room_display
             FROM properties p 
             LEFT JOIN agents a ON p.agent_id = a.id 
-            ORDER BY p.created_at DESC";
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $items_per_page, $offset);
 }
 
 $stmt->execute();
@@ -88,6 +109,9 @@ $properties = [];
 while ($row = $result->fetch_assoc()) {
     $properties[] = $row;
 }
+
+// Toplam sayfa sayısını hesapla
+$total_pages = ceil($total_items / $items_per_page);
 ?>
 
 <!DOCTYPE html>
@@ -293,6 +317,38 @@ while ($row = $result->fetch_assoc()) {
                     </div>
                 </div>
             </div>
+
+            <!-- İlanlar listesi sonrası, pagination ekle -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <?php if ($current_page > 1): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<?php echo $current_page - 1; ?>" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            
+                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <li class="page-item <?php echo $i === $current_page ? 'active' : ''; ?>">
+                                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
+                            
+                            <?php if ($current_page < $total_pages): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<?php echo $current_page + 1; ?>" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- End Pagination -->
         </div>
     </section>
 
