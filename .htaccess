@@ -1,4 +1,19 @@
 RewriteEngine On
+
+# Dosya veya dizin mevcut değilse
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
+
+# Özel yönlendirmeler (spesifik sayfalar için)
+RewriteRule ^property/([0-9]+)/?$ property-single.php?id=$1 [L,QSA]
+RewriteRule ^properties/?$ properties.php [L,QSA]
+RewriteRule ^agents/?$ agents.php [L,QSA]
+RewriteRule ^contact/?$ contact.html [L,QSA]
+RewriteRule ^about/?$ about.html [L,QSA]
+RewriteRule ^services/?$ services.html [L,QSA]
+
+# 404 sayfasına yönlendirme
+ErrorDocument 404 /404.php
+
+# Diğer tüm istekleri index.php'ye yönlendir
 RewriteRule ^ index.php [L] 

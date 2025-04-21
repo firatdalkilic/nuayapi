@@ -1,24 +1,30 @@
 <?php
 require_once 'admin/config.php';
 
-// URL'den danışman ID'sini al
-$agent_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if ($agent_id <= 0) {
-    header("Location: agents.php");
+// Danışman ID'sini kontrol et
+if (!isset($_GET['id'])) {
+    header("HTTP/1.0 404 Not Found");
+    include '404.php';
     exit;
 }
 
-// Danışman bilgilerini getir
-$stmt = $conn->prepare("SELECT * FROM agents WHERE id = ?");
+$agent_id = (int)$_GET['id'];
+
+// Danışmanı veritabanından al
+$agent_query = "SELECT * FROM agents WHERE id = ?";
+$stmt = $conn->prepare($agent_query);
 $stmt->bind_param("i", $agent_id);
 $stmt->execute();
-$agent = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
 
-if (!$agent) {
-    header("Location: agents.php");
+// Danışman bulunamadıysa 404 sayfasına yönlendir
+if ($result->num_rows === 0) {
+    header("HTTP/1.0 404 Not Found");
+    include '404.php';
     exit;
 }
+
+$agent = $result->fetch_assoc();
 
 // Danışmanın ilanlarını getir
 $stmt = $conn->prepare("SELECT * FROM properties WHERE agent_id = ? ORDER BY created_at DESC");

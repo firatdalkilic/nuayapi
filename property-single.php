@@ -22,6 +22,13 @@ try {
         $debug_result = $debug_stmt->get_result();
         $debug_property = $debug_result->fetch_assoc();
         
+        // Eğer ilan bulunamadıysa 404 sayfasına yönlendir
+        if (!$debug_property) {
+            header("HTTP/1.0 404 Not Found");
+            include '404.php';
+            exit;
+        }
+        
         fwrite($debug_log, "Property Debug Data:\n");
         fwrite($debug_log, print_r($debug_property, true));
         
