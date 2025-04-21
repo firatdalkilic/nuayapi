@@ -1210,12 +1210,12 @@ try {
                         </div>
                         <?php endif; ?>
 
-                        <?php if (!empty($property['square_meters'])): ?>
+                        <?php if (!empty($property['net_area'])): ?>
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <i class="bi bi-rulers"></i>
                                 <span>Alan (m²):</span>
-                                <strong><?php echo number_format($property['square_meters'], 0, ',', '.'); ?></strong>
+                                <strong><?php echo number_format($property['net_area'], 0, ',', '.'); ?></strong>
                             </div>
                         </div>
                         <?php endif; ?>

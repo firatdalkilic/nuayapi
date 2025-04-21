@@ -13,7 +13,7 @@ error_reporting(E_ALL);
 $debug_log = fopen("workplace_debug.log", "a");
 
 // Initialize variables
-$title = $price = $status = $neighborhood = $square_meters = $floor = $floor_location = '';
+$title = $price = $status = $neighborhood = $net_area = $floor = $floor_location = '';
 $building_age = $room_count = $heating = $credit_eligible = $deed_status = $description = '';
 $success_message = $error_message = '';
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price = str_replace('.', '', sanitize_input($_POST['price'] ?? '')); 
         $status = sanitize_input($_POST['status'] ?? '');
         $neighborhood = sanitize_input($_POST['neighborhood'] ?? '');
-        $square_meters = sanitize_input($_POST['square_meters'] ?? '');
+        $net_area = sanitize_input($_POST['net_area'] ?? '');
         $floor = sanitize_input($_POST['floor'] ?? '');
         $floor_location = sanitize_input($_POST['floor_location'] ?? '');
         $building_age = sanitize_input($_POST['building_age'] ?? '');
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $description = sanitize_input($_POST['description'] ?? '');
 
         fwrite($debug_log, "Temizlenmiş veriler:\n");
-        fwrite($debug_log, "square_meters: $square_meters\n");
+        fwrite($debug_log, "net_area: $net_area\n");
         fwrite($debug_log, "property_type: İş Yeri\n");
 
         // Validate required fields
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // SQL sorgusunu hazırla
         $sql = "INSERT INTO properties (
             title, price, status, location, neighborhood, property_type,
-            square_meters, floor, floor_location, building_age,
+            net_area, floor, floor_location, building_age,
             room_count, heating, eligible_for_credit, deed_status,
             description, agent_id, created_at
         ) VALUES (
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $price,
             $status,
             $neighborhood,
-            $square_meters,
+            $net_area,
             $floor,
             $floor_location,
             $building_age,
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         fwrite($debug_log, "price: $price\n");
         fwrite($debug_log, "status: $status\n");
         fwrite($debug_log, "neighborhood: $neighborhood\n");
-        fwrite($debug_log, "square_meters: $square_meters\n");
+        fwrite($debug_log, "net_area: $net_area\n");
         fwrite($debug_log, "floor: $floor\n");
         fwrite($debug_log, "floor_location: $floor_location\n");
         fwrite($debug_log, "building_age: $building_age\n");
@@ -299,8 +299,8 @@ if (isset($_SESSION['success_message'])) {
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="square_meters" class="form-label">m² *</label>
-                                    <input type="number" class="form-control" id="square_meters" name="square_meters" value="<?php echo htmlspecialchars($square_meters); ?>" required>
+                                    <label for="net_area" class="form-label">Net Metrekare (m²) *</label>
+                                    <input type="number" class="form-control" id="net_area" name="net_area" value="<?php echo htmlspecialchars($net_area); ?>" required>
                                 </div>
 
                                 <div class="col-md-6">
