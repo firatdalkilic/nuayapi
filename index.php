@@ -5,7 +5,7 @@ require_once 'admin/config.php';
 $query = "SELECT p.*, pi.image_name,
           CASE 
               WHEN p.property_type = 'Arsa' THEN p.net_area 
-              ELSE COALESCE(p.square_meters, p.net_area, 0)
+              ELSE p.net_area
           END as display_area,
           CONCAT(
               CASE 

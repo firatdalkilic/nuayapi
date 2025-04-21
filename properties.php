@@ -797,10 +797,10 @@ if (!file_exists('uploads')) {
                                 <i class="bi bi-building"></i>
                                 <span><?php echo htmlspecialchars($ilan['status'] . ' ' . $ilan['property_type']); ?></span>
                             </div>
-                            <?php if (!empty($ilan['square_meters'])): ?>
+                            <?php if (!empty($ilan['net_area'])): ?>
                             <div class="detail-item me-4">
                                 <i class="bi bi-rulers"></i>
-                                <span><?php echo number_format($ilan['square_meters'], 0, ',', '.'); ?> m²</span>
+                                <span><?php echo number_format($ilan['net_area'], 0, ',', '.'); ?> m²</span>
                             </div>
                             <?php endif; ?>
                             <?php if (!empty($ilan['room_count'])): ?>
@@ -814,10 +814,10 @@ if (!file_exists('uploads')) {
                                 <i class="bi bi-building"></i>
                                 <span><?php echo htmlspecialchars($ilan['status'] . ' ' . $ilan['property_type']); ?></span>
                             </div>
-                            <?php if (!empty($ilan['gross_area'])): ?>
+                            <?php if (!empty($ilan['net_area'])): ?>
                             <div class="detail-item me-4">
                                 <i class="bi bi-rulers"></i>
-                                <span><?php echo number_format($ilan['gross_area'], 0, ',', '.'); ?> m²</span>
+                                <span><?php echo number_format($ilan['net_area'], 0, ',', '.'); ?> m²</span>
                             </div>
                             <?php endif; ?>
                             <?php if (!empty($ilan['room_count'])): ?>

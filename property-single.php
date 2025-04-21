@@ -31,7 +31,7 @@ try {
                 GROUP_CONCAT(pi2.image_name ORDER BY pi2.is_featured DESC) as all_images,
                 CASE 
                     WHEN p.property_type = 'Arsa' THEN p.net_area 
-                    ELSE COALESCE(p.square_meters, p.net_area, 0)
+                    ELSE p.net_area
                 END as display_area
                 FROM properties p 
                 LEFT JOIN property_images pi ON p.id = pi.property_id AND pi.is_featured = 1 

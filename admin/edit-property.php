@@ -521,23 +521,12 @@ if (!file_exists($uploadDir)) {
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="gross_area" class="form-label">Brüt Metrekare (m²)</label>
-                                    <input type="number" class="form-control" id="gross_area" name="gross_area" 
-                                           min="0" step="0.1"
-                                           value="<?php echo htmlspecialchars($property['gross_area']); ?>"
-                                           placeholder="Örn: 95.5">
-                                    <small class="text-muted">Brüt alan net alandan büyük olmalıdır</small>
-                                </div>
-                                <div class="col-md-6">
                                     <label for="status" class="form-label">Durum</label>
                                     <select class="form-select" id="status" name="status" required>
                                         <option value="rent" <?php echo $property['status'] == 'rent' ? 'selected' : ''; ?>>Kiralık</option>
                                         <option value="sale" <?php echo $property['status'] == 'sale' ? 'selected' : ''; ?>>Satılık</option>
                                     </select>
                                 </div>
-                            </div>
-
-                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="property_type" class="form-label">Emlak Tipi</label>
                                     <select class="form-select" id="property_type" name="property_type" required onchange="togglePropertyFields()">
